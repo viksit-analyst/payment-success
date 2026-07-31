@@ -1,45 +1,64 @@
-const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxzbo25oQHBZRB-oZUgdtKiXo_R1EP0Gsu7Q5D_vGhgnzCowsLNBkEmUMC-YuwGRkxU/exec";
+const SCRIPT_URL = "YOUR_APPS_SCRIPT_URL";
 
-async function buy(bot) {
+function buy(bot) {
 
-    try {
+    const callbackName = "jsonp_" + Date.now();
 
-        const url = SCRIPT_URL + "?action=createOrder&bot=" + encodeURIComponent(bot);
+    window[callbackName] = function (data) {
 
-        const res = await fetch(url);
+        delete window[callbackName];
+        script.remove();
 
-        const text = await res.text();
+        if (!data.success) {
 
-        console.log("Status:", res.status);
-        console.log("Response:");
-        console.log(text);
+            alert(data.error);
+            return;
 
-        alert(text);
-
-        const data = JSON.parse(text);
+        }
 
         const order = data.order;
 
         const options = {
+
             key: data.key,
+
             amount: order.amount,
+
             currency: order.currency,
-            order_id: order.id,
+
             name: "Viksit Analyst",
+
             description: order.notes.botName,
 
+            order_id: order.id,
+
+            theme: {
+                color: "#2563eb"
+            },
+
             handler: function () {
+
                 window.location.href = "success.html";
+
             }
+
         };
 
-        new Razorpay(options).open();
+        const rzp = new Razorpay(options);
 
-    } catch (e) {
+        rzp.open();
 
-        console.error(e);
-        alert(e);
+    };
 
-    }
+    const script = document.createElement("script");
+
+    script.src =
+        SCRIPT_URL +
+        "?action=createOrder&bot=" +
+        encodeURIComponent(bot) +
+        "&callback=" +
+        callbackName;
+
+    document.body.appendChild(script);
 
 }
