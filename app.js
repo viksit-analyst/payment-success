@@ -1,4 +1,4 @@
-const SCRIPT_URL="YOUR_APPS_SCRIPT_URL";
+const SCRIPT_URL="https://script.google.com/macros/s/AKfycbxzbo25oQHBZRB-oZUgdtKiXo_R1EP0Gsu7Q5D_vGhgnzCowsLNBkEmUMC-YuwGRkxU/exec";
 
 async function buy(bot){
 
