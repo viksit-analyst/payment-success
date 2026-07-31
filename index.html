@@ -333,15 +333,7 @@ This usually takes less than 10 seconds.
 
 </div>
 
-<a id="subscribeBtn"
 
-class="button"
-
-href="#">
-
-Activate Monthly Subscription
-
-</a>
 
 <div class="footer">
 
@@ -359,46 +351,48 @@ Need assistance?<br>
 <script>
 
 //----------------------------------------------------
-// READ PARAMETERS FROM URL
+// READ PAYMENT DETAILS
 //----------------------------------------------------
 
 const params = new URLSearchParams(window.location.search);
 
 const paymentId = params.get("payment_id");
 const orderId = params.get("order_id");
-const bot = params.get("bot");
 
 console.log("Payment ID:", paymentId);
 console.log("Order ID:", orderId);
-console.log("Bot:", bot);
-
-// Optional: Display bot name on the page later
-if(bot){
-    console.log("Customer purchased:", bot);
-}
 
 //----------------------------------------------------
-// THIS WILL LATER CALL GOOGLE APPS SCRIPT
+// SIMULATE BACKEND PROCESS
+// Later this will call Google Apps Script
 //----------------------------------------------------
 
 setTimeout(function(){
 
     document.getElementById("loader").style.display="none";
 
-    document.getElementById("status").innerHTML="✔ Subscription Ready";
+    document.getElementById("status").innerHTML="✔ Subscription Created";
 
     document.getElementById("status").style.color="#18a558";
 
-    document.getElementById("message").innerHTML="Click the button below to authorize your monthly subscription.";
+    document.getElementById("message").innerHTML=
+    "Your monthly subscription has been successfully configured. Redirecting you securely...";
 
-    var btn=document.getElementById("subscribeBtn");
+    // ------------------------------------------------
+    // LATER:
+    // Replace this with the URL returned by Apps Script
+    // ------------------------------------------------
 
-    btn.style.display="inline-block";
+    setTimeout(function(){
 
-    // Temporary link
-    btn.href="https://example.com";
+        // window.location.href = subscriptionUrl;
 
-},7000);
+        // Temporary placeholder
+        console.log("Redirecting to Razorpay Subscription...");
+
+    },2000);
+
+},5000);
 
 </script>
 
