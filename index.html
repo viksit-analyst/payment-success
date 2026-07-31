@@ -356,8 +356,26 @@ Need assistance?<br>
 </div>
 
 </div>
-
 <script>
+
+//----------------------------------------------------
+// READ PARAMETERS FROM URL
+//----------------------------------------------------
+
+const params = new URLSearchParams(window.location.search);
+
+const paymentId = params.get("payment_id");
+const orderId = params.get("order_id");
+const bot = params.get("bot");
+
+console.log("Payment ID:", paymentId);
+console.log("Order ID:", orderId);
+console.log("Bot:", bot);
+
+// Optional: Display bot name on the page later
+if(bot){
+    console.log("Customer purchased:", bot);
+}
 
 //----------------------------------------------------
 // THIS WILL LATER CALL GOOGLE APPS SCRIPT
@@ -365,20 +383,20 @@ Need assistance?<br>
 
 setTimeout(function(){
 
-document.getElementById("loader").style.display="none";
+    document.getElementById("loader").style.display="none";
 
-document.getElementById("status").innerHTML="✔ Subscription Ready";
+    document.getElementById("status").innerHTML="✔ Subscription Ready";
 
-document.getElementById("status").style.color="#18a558";
+    document.getElementById("status").style.color="#18a558";
 
-document.getElementById("message").innerHTML="Click the button below to authorize your monthly subscription.";
+    document.getElementById("message").innerHTML="Click the button below to authorize your monthly subscription.";
 
-var btn=document.getElementById("subscribeBtn");
+    var btn=document.getElementById("subscribeBtn");
 
-btn.style.display="inline-block";
+    btn.style.display="inline-block";
 
-// Later we'll replace this with the subscription URL
-btn.href="https://example.com";
+    // Temporary link
+    btn.href="https://example.com";
 
 },7000);
 
