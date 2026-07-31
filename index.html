@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Payment Successful | Viksit Analyst</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:'Poppins',sans-serif;
+}
+
+body{
+
+background:#f5f7fb;
+
+display:flex;
+
+justify-content:center;
+
+align-items:center;
+
+min-height:100vh;
+
+padding:25px;
+
+}
+
+.container{
+
+background:white;
+
+width:650px;
+
+max-width:100%;
+
+border-radius:18px;
+
+box-shadow:0 15px 45px rgba(0,0,0,.12);
+
+padding:50px;
+
+text-align:center;
+
+}
+
+.success{
+
+width:90px;
+
+height:90px;
+
+border-radius:50%;
+
+background:#19b663;
+
+margin:auto;
+
+display:flex;
+
+justify-content:center;
+
+align-items:center;
+
+font-size:42px;
+
+color:white;
+
+font-weight:bold;
+
+}
+
+h1{
+
+margin-top:25px;
+
+font-size:34px;
+
+color:#142850;
+
+}
+
+.subtitle{
+
+margin-top:12px;
+
+font-size:17px;
+
+color:#666;
+
+line-height:1.7;
+
+}
+
+.card{
+
+margin-top:35px;
+
+background:#f8fafc;
+
+padding:28px;
+
+border-radius:12px;
+
+text-align:left;
+
+}
+
+.row{
+
+display:flex;
+
+justify-content:space-between;
+
+padding:12px 0;
+
+border-bottom:1px solid #e8e8e8;
+
+}
+
+.row:last-child{
+
+border:none;
+
+}
+
+.label{
+
+font-weight:600;
+
+color:#444;
+
+}
+
+.value{
+
+font-weight:500;
+
+color:#111;
+
+}
+
+.loader{
+
+margin:40px auto 15px;
+
+width:60px;
+
+height:60px;
+
+border:6px solid #e9e9e9;
+
+border-top:6px solid #ff7a00;
+
+border-radius:50%;
+
+animation:spin 1s linear infinite;
+
+}
+
+@keyframes spin{
+
+100%{
+
+transform:rotate(360deg);
+
+}
+
+}
+
+#status{
+
+font-size:18px;
+
+font-weight:600;
+
+color:#ff7a00;
+
+margin-top:15px;
+
+}
+
+#message{
+
+margin-top:15px;
+
+color:#666;
+
+line-height:1.8;
+
+}
+
+.button{
+
+display:none;
+
+margin-top:35px;
+
+padding:16px 36px;
+
+background:#ff7a00;
+
+color:white;
+
+text-decoration:none;
+
+font-weight:600;
+
+font-size:17px;
+
+border-radius:10px;
+
+transition:.25s;
+
+}
+
+.button:hover{
+
+background:#eb6e00;
+
+}
+
+.footer{
+
+margin-top:45px;
+
+font-size:14px;
+
+color:#777;
+
+line-height:2;
+
+}
+
+@media(max-width:600px){
+
+.container{
+
+padding:30px;
+
+}
+
+h1{
+
+font-size:28px;
+
+}
+
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="container">
+
+<div class="success">
+
+✓
+
+</div>
+
+<h1>Payment Successful</h1>
+
+<div class="subtitle">
+
+Thank you for choosing <b>Viksit Analyst</b>.
+
+<br><br>
+
+Your payment has been received successfully.
+
+</div>
+
+<div class="card">
+
+<div class="row">
+
+<div class="label">One-Time Payment</div>
+
+<div class="value">₹9,999</div>
+
+</div>
+
+<div class="row">
+
+<div class="label">Monthly Subscription</div>
+
+<div class="value">₹999 / Month</div>
+
+</div>
+
+<div class="row">
+
+<div class="label">Starts</div>
+
+<div class="value">Same Date Next Month</div>
+
+</div>
+
+<div class="row">
+
+<div class="label">Status</div>
+
+<div class="value" style="color:green;">Payment Confirmed</div>
+
+</div>
+
+</div>
+
+<div class="loader" id="loader"></div>
+
+<div id="status">
+
+Preparing your subscription...
+
+</div>
+
+<div id="message">
+
+Please wait while we securely prepare your subscription.
+
+This usually takes less than 10 seconds.
+
+</div>
+
+<a id="subscribeBtn"
+
+class="button"
+
+href="#">
+
+Activate Monthly Subscription
+
+</a>
+
+<div class="footer">
+
+Need assistance?<br>
+
+📧 analyst@viksitanalyst.com
+
+<br>
+
+📞 +91 9326968372
+
+</div>
+
+</div>
+
+<script>
+
+//----------------------------------------------------
+// THIS WILL LATER CALL GOOGLE APPS SCRIPT
+//----------------------------------------------------
+
+setTimeout(function(){
+
+document.getElementById("loader").style.display="none";
+
+document.getElementById("status").innerHTML="✔ Subscription Ready";
+
+document.getElementById("status").style.color="#18a558";
+
+document.getElementById("message").innerHTML="Click the button below to authorize your monthly subscription.";
+
+var btn=document.getElementById("subscribeBtn");
+
+btn.style.display="inline-block";
+
+// Later we'll replace this with the subscription URL
+btn.href="https://example.com";
+
+},7000);
+
+</script>
+
+</body>
+</html>
