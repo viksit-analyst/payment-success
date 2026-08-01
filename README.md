@@ -43,6 +43,13 @@ Set the custom domain. Under `Settings → Pages → Custom domain`, enter `www.
 Configure DNS. At your domain registrar / DNS provider:
 `www` → `CNAME` → `<user>.github.io`
 Apex (`viksitanalyst.com`) → `A` records pointing to GitHub Pages' IPs (currently `185.199.108.153`, `185.199.109.153`, `185.199.110.153`, `185.199.111.153` — confirm current values in GitHub's own Pages documentation before setting them), or an `ALIAS`/`ANAME` record if your DNS provider supports one, then redirect apex → `www` at the registrar level to match the canonical URLs used throughout this site (`https://www.viksitanalyst.com/...`).
+Apex (viksitanalyst.com)
+
+Configured using an ALIAS record pointing to:
+
+viksit-analyst.github.io
+
+DNS is managed through Squarespace Domains.
 Enforce HTTPS. Once DNS propagates and GitHub issues the TLS certificate (can take up to a few hours), tick Enforce HTTPS in the same Pages settings panel. All canonical URLs, sitemap entries, and structured data on this site already assume `https://www.viksitanalyst.com`.
 Verify. Confirm `https://www.viksitanalyst.com/`, `/privacy.html`, `/terms.html`, `/refund.html`, `/contact.html`, and a deliberately broken URL (to confirm `404.html` renders — GitHub Pages serves `404.html` automatically for unmatched paths at the repo root) all load correctly.
 ---
