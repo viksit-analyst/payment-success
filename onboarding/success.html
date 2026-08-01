@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Payment Successful — Viksit Analyst</title>
+<meta name="description" content="Your Viksit Analyst subscription payment was successful. Check your email for your setup link.">
+<meta name="robots" content="noindex, nofollow">
+
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+<meta name="theme-color" content="#0B1F3A">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+
+<link rel="stylesheet" href="styles.css">
+<link rel="stylesheet" href="onboarding.css">
+</head>
+
+<body>
+<noscript><style>.mobile-drawer { display: none; }</style></noscript>
+<a href="#main" class="skip-link">Skip to main content</a>
+
+<header class="nav" id="siteNav">
+  <div class="container nav-inner">
+    <a href="index.html" class="brand" aria-label="Viksit Analyst home">
+      <svg class="brand-mark" viewBox="0 0 32 20" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <path d="M1 15L8 8L13 12L21 4L31 6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        <circle cx="21" cy="4" r="2.5"/>
+      </svg>
+      Viksit Analyst
+    </a>
+    <nav class="nav-links" aria-label="Primary"></nav>
+    <div class="nav-actions">
+      <button class="theme-toggle" id="themeToggle" aria-label="Toggle dark mode" type="button">
+        <svg class="icon-sun" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4" stroke-linecap="round"/></svg>
+        <svg class="icon-moon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 12.8A9 9 0 1 1 11.2 3 7 7 0 0 0 21 12.8Z" stroke-linejoin="round"/></svg>
+      </button>
+      <button class="nav-toggle" id="navToggle" aria-label="Open menu" aria-expanded="false" type="button"><span></span></button>
+    </div>
+  </div>
+  <div class="mobile-drawer" id="mobileDrawer"></div>
+</header>
+
+<main id="main" class="onboarding-main">
+  <div class="onboarding-shell">
+    <div class="ob-panel" style="text-align:center;">
+      <div style="width:64px;height:64px;border-radius:50%;background:rgba(31,169,113,0.14);display:inline-flex;align-items:center;justify-content:center;margin-bottom:20px;">
+        <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="var(--color-success)" stroke-width="2.5"><path d="M20 6L9 17l-5-5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </div>
+
+      <p class="ob-panel-eyebrow" style="justify-content:center;">Payment Successful</p>
+      <h1 class="ob-panel-title">Thank you — you're in.</h1>
+      <p class="ob-panel-sub" style="margin-left:auto;margin-right:auto;">
+        Your subscription is being created automatically. We're sending your setup link to your email now — it usually arrives within a couple of minutes.
+      </p>
+
+      <div class="ob-summary" id="successOrderRow" style="text-align:left;display:none;">
+        <div class="ob-summary-row"><span class="ob-summary-label">Payment ID</span><span class="ob-summary-value mono" id="successPaymentId">—</span></div>
+      </div>
+
+      <div style="text-align:left;margin:28px 0;">
+        <p class="ob-panel-eyebrow">What happens next</p>
+        <div class="ob-activation-track">
+          <div class="ob-activation-row is-done">
+            <span class="ob-activation-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M20 6L9 17l-5-5" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+            <span class="ob-activation-text"><span class="ob-activation-title">Payment confirmed</span></span>
+          </div>
+          <div class="ob-activation-row is-active">
+            <span class="ob-activation-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 3a9 9 0 1 0 9 9" stroke-linecap="round"/></svg></span>
+            <span class="ob-activation-text"><span class="ob-activation-title">Setting up your account</span></span>
+          </div>
+          <div class="ob-activation-row">
+            <span class="ob-activation-icon"><span style="width:6px;height:6px;border-radius:50%;background:currentColor;display:inline-block;"></span></span>
+            <span class="ob-activation-text"><span class="ob-activation-title" style="color:var(--text-tertiary);">Setup link emailed to you</span></span>
+          </div>
+          <div class="ob-activation-row">
+            <span class="ob-activation-icon"><span style="width:6px;height:6px;border-radius:50%;background:currentColor;display:inline-block;"></span></span>
+            <span class="ob-activation-text"><span class="ob-activation-title" style="color:var(--text-tertiary);">Connect broker &amp; activate your bot (5–10 min)</span></span>
+          </div>
+        </div>
+      </div>
+
+      <div class="ob-panel-footer" style="border-top:1px solid var(--border-subtle);flex-direction:column;gap:12px;">
+        <p class="ob-form-hint" style="text-align:center;">
+          Didn't get the email? Check spam, or
+          <a href="contact.html" style="color:var(--color-primary);font-weight:600;">contact support</a> and we'll resend it.
+        </p>
+      </div>
+    </div>
+  </div>
+</main>
+
+<div class="modal-overlay" id="strategyModal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+  <div class="modal" id="modalContent">
+    <button class="modal-close" id="modalClose" aria-label="Close">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M18 6L6 18M6 6l12 12" stroke-linecap="round"/></svg>
+    </button>
+    <div id="modalBody"></div>
+  </div>
+</div>
+
+<script src="script.js"></script>
+<script>
+  // Payment-ID display only — no API calls happen on this page. The
+  // account itself is created asynchronously by the Razorpay webhook
+  // reaching the Apps Script backend, not by anything client-side here.
+  (() => {
+    'use strict';
+    const params = new URLSearchParams(window.location.search);
+    const paymentId = params.get('payment_id');
+    if (paymentId) {
+      document.getElementById('successOrderRow').style.display = 'grid';
+      document.getElementById('successPaymentId').textContent = paymentId;
+    }
+  })();
+</script>
+</body>
+</html>
