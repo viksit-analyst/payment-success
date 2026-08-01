@@ -75,15 +75,26 @@ async function buy(bot) {
             },
 
             modal: {
+            
                 confirm_close: true,
-                escape: false
+            
+                escape: false,
+            
+                ondismiss: function () {
+            
+                    paymentInProgress = false;
+            
+                }
+            
             },
 
             handler: function (response) {
-
+            
+                paymentInProgress = false;
+            
                 window.location.href =
                     `success.html?payment_id=${response.razorpay_payment_id}`;
-
+            
             }
 
         };
@@ -91,22 +102,33 @@ async function buy(bot) {
         
         console.log(options);
         const rzp = new Razorpay(options);
+        
         console.log("Opening Razorpay...");
-
+        
         rzp.on("payment.failed", function (response) {
-
+        
             console.error(response.error);
-
+        
             alert(
                 "Payment Failed\n\n" +
                 response.error.description
             );
-
+        
             paymentInProgress = false;
-
+        
         });
-
-        rzp.open();
+        
+        try {
+        
+            rzp.open();
+        
+        } catch (err) {
+        
+            paymentInProgress = false;
+        
+            throw err;
+        
+        }
 
     }
 
