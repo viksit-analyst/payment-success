@@ -151,7 +151,9 @@
 
       <div class="hero-actions">
         <a href="#strategies" class="btn btn-accent btn-lg">Explore Strategies</a>
-        <a href="#pricing" class="btn btn-secondary btn-lg">Subscribe Now</a>
+        <a href="#pricing" class="btn btn-secondary btn-lg">
+            View Plans
+        </a>
       </div>
 
       <div class="hero-badges">
@@ -475,22 +477,67 @@
 <section class="section-pad section-pad-tight" id="pricing" style="background:var(--bg-sunken)">
   <div class="container">
     <div class="section-head center reveal">
-      <p class="eyebrow">Pricing</p>
-      <h2 class="section-title">One plan. Full platform access.</h2>
-      <p class="section-sub">A single Professional plan covers every strategy — automated execution, reporting, and ongoing research improvements.</p>
+      <p class="eyebrow">Choose Your Strategy</p>
+      <h2 class="section-title">Professional Strategy Subscriptions</h2>
+      <p class="section-sub">Each strategy is independently researched, maintained and continuously improved. Subscribe only to the strategy that matches your trading style.</p>
     </div>
 
-    <div class="pricing-wrap reveal">
-      <div class="card pricing-card">
-        <span class="pricing-badge mono">PROFESSIONAL PLAN</span>
-        <h3>Everything you need to trade systematically.</h3>
-        <p class="pricing-lead">No hidden tiers. No performance-fee surprises.</p>
+    <style>
+      .pricing-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 22px;
+        align-items: stretch;
+      }
+      .pricing-grid .pricing-card {
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        padding: 30px 28px 28px;
+        position: relative;
+        overflow: hidden;
+        border-top: 3px solid var(--strategy-color);
+      }
+      .pricing-grid .pricing-card::before {
+        content: '';
+        position: absolute;
+        top: -60px; right: -60px;
+        width: 160px; height: 160px;
+        border-radius: 50%;
+        background: var(--strategy-color);
+        opacity: 0.07;
+      }
+      .pricing-grid .strategy-icon { margin-bottom: 18px; }
+      .pricing-grid .pricing-tagline {
+        font-family: var(--font-mono);
+        font-size: var(--fs-2xs);
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        color: var(--strategy-color);
+        font-weight: 600;
+        margin-bottom: 18px;
+      }
+      .pricing-grid .price-rows { margin-bottom: 22px; }
+      .pricing-grid .price-includes { flex-grow: 1; }
+      .pricing-grid .pricing-card .btn { width: 100%; }
+      @media (max-width: 900px) {
+        .pricing-grid { grid-template-columns: repeat(2, 1fr); }
+      }
+      @media (max-width: 600px) {
+        .pricing-grid { grid-template-columns: 1fr; }
+      }
+    </style>
+
+    <div class="pricing-grid reveal-stagger">
+
+      <div class="card pricing-card" style="--strategy-color: var(--color-ivrv)">
+        <div class="strategy-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M2 12c1.5-4 3-6 4.5-6s2 8 3.5 8 2-8 3.5-8 2 8 3.5 8 3-4 4.5-4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+        <h3>IVRV</h3>
+        <p class="pricing-tagline">Systematic Volatility Trading</p>
 
         <div class="price-rows">
-          <div class="price-row">
-            <span class="p-label">One-Time Onboarding</span>
-            <span class="p-value mono">₹9,999</span>
-          </div>
           <div class="price-row">
             <span class="p-label">Monthly Subscription</span>
             <span class="p-value mono">₹999 <small>/ month</small></span>
@@ -499,22 +546,89 @@
 
         <ul class="price-includes">
           <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><path d="M20 6L9 17l-5-5" stroke-linecap="round" stroke-linejoin="round"/></svg>Automated Execution</li>
-          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><path d="M20 6L9 17l-5-5" stroke-linecap="round" stroke-linejoin="round"/></svg>Strategy Updates</li>
           <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><path d="M20 6L9 17l-5-5" stroke-linecap="round" stroke-linejoin="round"/></svg>Daily Reports</li>
-          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><path d="M20 6L9 17l-5-5" stroke-linecap="round" stroke-linejoin="round"/></svg>Research Improvements</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><path d="M20 6L9 17l-5-5" stroke-linecap="round" stroke-linejoin="round"/></svg>Strategy Updates</li>
           <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><path d="M20 6L9 17l-5-5" stroke-linecap="round" stroke-linejoin="round"/></svg>Email Support</li>
         </ul>
 
         <div class="price-capital">
           <span class="p-cap-label">Recommended Trading Capital</span>
           <span class="p-cap-value mono">₹3,00,000+</span>
-          <p class="p-cap-note">A trading capital of ₹3 lakh or above is recommended for efficient position sizing and disciplined risk management.</p>
         </div>
 
-          <a href="#pricing" class="btn btn-primary btn-block btn-lg">
-              Subscribe Now
-          </a>
+        <button
+          class="btn btn-primary btn-block btn-lg"
+          onclick="buy('IVRV')">
+          Subscribe to IVRV
+        </button>
       </div>
+
+      <div class="card pricing-card" style="--strategy-color: var(--color-gamma)">
+        <div class="strategy-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M13 2 4 14h7l-1 8 9-12h-7l1-8Z" stroke-linejoin="round"/></svg>
+        </div>
+        <h3>Gamma Flip</h3>
+        <p class="pricing-tagline">Systematic Momentum Trading</p>
+
+        <div class="price-rows">
+          <div class="price-row">
+            <span class="p-label">Monthly Subscription</span>
+            <span class="p-value mono">₹999 <small>/ month</small></span>
+          </div>
+        </div>
+
+        <ul class="price-includes">
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><path d="M20 6L9 17l-5-5" stroke-linecap="round" stroke-linejoin="round"/></svg>Automated Execution</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><path d="M20 6L9 17l-5-5" stroke-linecap="round" stroke-linejoin="round"/></svg>Daily Reports</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><path d="M20 6L9 17l-5-5" stroke-linecap="round" stroke-linejoin="round"/></svg>Strategy Updates</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><path d="M20 6L9 17l-5-5" stroke-linecap="round" stroke-linejoin="round"/></svg>Email Support</li>
+        </ul>
+
+        <div class="price-capital">
+          <span class="p-cap-label">Recommended Trading Capital</span>
+          <span class="p-cap-value mono">₹3,00,000+</span>
+        </div>
+
+        <button
+          class="btn btn-primary btn-block btn-lg"
+          onclick="buy('Gamma Flip')">
+          Subscribe to Gamma Flip
+        </button>
+      </div>
+
+      <div class="card pricing-card" style="--strategy-color: var(--color-vwap)">
+        <div class="strategy-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M3 17l6-6 4 4 8-9" stroke-linecap="round" stroke-linejoin="round"/><path d="M15 6h6v6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+        <h3>VWAP</h3>
+        <p class="pricing-tagline">Institutional Trend Following</p>
+
+        <div class="price-rows">
+          <div class="price-row">
+            <span class="p-label">Monthly Subscription</span>
+            <span class="p-value mono">₹999 <small>/ month</small></span>
+          </div>
+        </div>
+
+        <ul class="price-includes">
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><path d="M20 6L9 17l-5-5" stroke-linecap="round" stroke-linejoin="round"/></svg>Automated Execution</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><path d="M20 6L9 17l-5-5" stroke-linecap="round" stroke-linejoin="round"/></svg>Daily Reports</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><path d="M20 6L9 17l-5-5" stroke-linecap="round" stroke-linejoin="round"/></svg>Strategy Updates</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><path d="M20 6L9 17l-5-5" stroke-linecap="round" stroke-linejoin="round"/></svg>Email Support</li>
+        </ul>
+
+        <div class="price-capital">
+          <span class="p-cap-label">Recommended Trading Capital</span>
+          <span class="p-cap-value mono">₹3,00,000+</span>
+        </div>
+
+        <button
+          class="btn btn-primary btn-block btn-lg"
+          onclick="buy('VWAP')">
+          Subscribe to VWAP
+        </button>
+      </div>
+
     </div>
   </div>
 </section>
