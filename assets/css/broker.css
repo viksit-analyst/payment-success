@@ -1,0 +1,335 @@
+/* ==========================================================================
+   VIKSIT ANALYST — BROKER INTEGRATION MODULE
+   Extends styles.css (VDS tokens). Nothing here redefines a color, font,
+   radius, or shadow — it only adds the app-shell / dashboard layout patterns
+   that the marketing site never needed. Defaults to the dark surface theme
+   (fintech control-room register: Stripe Dashboard / TradingView / Linear),
+   but respects the same [data-theme] toggle as the rest of the platform.
+   ========================================================================== */
+
+:root {
+  --app-sidebar-w: 248px;
+  --app-topbar-h: 64px;
+  --app-gap: 20px;
+}
+
+/* --------------------------------------------------------------------------
+   0. APP SHELL
+   -------------------------------------------------------------------------- */
+.app-shell {
+  display: grid;
+  grid-template-columns: var(--app-sidebar-w) 1fr;
+  min-height: 100vh;
+  background: var(--bg-base);
+}
+
+.app-sidebar {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  border-right: 1px solid var(--border-subtle);
+  padding: 20px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  background: var(--bg-raised);
+}
+
+.app-brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 10px 20px;
+  font-family: var(--font-display);
+  font-weight: 600;
+  color: var(--text-primary);
+}
+.app-brand .brand-mark { width: 26px; height: 18px; }
+.app-brand .brand-mark path { stroke: var(--color-ivrv); }
+.app-brand .brand-mark circle { fill: var(--color-accent); }
+
+.app-nav { display: flex; flex-direction: column; gap: 2px; }
+.app-nav a {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 12px;
+  border-radius: var(--radius-sm);
+  font-size: var(--fs-sm);
+  font-weight: 500;
+  color: var(--text-secondary);
+  transition: background-color var(--dur-base) var(--ease-standard), color var(--dur-base) var(--ease-standard);
+}
+.app-nav a svg { width: 18px; height: 18px; flex-shrink: 0; opacity: 0.85; }
+.app-nav a:hover { background: var(--bg-sunken); color: var(--text-primary); }
+.app-nav a.is-active { background: rgba(var(--color-accent-rgb), 0.12); color: var(--text-primary); }
+.app-nav a.is-active svg { color: var(--color-accent); opacity: 1; }
+
+.app-sidebar-foot {
+  margin-top: auto;
+  padding: 12px;
+  border-top: 1px solid var(--border-subtle);
+  font-size: var(--fs-2xs);
+  color: var(--text-tertiary);
+  font-family: var(--font-mono);
+}
+
+.app-main { min-width: 0; }
+
+.app-topbar {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  height: var(--app-topbar-h);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 0 28px;
+  background: rgba(var(--color-primary-rgb), 0.02);
+  border-bottom: 1px solid var(--border-subtle);
+  backdrop-filter: blur(10px);
+}
+[data-theme="dark"] .app-topbar { background: rgba(6, 15, 31, 0.5); }
+
+.app-topbar h1 { font-size: var(--fs-lg); font-weight: 600; }
+.app-topbar-meta { display: flex; align-items: center; gap: 14px; }
+
+.app-content {
+  padding: 28px;
+  max-width: 1320px;
+}
+
+/* --------------------------------------------------------------------------
+   1. BROKER GRID
+   -------------------------------------------------------------------------- */
+.broker-grid {
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  gap: var(--app-gap);
+}
+
+.g-4 { grid-column: span 4; }
+.g-6 { grid-column: span 6; }
+.g-8 { grid-column: span 8; }
+.g-12 { grid-column: span 12; }
+
+@media (max-width: 1100px) {
+  .g-4, .g-6, .g-8 { grid-column: span 12; }
+}
+
+/* --------------------------------------------------------------------------
+   2. DASH CARD (extends .card from styles.css)
+   -------------------------------------------------------------------------- */
+.dash-card {
+  padding: 20px 22px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.dash-card-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.dash-card-title {
+  font-family: var(--font-display);
+  font-size: var(--fs-sm);
+  font-weight: 600;
+  color: var(--text-primary);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.dash-card-title svg { width: 16px; height: 16px; color: var(--text-tertiary); }
+
+.dash-card-sub { font-size: var(--fs-2xs); color: var(--text-tertiary); }
+
+.dash-metric {
+  font-family: var(--font-mono);
+  font-size: var(--fs-2xl);
+  font-weight: 600;
+  color: var(--text-primary);
+  font-variant-numeric: tabular-nums;
+}
+.dash-metric-label { font-size: var(--fs-2xs); color: var(--text-secondary); margin-top: -8px; }
+
+.kv-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--border-subtle);
+  font-size: var(--fs-xs);
+}
+.kv-row:last-child { border-bottom: none; }
+.kv-row dt { color: var(--text-secondary); }
+.kv-row dd { color: var(--text-primary); font-family: var(--font-mono); font-weight: 500; text-align: right; }
+
+/* --------------------------------------------------------------------------
+   3. STATUS BADGES (broker-specific states, layered on .badge)
+   -------------------------------------------------------------------------- */
+.badge-connected { background: rgba(31, 169, 113, 0.12); color: var(--color-success); }
+.badge-connected .status-dot { background: var(--color-success); }
+
+.badge-disconnected { background: rgba(122, 135, 156, 0.14); color: var(--text-tertiary); }
+.badge-disconnected .status-dot { background: var(--text-tertiary); }
+.badge-disconnected .status-dot::after { display: none; }
+
+.badge-expired,
+.badge-error { background: rgba(214, 69, 69, 0.12); color: var(--color-error); }
+.badge-expired .status-dot,
+.badge-error .status-dot { background: var(--color-error); }
+
+.badge-reconnecting,
+.badge-pending { background: rgba(245, 166, 35, 0.14); color: var(--color-warning); }
+.badge-reconnecting .status-dot,
+.badge-pending .status-dot { background: var(--color-warning); }
+
+/* --------------------------------------------------------------------------
+   4. CONNECT PANEL / EMPTY STATE
+   -------------------------------------------------------------------------- */
+.connect-panel {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 18px;
+  padding: 64px 32px;
+}
+.connect-panel .broker-logo { width: 56px; height: 56px; border-radius: var(--radius-md); background: var(--bg-sunken); display: flex; align-items: center; justify-content: center; }
+.connect-panel h2 { font-size: var(--fs-xl); }
+.connect-panel p { color: var(--text-secondary); max-width: 460px; }
+
+/* --------------------------------------------------------------------------
+   5. HEARTBEAT / HEALTH
+   -------------------------------------------------------------------------- */
+.heartbeat-pulse {
+  width: 10px; height: 10px;
+  border-radius: 50%;
+  background: var(--color-success);
+  position: relative;
+  flex-shrink: 0;
+}
+.heartbeat-pulse::after {
+  content: '';
+  position: absolute; inset: -5px;
+  border-radius: 50%;
+  background: inherit;
+  opacity: 0.35;
+  animation: dot-pulse 1.8s var(--ease-standard) infinite;
+}
+.heartbeat-pulse.is-flat { background: var(--color-error); }
+.heartbeat-pulse.is-flat::after { display: none; }
+
+.health-row { display: flex; align-items: center; gap: 10px; font-size: var(--fs-xs); padding: 7px 0; }
+.health-row .health-label { flex: 1; color: var(--text-secondary); }
+.health-row .health-value { font-family: var(--font-mono); color: var(--text-primary); }
+.health-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+.health-dot.ok { background: var(--color-success); }
+.health-dot.warn { background: var(--color-warning); }
+.health-dot.fail { background: var(--color-error); }
+
+/* --------------------------------------------------------------------------
+   6. PERMISSION CHIPS
+   -------------------------------------------------------------------------- */
+.perm-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; }
+.perm-chip {
+  display: flex; align-items: center; gap: 8px;
+  padding: 9px 12px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border-subtle);
+  font-size: var(--fs-xs);
+  color: var(--text-secondary);
+}
+.perm-chip .health-dot { flex-shrink: 0; }
+.perm-chip.is-enabled { color: var(--text-primary); }
+
+/* --------------------------------------------------------------------------
+   7. STRATEGY SELECT CARDS
+   -------------------------------------------------------------------------- */
+.strategy-pick-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+@media (max-width: 900px) { .strategy-pick-grid { grid-template-columns: 1fr; } }
+
+.strategy-pick {
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-md);
+  padding: 18px;
+  cursor: pointer;
+  text-align: left;
+  background: var(--bg-raised);
+  transition: border-color var(--dur-base) var(--ease-standard), transform var(--dur-base) var(--ease-out);
+}
+.strategy-pick:hover { transform: translateY(-3px); border-color: var(--color-accent); }
+.strategy-pick.is-selected { border-color: var(--strategy-color, var(--color-accent)); box-shadow: 0 0 0 1px var(--strategy-color, var(--color-accent)) inset; }
+.strategy-pick-name { font-family: var(--font-display); font-weight: 600; margin-top: 10px; }
+.strategy-pick-sub { font-size: var(--fs-2xs); color: var(--text-tertiary); margin-top: 4px; }
+.strategy-pick-icon { width: 32px; height: 32px; color: var(--strategy-color, var(--color-accent)); }
+
+/* --------------------------------------------------------------------------
+   8. SKELETON LOADING
+   -------------------------------------------------------------------------- */
+.skel { position: relative; overflow: hidden; background: var(--bg-sunken); border-radius: var(--radius-sm); }
+.skel::after {
+  content: '';
+  position: absolute; inset: 0;
+  transform: translateX(-100%);
+  background: linear-gradient(90deg, transparent, rgba(var(--color-primary-rgb), 0.06), transparent);
+  animation: skel-sheen 1.4s var(--ease-standard) infinite;
+}
+[data-theme="dark"] .skel::after { background: linear-gradient(90deg, transparent, rgba(255,255,255,0.06), transparent); }
+@keyframes skel-sheen { 100% { transform: translateX(100%); } }
+.skel-line { height: 12px; margin: 6px 0; }
+.skel-title { height: 18px; width: 60%; margin-bottom: 12px; }
+
+/* --------------------------------------------------------------------------
+   9. TOAST / INLINE ALERTS
+   -------------------------------------------------------------------------- */
+.va-toast-stack {
+  position: fixed;
+  right: 20px;
+  bottom: 20px;
+  z-index: 500;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  max-width: 360px;
+}
+.va-toast {
+  background: var(--bg-raised);
+  border: 1px solid var(--border-default);
+  border-left: 3px solid var(--color-accent);
+  border-radius: var(--radius-sm);
+  box-shadow: var(--shadow-md);
+  padding: 12px 14px;
+  font-size: var(--fs-xs);
+  animation: toast-in var(--dur-base) var(--ease-out);
+}
+.va-toast.is-error { border-left-color: var(--color-error); }
+.va-toast.is-success { border-left-color: var(--color-success); }
+.va-toast.is-warning { border-left-color: var(--color-warning); }
+@keyframes toast-in { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+/* --------------------------------------------------------------------------
+   10. RESPONSIVE — MOBILE APP SHELL
+   -------------------------------------------------------------------------- */
+@media (max-width: 900px) {
+  .app-shell { grid-template-columns: 1fr; }
+  .app-sidebar {
+    position: fixed;
+    left: 0; top: 0; bottom: 0;
+    z-index: 300;
+    transform: translateX(-100%);
+    transition: transform var(--dur-base) var(--ease-standard);
+    box-shadow: var(--shadow-lg);
+  }
+  .app-sidebar.is-open { transform: translateX(0); }
+  .app-content { padding: 18px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .heartbeat-pulse::after, .skel::after, .status-dot::after { animation: none; }
+}
