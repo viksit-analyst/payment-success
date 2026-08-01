@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sign In — Viksit Analyst</title>
+<meta name="description" content="Sign in to Viksit Analyst with a one-time code sent to your email. No passwords to remember.">
+<meta name="robots" content="noindex, nofollow">
+<link rel="canonical" href="https://www.viksitanalyst.com/auth/login.html">
+
+<link rel="icon" type="image/svg+xml" href="../assets/favicon.svg">
+<link rel="shortcut icon" href="../favicon.ico">
+<meta name="theme-color" content="#060A12">
+<meta name="color-scheme" content="dark">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+
+<link rel="stylesheet" href="components/auth-theme.css">
+<link rel="stylesheet" href="components/toast.css">
+<link rel="stylesheet" href="login.css">
+</head>
+<body>
+<a href="#main" class="va-skip-link">Skip to main content</a>
+
+<div class="va-shell">
+
+  <!-- ============================ BRAND PANEL ============================ -->
+  <aside class="va-brand-panel" aria-hidden="true">
+    <svg class="va-brand-panel-texture" viewBox="0 0 400 500" preserveAspectRatio="xMidYMid slice">
+      <path class="va-login-texture-path" d="M20 420 L70 360 L110 400 L160 300 L210 350 L260 250 L310 300 L360 200"/>
+    </svg>
+
+    <div class="va-brand-panel-logo">
+      <svg viewBox="0 0 32 20" fill="none" xmlns="http://www.w3.org/2000/svg" class="va-brand-mark">
+        <path d="M1 15L8 8L13 12L21 4L31 6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        <circle cx="21" cy="4" r="2.5"/>
+      </svg>
+      <span>Viksit Analyst</span>
+    </div>
+
+    <div>
+      <div class="va-brand-panel-quote">
+        <p>Trade with discipline, not emotion.</p>
+        <p>Research-driven quantitative strategies, executed automatically, with full transparency into every decision your system makes.</p>
+      </div>
+      <div class="va-brand-panel-stats">
+        <div>
+          <div class="va-brand-stat-value">3</div>
+          <div class="va-brand-stat-label">Live Strategies</div>
+        </div>
+        <div>
+          <div class="va-brand-stat-value">24/7</div>
+          <div class="va-brand-stat-label">Mission Control</div>
+        </div>
+        <div>
+          <div class="va-brand-stat-value">100%</div>
+          <div class="va-brand-stat-label">Rules-Based</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="va-brand-panel-footer">
+      <span>SEBI-aware · No custody of funds</span>
+      <span>Maharashtra, India</span>
+    </div>
+  </aside>
+
+  <!-- ============================= FORM PANEL ============================= -->
+  <main id="main" class="va-form-panel">
+    <div class="va-form-card">
+
+      <div class="va-mobile-brand">
+        <svg viewBox="0 0 32 20" fill="none" xmlns="http://www.w3.org/2000/svg" class="va-brand-mark va-mobile-brand-mark">
+          <path d="M1 15L8 8L13 12L21 4L31 6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          <circle cx="21" cy="4" r="2.5"/>
+        </svg>
+        <span class="va-mobile-brand-name">Viksit Analyst</span>
+      </div>
+
+      <p class="va-eyebrow">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3" y="11" width="18" height="10" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4" stroke-linecap="round"/></svg>
+        Secure Sign In
+      </p>
+      <h1 class="va-title">Welcome back.</h1>
+      <p class="va-subtitle" id="loginSubtitle">Enter your email and we'll send you a one-time code. No password required.</p>
+
+      <div class="va-resume-banner" id="resumeBanner" hidden>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 8v4l3 2" stroke-linecap="round"/><circle cx="12" cy="12" r="9"/></svg>
+        <span id="resumeBannerText">You already have a code on the way.</span>
+        <button type="button" id="resumeContinue">Continue</button>
+      </div>
+
+      <form id="loginForm" novalidate>
+        <div class="va-field">
+          <label class="va-label" for="email">Email address</label>
+          <div class="va-input-wrap">
+            <input
+              type="email"
+              id="email"
+              name="email"
+              class="va-input"
+              placeholder="you@example.com"
+              autocomplete="email"
+              inputmode="email"
+              spellcheck="false"
+              required
+              aria-describedby="emailError"
+              aria-invalid="false"
+            >
+          </div>
+          <p class="va-field-error" id="emailError" role="alert"></p>
+        </div>
+
+        <div class="va-checkbox-row">
+          <input type="checkbox" id="rememberDevice" name="rememberDevice">
+          <label for="rememberDevice">Remember this device for 30 days</label>
+        </div>
+
+        <div class="va-checkbox-row">
+          <input type="checkbox" id="acceptTerms" name="acceptTerms" required aria-describedby="termsError">
+          <label for="acceptTerms">I agree to the <a href="../terms.html" target="_blank" rel="noopener noreferrer">Terms of Service</a> and <a href="../privacy.html" target="_blank" rel="noopener noreferrer">Privacy Policy</a></label>
+        </div>
+        <p class="va-field-error" id="termsError" role="alert"></p>
+
+        <button type="submit" class="va-btn va-btn-primary" id="continueBtn">
+          <span class="va-btn-label">Continue with Email</span>
+          <span class="va-btn-loading" hidden>
+            <span class="va-spinner" aria-hidden="true"></span>
+            <span>Sending code…</span>
+          </span>
+        </button>
+
+        <p class="va-login-form-status va-field-error" id="formStatus" role="alert" hidden></p>
+      </form>
+
+      <p class="va-footer-note">
+        Don't have a subscription yet? <a href="../index.html#pricing">View plans</a><br>
+        Need help signing in? <a href="../contact.html">Contact support</a>
+      </p>
+    </div>
+  </main>
+
+</div>
+
+<script src="config.js"></script>
+<script src="api.js"></script>
+<script src="session.js"></script>
+<script src="auth.js"></script>
+<script src="components/toast.js"></script>
+<script src="login.js"></script>
+</body>
+</html>
