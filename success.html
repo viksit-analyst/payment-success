@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Payment Successful | Viksit Analyst</title>
+
+    <link rel="stylesheet" href="styles.css">
+
+    <style>
+
+        body{
+
+            margin:0;
+
+            background:#08111f;
+
+            color:#fff;
+
+            font-family:Inter,Arial,sans-serif;
+
+            display:flex;
+
+            justify-content:center;
+
+            align-items:center;
+
+            min-height:100vh;
+
+        }
+
+        .card{
+
+            width:min(700px,90%);
+
+            background:#101b2d;
+
+            border:1px solid rgba(255,255,255,.08);
+
+            border-radius:18px;
+
+            padding:48px;
+
+            text-align:center;
+
+            box-shadow:0 30px 70px rgba(0,0,0,.35);
+
+        }
+
+        .check{
+
+            width:90px;
+
+            height:90px;
+
+            border-radius:50%;
+
+            background:#16a34a;
+
+            display:flex;
+
+            justify-content:center;
+
+            align-items:center;
+
+            font-size:48px;
+
+            margin:auto;
+
+            margin-bottom:24px;
+
+        }
+
+        h1{
+
+            margin:0;
+
+            font-size:38px;
+
+        }
+
+        .subtitle{
+
+            color:#cbd5e1;
+
+            margin-top:14px;
+
+            line-height:1.7;
+
+        }
+
+        .progress{
+
+            margin-top:40px;
+
+            text-align:left;
+
+        }
+
+        .step{
+
+            display:flex;
+
+            align-items:center;
+
+            margin:18px 0;
+
+            font-size:17px;
+
+        }
+
+        .tick{
+
+            width:28px;
+
+            margin-right:14px;
+
+            color:#22c55e;
+
+            font-weight:bold;
+
+        }
+
+        .payment{
+
+            margin-top:32px;
+
+            padding:18px;
+
+            border-radius:10px;
+
+            background:#0f172a;
+
+            font-size:15px;
+
+            color:#cbd5e1;
+
+            word-break:break-all;
+
+        }
+
+        .button{
+
+            display:inline-block;
+
+            margin-top:40px;
+
+            padding:15px 34px;
+
+            border-radius:10px;
+
+            background:#2563eb;
+
+            color:white;
+
+            text-decoration:none;
+
+            font-weight:600;
+
+        }
+
+        .button:hover{
+
+            background:#1d4ed8;
+
+        }
+
+        .footer{
+
+            margin-top:28px;
+
+            color:#94a3b8;
+
+            font-size:14px;
+
+            line-height:1.7;
+
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+<div class="card">
+
+    <div class="check">
+
+        ✓
+
+    </div>
+
+    <h1>
+
+        Payment Successful
+
+    </h1>
+
+    <div class="subtitle">
+
+        Your payment has been received successfully.
+
+        Our automated systems are now creating your subscription,
+
+        linking your strategy and preparing your account.
+
+    </div>
+
+    <div class="progress">
+
+        <div class="step">
+
+            <div class="tick">✓</div>
+
+            Payment verified
+
+        </div>
+
+        <div class="step">
+
+            <div class="tick">✓</div>
+
+            Subscription activation in progress
+
+        </div>
+
+        <div class="step">
+
+            <div class="tick">✓</div>
+
+            Customer profile being created
+
+        </div>
+
+        <div class="step">
+
+            <div class="tick">✓</div>
+
+            Welcome email will be sent shortly
+
+        </div>
+
+    </div>
+
+    <div class="payment">
+
+        Payment ID
+
+        <br><br>
+
+        <strong id="paymentId">
+
+            Loading...
+
+        </strong>
+
+    </div>
+
+    <a class="button" href="/">
+
+        Return to Home
+
+    </a>
+
+    <div class="footer">
+
+        Activation normally completes within one minute.
+
+        If you do not receive your onboarding email within 10 minutes,
+
+        contact <strong>support@viksitanalyst.com</strong> with your Payment ID.
+
+    </div>
+
+</div>
+
+<script>
+
+const params = new URLSearchParams(window.location.search);
+
+const paymentId = params.get("payment_id");
+
+if(paymentId){
+
+    document.getElementById("paymentId").textContent = paymentId;
+
+}else{
+
+    document.getElementById("paymentId").textContent = "Unavailable";
+
+}
+
+</script>
+
+</body>
+
+</html><!DOCTYPE html>
+
+<html>
+
+<head>
+
+<title>Success</title>
+
+<link rel="stylesheet" href="style.css">
+
+</head>
+
+<body>
+
+<div class="container">
+
+<h1>
+
+✅ Payment Successful
+
+</h1>
+
+<p>
+
+Thank you.
+
+</p>
+
+<p>
+
+Your subscription is being created automatically.
+
+</p>
+
+<p>
+
+You will shortly receive your authentication link.
+
+</p>
+
+</div>
+
+</body>
+
+</html>
