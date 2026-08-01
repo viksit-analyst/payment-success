@@ -1,0 +1,17 @@
+/* TEAM */
+Product & Research: Viksit Analyst Team
+Location: Maharashtra, India
+Contact: hello@viksitanalyst.com
+
+/* SITE */
+Last update: 2026/08/01
+Standards: HTML5, CSS3, ES2023
+Components: Vanilla JavaScript (no frontend framework, no build step)
+Software: Visual Studio Code
+Hosting: GitHub Pages
+Payments: Razorpay
+Backend: Google Workspace + Google Apps Script
+
+/* THANKS */
+Thank you for reading. If you're a fellow builder of systematic,
+research-driven products — we'd love to hear from you.

@@ -1,0 +1,8 @@
+# Viksit Analyst — https://www.viksitanalyst.com
+# Quantitative Research & Automated Execution
+
+User-agent: *
+Allow: /
+Disallow: /404.html
+
+Sitemap: https://www.viksitanalyst.com/sitemap.xml
