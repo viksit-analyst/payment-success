@@ -38,10 +38,17 @@ async function buy(bot) {
         
         console.log(data);
 
-        if (!data.success) {
-            throw new Error(data.error || "Unable to create order.");
+        if (
+            data.success !== true &&
+            data.status !== "success"
+        ) {
+            throw new Error(
+                data.error ||
+                data.message ||
+                "Unable to create order."
+            );
         }
-
+                
         const order = data.order;
 
         const options = {
