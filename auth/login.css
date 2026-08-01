@@ -1,0 +1,77 @@
+/**
+ * login.css
+ * Page-specific styles for login.html. Foundational tokens, the split-panel
+ * shell, buttons, inputs, and checkboxes all come from
+ * components/auth-theme.css — this file only adds what's unique to the
+ * login screen.
+ */
+
+/* Brand panel decorative sparkline (drawn once on load, matches the
+   marketing site's hero animation language at a much smaller scale). */
+.va-login-texture-path {
+  fill: none;
+  stroke: rgba(111, 160, 255, 0.5);
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-dasharray: 340;
+  stroke-dashoffset: 340;
+  animation: va-draw-line 1600ms var(--va-ease) 200ms forwards;
+}
+@keyframes va-draw-line { to { stroke-dashoffset: 0; } }
+
+.va-brand-panel-stats {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  gap: 28px;
+  margin-top: 28px;
+}
+.va-brand-stat-value {
+  font-family: var(--va-font-mono);
+  font-size: 20px;
+  font-weight: 600;
+  color: #fff;
+}
+.va-brand-stat-label {
+  font-size: 11.5px;
+  color: rgba(244, 247, 251, 0.5);
+  margin-top: 2px;
+}
+
+/* Continue button holds either label text or a spinner + "Sending code…" —
+   both live in the DOM permanently and are toggled via [hidden] so the
+   button never changes size/layout when its state changes. */
+.va-btn-primary .va-btn-loading { display: none; }
+.va-btn-primary.is-loading .va-btn-label { display: none; }
+.va-btn-primary.is-loading .va-btn-loading { display: inline-flex; align-items: center; gap: 8px; }
+
+.va-login-form-status[hidden] { display: none; }
+
+/* Resuming a pending login: shown instead of the plain subtitle if the
+   visitor still has an unexpired "we sent you a code" state (e.g. they
+   navigated back from verify.html). */
+.va-resume-banner {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 14px;
+  border-radius: var(--va-radius-sm);
+  background: rgba(46, 107, 230, 0.1);
+  border: 1px solid rgba(46, 107, 230, 0.28);
+  font-size: 13px;
+  color: var(--va-text-secondary);
+  margin-bottom: 24px;
+}
+.va-resume-banner svg { width: 16px; height: 16px; color: var(--va-accent-blue-hover); flex-shrink: 0; }
+.va-resume-banner button {
+  margin-left: auto;
+  background: none;
+  border: none;
+  color: var(--va-accent-blue-hover);
+  font-size: 12.5px;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.va-resume-banner button:hover { color: var(--va-accent-blue); text-decoration: underline; }

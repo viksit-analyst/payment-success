@@ -1,0 +1,103 @@
+/**
+ * verify.css
+ * Page-specific styles for verify.html. Shared primitives (buttons, inputs,
+ * OTP boxes, success check) live in components/auth-theme.css.
+ */
+
+.va-verify-email {
+  font-family: var(--va-font-mono);
+  color: var(--va-text-primary);
+  font-weight: 500;
+}
+
+.va-change-email {
+  background: none;
+  border: none;
+  padding: 0;
+  color: var(--va-accent-blue-hover);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+}
+.va-change-email:hover { color: var(--va-accent-blue); text-decoration: underline; }
+
+.va-otp-group[data-disabled="true"] { opacity: 0.6; }
+
+.va-verify-attempts {
+  margin-top: 12px;
+  font-size: 12.5px;
+  color: var(--va-text-tertiary);
+  text-align: center;
+}
+.va-verify-attempts.is-warning { color: var(--va-warning); }
+.va-verify-attempts:empty { display: none; }
+
+.va-resend-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  margin-top: 28px;
+  font-size: 13px;
+  color: var(--va-text-tertiary);
+  text-align: center;
+}
+
+.va-otp-expiry {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  margin-top: 20px;
+  font-family: var(--va-font-mono);
+  font-size: 12.5px;
+  color: var(--va-text-tertiary);
+}
+.va-otp-expiry svg { width: 13px; height: 13px; }
+.va-otp-expiry.is-expiring { color: var(--va-warning); }
+.va-otp-expiry.is-expired { color: var(--va-error); }
+
+/* ── States: verifying / success / locked ────────────────────────────── */
+.va-verify-state {
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 12px 0 4px;
+}
+.va-verify-state.is-active { display: flex; }
+
+.va-verify-state h2 {
+  font-family: var(--va-font-heading);
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--va-text-primary);
+  margin-bottom: 8px;
+}
+.va-verify-state p {
+  font-size: 14px;
+  color: var(--va-text-secondary);
+  line-height: 1.6;
+  max-width: 320px;
+}
+
+.va-locked-icon {
+  width: 56px; height: 56px;
+  border-radius: 50%;
+  background: rgba(242, 109, 109, 0.12);
+  display: flex; align-items: center; justify-content: center;
+  margin-bottom: 20px;
+}
+.va-locked-icon svg { width: 24px; height: 24px; color: var(--va-error); }
+
+.va-verify-form[hidden],
+.va-verify-state[hidden] { display: none; }
+
+/* Fade/slide between the OTP form and the success/locked states. */
+.va-verify-transition {
+  animation: va-verify-in 260ms var(--va-ease);
+}
+@keyframes va-verify-in {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
