@@ -9,14 +9,6 @@ async function buy(bot) {
 
     paymentInProgress = true;
 
-    const buttons = document.querySelectorAll(".buy-btn");
-
-    buttons.forEach(btn => {
-        btn.disabled = true;
-        btn.style.opacity = "0.6";
-        btn.style.cursor = "not-allowed";
-    });
-
     try {
 
         const response = await fetch(
@@ -63,63 +55,10 @@ async function buy(bot) {
                 escape: false
             },
 
-            handler: async function (payment) {
+            handler: function (response) {
 
-                try {
-
-                    const verifyResponse = await fetch(SCRIPT_URL, {
-
-                        method: "POST",
-
-                        headers: {
-                            "Content-Type": "application/json"
-                        },
-
-                        body: JSON.stringify({
-
-                            action: "verify",
-
-                            razorpay_payment_id:
-                                payment.razorpay_payment_id,
-
-                            razorpay_order_id:
-                                payment.razorpay_order_id,
-
-                            razorpay_signature:
-                                payment.razorpay_signature
-
-                        })
-
-                    });
-
-                    const verify = await verifyResponse.json();
-
-                    if (verify.success) {
-
-                        window.location.href = "success.html";
-
-                    } else {
-
-                        alert(
-                            verify.error ||
-                            "Payment verification failed."
-                        );
-
-                        enableButtons();
-
-                    }
-
-                }
-
-                catch (e) {
-
-                    console.error(e);
-
-                    alert("Verification failed.");
-
-                    enableButtons();
-
-                }
+                window.location.href =
+                    `success.html?payment_id=${response.razorpay_payment_id}`;
 
             }
 
@@ -136,7 +75,7 @@ async function buy(bot) {
                 response.error.description
             );
 
-            enableButtons();
+            paymentInProgress = false;
 
         });
 
@@ -148,26 +87,10 @@ async function buy(bot) {
 
         console.error(e);
 
-        alert(e.message || e);
+        alert(e.message || "Something went wrong.");
 
-        enableButtons();
+        paymentInProgress = false;
 
     }
-
-}
-
-function enableButtons() {
-
-    paymentInProgress = false;
-
-    document.querySelectorAll(".buy-btn").forEach(btn => {
-
-        btn.disabled = false;
-
-        btn.style.opacity = "";
-
-        btn.style.cursor = "";
-
-    });
 
 }
