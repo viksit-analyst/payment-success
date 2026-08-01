@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dashboard — Viksit Analyst</title>
+<meta name="description" content="Viksit Analyst customer dashboard — subscription, live bot status, broker connection, performance analytics and reports.">
+<meta name="robots" content="noindex, nofollow">
+<link rel="icon" type="image/svg+xml" href="assets/icons/favicon.svg">
+<meta name="theme-color" content="#060F1F">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+
+<link rel="stylesheet" href="dashboard.css">
+</head>
+<body data-theme="dark">
+<a href="#main-content" class="skip-link">Skip to main content</a>
+
+<!-- ============================== SIDEBAR SCRIM (mobile) ============================== -->
+<div class="sidebar-scrim" id="sidebarScrim"></div>
+
+<div class="app-shell" id="appShell">
+
+  <!-- ============================== SIDEBAR ============================== -->
+  <aside class="sidebar" id="sidebar" aria-label="Primary navigation">
+    <div class="sidebar-head">
+      <a href="#dashboard" class="sidebar-brand" aria-label="Viksit Analyst dashboard home">
+        <svg class="brand-mark" viewBox="0 0 32 20" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <path d="M1 15L8 8L13 12L21 4L31 6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          <circle cx="21" cy="4" r="2.5"/>
+        </svg>
+        <span class="sidebar-brand-name">Viksit Analyst</span>
+      </a>
+      <button class="sidebar-collapse-btn" id="collapseBtn" type="button" aria-label="Collapse sidebar">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 6l-6 6 6 6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
+    </div>
+
+    <nav class="sidebar-nav" id="sidebarNav">
+      <div class="sidebar-group">
+        <div class="sidebar-group-title">Overview</div>
+        <button class="nav-item" data-route="dashboard" type="button">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="7" height="9" rx="1.5"/><rect x="14" y="3" width="7" height="5" rx="1.5"/><rect x="14" y="12" width="7" height="9" rx="1.5"/><rect x="3" y="16" width="7" height="5" rx="1.5"/></svg>
+          <span class="nav-label">Dashboard</span>
+        </button>
+        <button class="nav-item" data-route="strategies" type="button">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 17l5-6 4 3 5-7 4 3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <span class="nav-label">Strategies</span>
+        </button>
+        <button class="nav-item" data-route="performance" type="button">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 20V10M12 20V4M20 20v-7" stroke-linecap="round"/></svg>
+          <span class="nav-label">Performance</span>
+        </button>
+        <button class="nav-item" data-route="trades" type="button">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 6h16M4 12h16M4 18h10" stroke-linecap="round"/></svg>
+          <span class="nav-label">Trade History</span>
+        </button>
+      </div>
+
+      <div class="sidebar-group">
+        <div class="sidebar-group-title">Execution</div>
+        <button class="nav-item" data-route="broker" type="button">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 10h18M8 15h4" stroke-linecap="round"/></svg>
+          <span class="nav-label">Broker</span>
+        </button>
+        <button class="nav-item" data-route="reports" type="button">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M6 3h9l5 5v13a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1Z"/><path d="M14 3v5h5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <span class="nav-label">Reports</span>
+        </button>
+        <button class="nav-item" data-route="downloads" type="button">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3v12m0 0l-4-4m4 4l4-4M4 19h16" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <span class="nav-label">Downloads</span>
+        </button>
+      </div>
+
+      <div class="sidebar-group">
+        <div class="sidebar-group-title">Account</div>
+        <button class="nav-item" data-route="billing" type="button">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="2" y="5" width="20" height="15" rx="2"/><path d="M2 10h20M6 15h4" stroke-linecap="round"/></svg>
+          <span class="nav-label">Billing</span>
+        </button>
+        <button class="nav-item" data-route="support" type="button">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 19c4.4 0 8-3.6 8-8s-3.6-8-8-8-8 3.6-8 8c0 1.4.4 2.7 1 3.9L4 21l5.3-1.4c1 .3 1.9.4 2.7.4Z" stroke-linejoin="round"/></svg>
+          <span class="nav-label">Support</span>
+          <span class="nav-badge" id="ticketBadge" hidden>1</span>
+        </button>
+        <button class="nav-item" data-route="profile" type="button">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-6 8-6s8 2 8 6" stroke-linecap="round"/></svg>
+          <span class="nav-label">Profile</span>
+        </button>
+        <button class="nav-item" data-route="settings" type="button">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.9l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.9-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1-1.6 1.7 1.7 0 0 0-1.9.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.9 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.6-1 1.7 1.7 0 0 0-.3-1.9l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.9.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.9-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.9V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1Z" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <span class="nav-label">Settings</span>
+        </button>
+      </div>
+    </nav>
+
+    <div class="sidebar-foot">
+      <div class="pulse-dot success" id="sidebarSystemDot" aria-hidden="true"></div>
+      <div class="sidebar-foot-meta">
+        <div class="sidebar-foot-title">Mission Control</div>
+        <div class="sidebar-foot-value" id="sidebarSystemStatus">Operational</div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- ============================== TOPBAR ============================== -->
+  <header class="topbar">
+    <button class="topbar-menu-btn" id="mobileMenuBtn" type="button" aria-label="Open menu">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 6h16M4 12h16M4 18h16" stroke-linecap="round"/></svg>
+    </button>
+
+    <button class="topbar-search" id="searchTrigger" type="button" aria-label="Open global search">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3" stroke-linecap="round"/></svg>
+      <span>Search strategies, trades, invoices…</span>
+      <kbd>⌘K</kbd>
+    </button>
+
+    <div class="topbar-actions">
+      <button class="icon-btn tooltip" id="themeToggle" type="button" data-tooltip="Toggle theme" aria-label="Toggle theme">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4" stroke-linecap="round"/></svg>
+      </button>
+      <div style="position:relative;">
+        <button class="icon-btn" id="notifBtn" type="button" aria-label="Notifications" aria-haspopup="true">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9" stroke-linecap="round" stroke-linejoin="round"/><path d="M13.7 21a2 2 0 0 1-3.4 0" stroke-linecap="round"/></svg>
+          <span class="dot" id="notifDot" hidden></span>
+        </button>
+        <div class="dropdown-panel" id="notifPanel" role="menu" aria-label="Notifications"></div>
+      </div>
+      <div style="position:relative;">
+        <button class="topbar-profile" id="profileBtn" type="button" aria-haspopup="true">
+          <div class="avatar" id="topbarAvatar">—</div>
+          <div class="topbar-profile-meta">
+            <div class="topbar-profile-name" id="topbarName">Loading…</div>
+            <div class="topbar-profile-plan" id="topbarPlan">—</div>
+          </div>
+        </button>
+        <div class="dropdown-panel profile-menu" id="profilePanel" role="menu"></div>
+      </div>
+    </div>
+  </header>
+
+  <!-- ============================== MAIN ============================== -->
+  <main class="main" id="main-content">
+
+    <!-- ---------- DASHBOARD HOME ---------- -->
+    <section class="view" id="view-dashboard" data-view="dashboard">
+      <div id="dashboardBanner"></div>
+      <div class="view-head">
+        <div>
+          <div class="view-title" id="welcomeTitle">Welcome back</div>
+          <div class="view-subtitle" id="welcomeSubtitle">Here's what's happening with your account today.</div>
+        </div>
+        <div class="view-actions">
+          <button class="btn btn-secondary" data-action="download-bot">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v12m0 0l-4-4m4 4l4-4M4 19h16" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            Download Bot
+          </button>
+          <button class="btn btn-primary" data-action="renew">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4v6h6M20 20v-6h-6" stroke-linecap="round" stroke-linejoin="round"/><path d="M5.5 15a8 8 0 0 0 13.9 2.5M18.5 9A8 8 0 0 0 4.6 6.5" stroke-linecap="round"/></svg>
+            Renew Subscription
+          </button>
+        </div>
+      </div>
+
+      <div class="grid grid-4" id="statCards">
+        <div class="card sk-card"></div><div class="card sk-card"></div><div class="card sk-card"></div><div class="card sk-card"></div>
+      </div>
+
+      <div class="grid grid-12 mt-20">
+        <div class="col-8">
+          <div class="card" id="subscriptionCard" style="min-height:280px;"></div>
+        </div>
+        <div class="col-4">
+          <div class="card" id="botStatusCard" style="min-height:280px;"></div>
+        </div>
+      </div>
+
+      <div class="grid grid-12 mt-20">
+        <div class="col-4">
+          <div class="card" id="brokerMiniCard"></div>
+        </div>
+        <div class="col-8">
+          <div class="card">
+            <div class="card-head">
+              <div>
+                <div class="card-title">Quick Actions</div>
+                <div class="card-sub">Common tasks, one tap away</div>
+              </div>
+            </div>
+            <div class="qa-grid">
+              <button class="qa-tile" data-action="renew">
+                <span class="qa-tile-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4v6h6M20 20v-6h-6" stroke-linecap="round" stroke-linejoin="round"/><path d="M5.5 15a8 8 0 0 0 13.9 2.5M18.5 9A8 8 0 0 0 4.6 6.5" stroke-linecap="round"/></svg></span>
+                <span class="qa-tile-label">Renew Plan</span>
+              </button>
+              <button class="qa-tile" data-action="download-bot">
+                <span class="qa-tile-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v12m0 0l-4-4m4 4l4-4M4 19h16" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+                <span class="qa-tile-label">Download Bot</span>
+              </button>
+              <button class="qa-tile" data-route="broker">
+                <span class="qa-tile-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 10h18M8 15h4" stroke-linecap="round"/></svg></span>
+                <span class="qa-tile-label">Connect Broker</span>
+              </button>
+              <button class="qa-tile" data-action="new-ticket">
+                <span class="qa-tile-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 19c4.4 0 8-3.6 8-8s-3.6-8-8-8-8 3.6-8 8c0 1.4.4 2.7 1 3.9L4 21l5.3-1.4c1 .3 1.9.4 2.7.4Z" stroke-linejoin="round"/></svg></span>
+                <span class="qa-tile-label">Raise Ticket</span>
+              </button>
+              <button class="qa-tile" data-route="reports">
+                <span class="qa-tile-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 3h9l5 5v13a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1Z"/><path d="M14 3v5h5" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+                <span class="qa-tile-label">View Reports</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="grid grid-12 mt-20">
+        <div class="col-12">
+          <div class="card">
+            <div class="card-head">
+              <div>
+                <div class="card-title">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 20V10M12 20V4M20 20v-7" stroke-linecap="round"/></svg>
+                  Equity Curve
+                </div>
+                <div class="card-sub">Cumulative performance across active strategies</div>
+              </div>
+              <div class="chart-tabs" id="equityRangeTabs">
+                <button class="chart-tab is-active" data-range="1M">1M</button>
+                <button class="chart-tab" data-range="3M">3M</button>
+                <button class="chart-tab" data-range="1Y">1Y</button>
+                <button class="chart-tab" data-range="ALL">ALL</button>
+              </div>
+            </div>
+            <div style="position:relative;">
+              <canvas id="equityChart" height="260"></canvas>
+              <div class="chart-tooltip" id="equityTooltip"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Additional views are injected by dashboard.js -->
+    <div id="viewOutlet"></div>
+
+  </main>
+</div>
+
+<!-- ============================== TOAST STACK ============================== -->
+<div class="toast-stack" id="toastStack" aria-live="polite"></div>
+
+<!-- ============================== COMMAND PALETTE ============================== -->
+<div class="modal-overlay cmdk" id="cmdkOverlay" role="dialog" aria-modal="true" aria-label="Global search">
+  <div class="modal">
+    <div class="cmdk-input-row">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3" stroke-linecap="round"/></svg>
+      <input class="cmdk-input" id="cmdkInput" type="text" placeholder="Search strategies, trades, invoices, tickets…" autocomplete="off">
+      <kbd class="mono" style="font-size:11px;color:var(--text-tertiary);border:1px solid var(--border-default);padding:2px 6px;border-radius:4px;">ESC</kbd>
+    </div>
+    <div class="cmdk-results" id="cmdkResults"></div>
+  </div>
+</div>
+
+<!-- ============================== GENERIC MODAL ============================== -->
+<div class="modal-overlay" id="genericModalOverlay" role="dialog" aria-modal="true">
+  <div class="modal" id="genericModal"></div>
+</div>
+
+<script src="dashboard.js"></script>
+</body>
+</html>
