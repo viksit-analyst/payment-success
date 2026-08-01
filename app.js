@@ -4,22 +4,39 @@ const SCRIPT_URL =
 let paymentInProgress = false;
 
 async function buy(bot) {
-
+    console.log("buy() called:", bot);
     if (paymentInProgress) return;
 
     paymentInProgress = true;
 
     try {
 
+        console.log("Sending request...");
+        
         const response = await fetch(
-            `${SCRIPT_URL}?action=createOrder&bot=${encodeURIComponent(bot)}`
+            SCRIPT_URL +
+            "?action=createOrder&bot=" +
+            encodeURIComponent(bot)
         );
+        
+        console.log("Fetch completed");
+        
+        console.log("HTTP Status:", response.status);
 
         if (!response.ok) {
             throw new Error(`Server Error ${response.status}`);
         }
-
-        const data = await response.json();
+        const text = await response.text();
+        
+        console.log("Raw Response:");
+        
+        console.log(text);
+        
+        const data = JSON.parse(text);
+        
+        console.log("Parsed Data:");
+        
+        console.log(data);
 
         if (!data.success) {
             throw new Error(data.error || "Unable to create order.");
@@ -63,8 +80,11 @@ async function buy(bot) {
             }
 
         };
-
+        console.log("Options:");
+        
+        console.log(options);
         const rzp = new Razorpay(options);
+        console.log("Opening Razorpay...");
 
         rzp.on("payment.failed", function (response) {
 
