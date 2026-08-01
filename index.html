@@ -1,73 +1,625 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Viksit Analyst — Quantitative Research & Automated Execution</title>
+<meta name="description" content="Viksit Analyst develops and operates research-driven quantitative trading strategies with disciplined risk management and fully automated execution. Systematic, not speculative.">
+<meta name="keywords" content="quantitative trading, algorithmic trading, automated trading India, systematic investing, options strategies, risk management, IVRV, Gamma Flip, VWAP strategy">
+<meta name="robots" content="index, follow">
+<link rel="canonical" href="https://www.viksitanalyst.com/">
 
-<title>Viksit Analyst</title>
+<!-- Open Graph -->
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Viksit Analyst">
+<meta property="og:title" content="Viksit Analyst — Trade with Discipline, Not Emotion.">
+<meta property="og:description" content="Research-driven quantitative trading strategies with disciplined risk management and fully automated execution.">
+<meta property="og:url" content="https://www.viksitanalyst.com/">
+<meta property="og:image" content="https://www.viksitanalyst.com/assets/og-cover.png">
+<meta property="og:locale" content="en_IN">
 
-<link rel="stylesheet" href="style.css">
+<!-- Twitter -->
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Viksit Analyst — Trade with Discipline, Not Emotion.">
+<meta name="twitter:description" content="Research-driven quantitative trading strategies with disciplined risk management and fully automated execution.">
+<meta name="twitter:image" content="https://www.viksitanalyst.com/assets/og-cover.png">
 
-<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+<meta name="theme-color" content="#0B1F3A">
 
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+
+<link rel="stylesheet" href="styles.css">
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  "name": "Viksit Analyst",
+  "url": "https://www.viksitanalyst.com",
+  "description": "Viksit Analyst develops and operates research-driven quantitative trading strategies with disciplined risk management and fully automated execution.",
+  "slogan": "Trade with Discipline. Not Emotion."
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "How does automated execution work?",
+      "acceptedAnswer": { "@type": "Answer", "text": "Every signal passes through a fixed sequence — risk validation, subscription check, broker validation and margin check — before an order is placed. Execution, logging and reporting then continue automatically without manual intervention." }
+    },
+    {
+      "@type": "Question",
+      "name": "Which brokers are supported?",
+      "acceptedAnswer": { "@type": "Answer", "text": "Upstox is fully supported today. Zerodha integration is in active development. Additional brokers are added as the platform expands." }
+    },
+    {
+      "@type": "Question",
+      "name": "How often are strategies updated?",
+      "acceptedAnswer": { "@type": "Answer", "text": "Strategies are continuously researched. Meaningful changes pass through internal validation and limited live testing before reaching production, and every release is versioned and documented." }
+    },
+    {
+      "@type": "Question",
+      "name": "How are reports delivered?",
+      "acceptedAnswer": { "@type": "Answer", "text": "A report is generated after each trading session and delivered by email, summarizing execution activity, platform status and any relevant updates." }
+    },
+    {
+      "@type": "Question",
+      "name": "What capital is recommended?",
+      "acceptedAnswer": { "@type": "Answer", "text": "A trading capital of ₹3,00,000 or above is recommended across strategies, to allow for efficient position sizing and disciplined risk management." }
+    }
+  ]
+}
+</script>
 </head>
-
 <body>
+<noscript><style>
+  .reveal, .hero-copy > *, .hero-visual, .hero-badge, .preview-panel { opacity: 1 !important; transform: none !important; }
+  .spark-draw { stroke-dashoffset: 0 !important; }
+  .spark-node { opacity: 1 !important; transform: scale(1) !important; }
+  .faq-a { max-height: none !important; }
+  .mobile-drawer { display: none; }
+</style></noscript>
+<a href="#main" class="skip-link">Skip to main content</a>
 
-<div class="container">
+<!-- ============================== NAVIGATION ============================== -->
+<header class="nav" id="siteNav">
+  <div class="container nav-inner">
+    <a href="#top" class="brand" aria-label="Viksit Analyst home">
+      <svg class="brand-mark" viewBox="0 0 32 20" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <path d="M1 15L8 8L13 12L21 4L31 6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        <circle cx="21" cy="4" r="2.5"/>
+      </svg>
+      Viksit Analyst
+    </a>
 
-<h1>Viksit Analyst</h1>
+    <nav class="nav-links" aria-label="Primary">
+      <a href="#top">Home</a>
+      <a href="#strategies">Strategies</a>
+      <a href="#pricing">Pricing</a>
+      <a href="#mission-control">Mission Control</a>
+      <a href="#faq">FAQ</a>
+      <a href="#contact">Contact</a>
+    </nav>
 
-<p class="subtitle">
-Professional Quantitative Trading Algorithms
-</p>
+    <div class="nav-actions">
+      <button class="theme-toggle" id="themeToggle" aria-label="Toggle dark mode" type="button">
+        <svg class="icon-sun" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4" stroke-linecap="round"/></svg>
+        <svg class="icon-moon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 12.8A9 9 0 1 1 11.2 3 7 7 0 0 0 21 12.8Z" stroke-linejoin="round"/></svg>
+      </button>
+      <a href="#login" class="btn btn-ghost">Login</a>
+      <a href="#pricing" class="btn btn-primary">Subscribe</a>
+      <button class="nav-toggle" id="navToggle" aria-label="Open menu" aria-expanded="false" type="button"><span></span></button>
+    </div>
+  </div>
 
-<div class="card">
+  <div class="mobile-drawer" id="mobileDrawer">
+    <a href="#top">Home</a>
+    <a href="#strategies">Strategies</a>
+    <a href="#pricing">Pricing</a>
+    <a href="#mission-control">Mission Control</a>
+    <a href="#faq">FAQ</a>
+    <a href="#contact">Contact</a>
+    <div class="drawer-actions">
+      <a href="#login" class="btn btn-secondary btn-block">Login</a>
+      <a href="#pricing" class="btn btn-primary btn-block">Subscribe</a>
+    </div>
+  </div>
+</header>
 
-<h2>📈 Volatility Algo</h2>
+<main id="main">
+<div id="top"></div>
 
-<p>Monthly Subscription</p>
+<!-- ================================ HERO ================================== -->
+<section class="hero">
+  <div class="hero-texture" id="heroTexture" aria-hidden="true"></div>
+  <div class="container hero-grid">
 
-<button onclick="buy('volatility')">
-Subscribe
-</button>
+    <div class="hero-copy">
+      <p class="eyebrow hero-eyebrow">Professional Quantitative Research &amp; Automated Execution</p>
+      <h1>Trade with Discipline.<br><span class="accent-line">Not Emotion.</span></h1>
+      <p class="hero-sub">Viksit Analyst develops and operates research-driven quantitative trading strategies with disciplined risk management and fully automated execution — designed for investors who value systematic decision-making over speculation.</p>
 
+      <div class="hero-actions">
+        <a href="#strategies" class="btn btn-accent btn-lg">Explore Strategies</a>
+        <a href="#pricing" class="btn btn-secondary btn-lg">Subscribe Now</a>
+      </div>
+
+      <div class="hero-badges">
+        <span class="hero-badge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><path d="M20 6L9 17l-5-5" stroke-linecap="round" stroke-linejoin="round"/></svg>Quantitative Research</span>
+        <span class="hero-badge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><path d="M20 6L9 17l-5-5" stroke-linecap="round" stroke-linejoin="round"/></svg>Automated Execution</span>
+        <span class="hero-badge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><path d="M20 6L9 17l-5-5" stroke-linecap="round" stroke-linejoin="round"/></svg>Daily Trade Reports</span>
+        <span class="hero-badge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><path d="M20 6L9 17l-5-5" stroke-linecap="round" stroke-linejoin="round"/></svg>Recommended Capital ₹3L+</span>
+      </div>
+    </div>
+
+    <div class="hero-visual" aria-hidden="true">
+      <div class="preview-panel glass">
+        <div class="preview-topbar">
+          <span class="brand">
+            <svg class="brand-mark" viewBox="0 0 32 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path class="spark-draw" d="M1 15L8 8L13 12L21 4L31 6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              <circle class="spark-node" cx="8" cy="8" r="2.5" fill="#FF9933"/>
+              <circle class="spark-node" cx="21" cy="4" r="2.5" fill="#FF9933"/>
+              <circle class="spark-node" cx="31" cy="6" r="2.5" fill="#FF9933"/>
+            </svg>
+            Mission Control
+          </span>
+          <span class="preview-dots"><span></span><span></span><span></span></span>
+        </div>
+
+        <div class="preview-grid">
+          <div class="preview-tile"><span class="t-label">Today's Trades</span><span class="t-value mono">12</span></div>
+          <div class="preview-tile"><span class="t-label">Research Ver.</span><span class="t-value mono">v19</span></div>
+          <div class="preview-tile"><span class="t-label">Uptime</span><span class="t-value mono up">99.98%</span></div>
+        </div>
+
+        <div class="preview-chart">
+          <svg viewBox="0 0 320 84" preserveAspectRatio="none">
+            <polyline points="0,60 30,55 60,58 90,40 120,44 150,26 180,32 210,18 240,24 270,10 300,16 320,8" fill="none" stroke="#6FA0FF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            <polyline points="0,60 30,55 60,58 90,40 120,44 150,26 180,32 210,18 240,24 270,10 300,16 320,8 320,84 0,84" fill="url(#heroGrad)" stroke="none" opacity="0.35"/>
+            <defs>
+              <linearGradient id="heroGrad" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="#6FA0FF" stop-opacity="0.5"/>
+                <stop offset="100%" stop-color="#6FA0FF" stop-opacity="0"/>
+              </linearGradient>
+            </defs>
+          </svg>
+          <div class="chart-caption"><span>Research Dataset</span><span>Updated Today</span></div>
+        </div>
+
+        <div class="preview-rows">
+          <div class="preview-row">
+            <span class="preview-row-name"><span class="preview-row-dot" style="background:#2E6BE6"></span>IVRV</span>
+            <span class="preview-row-status" style="background:rgba(46,107,230,.16);color:#8FB4FF">Monitoring</span>
+          </div>
+          <div class="preview-row">
+            <span class="preview-row-name"><span class="preview-row-dot" style="background:#FF9933"></span>Gamma Flip</span>
+            <span class="preview-row-status" style="background:rgba(255,153,51,.16);color:#FFC078">Monitoring</span>
+          </div>
+          <div class="preview-row">
+            <span class="preview-row-name"><span class="preview-row-dot" style="background:#1FA971"></span>VWAP</span>
+            <span class="preview-row-status" style="background:rgba(31,169,113,.18);color:#6FE0AA">Monitoring</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="preview-float f1"><span style="width:6px;height:6px;border-radius:50%;background:#1FA971;display:inline-block"></span> Execution: Operational</div>
+      <div class="preview-float f2">Daily Report — Ready</div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================ LIVE STATUS BAR ============================ -->
+<section class="status-bar" aria-label="Live platform status">
+  <div class="container">
+    <div class="status-track">
+      <div class="status-item">
+        <span class="status-label">Research Engine</span>
+        <span class="status-value"><span class="status-dot"></span>Operational</span>
+      </div>
+      <div class="status-item">
+        <span class="status-label">Execution Engine</span>
+        <span class="status-value"><span class="status-dot"></span>Operational</span>
+      </div>
+      <div class="status-item">
+        <span class="status-label">Strategies</span>
+        <span class="status-value"><span class="status-dot"></span>Monitoring Markets</span>
+      </div>
+      <div class="status-item">
+        <span class="status-label">Daily Reports</span>
+        <span class="status-value"><span class="status-dot"></span>Ready</span>
+      </div>
+      <div class="status-item">
+        <span class="status-label">Supported Brokers</span>
+        <span class="status-value">Upstox</span>
+        <span class="status-sub">Zerodha — Coming Soon</span>
+      </div>
+      <div class="status-item">
+        <span class="status-label">Platform Health</span>
+        <span class="status-value"><span class="status-dot"></span>Excellent</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- =========================== WHY VIKSIT ANALYST ========================== -->
+<section class="section-pad" id="why">
+  <div class="container">
+    <div class="section-head center reveal">
+      <p class="eyebrow">Why Viksit Analyst</p>
+      <h2 class="section-title">Built for disciplined investors, not discretionary traders.</h2>
+      <p class="section-sub">Systematic execution, engineered risk controls, and a platform that keeps working after you subscribe — not just on the day you sign up.</p>
+    </div>
+
+    <div class="why-grid reveal-stagger">
+      <article class="card why-card reveal" style="--stagger-i:0">
+        <div class="why-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3" stroke-linecap="round"/></svg></div>
+        <h3>Research Driven</h3>
+        <p>Strategies are developed through quantitative research, historical analysis and continuous refinement. Every improvement is evaluated before it becomes part of live execution.</p>
+      </article>
+      <article class="card why-card reveal" style="--stagger-i:1">
+        <div class="why-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M9 6h11M9 12h11M9 18h11" stroke-linecap="round"/><circle cx="4.5" cy="6" r="1.4" fill="currentColor" stroke="none"/><circle cx="4.5" cy="12" r="1.4" fill="currentColor" stroke="none"/><circle cx="4.5" cy="18" r="1.4" fill="currentColor" stroke="none"/></svg></div>
+        <h3>Systematic Execution</h3>
+        <p>Every trade follows predefined rules. Execution remains consistent regardless of market noise, headlines, or emotion.</p>
+      </article>
+      <article class="card why-card reveal" style="--stagger-i:2">
+        <div class="why-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M12 3l7 3v6c0 4.5-3 7.5-7 9-4-1.5-7-4.5-7-9V6l7-3Z" stroke-linejoin="round"/></svg></div>
+        <h3>Risk Management</h3>
+        <p>Capital preservation is considered before opportunity. Every strategy incorporates position sizing, predefined exits and portfolio-level safeguards.</p>
+      </article>
+      <article class="card why-card reveal" style="--stagger-i:3">
+        <div class="why-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .34 1.87l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.7 1.7 0 0 0-1.87-.34 1.7 1.7 0 0 0-1 1.55V21a2 2 0 1 1-4 0v-.09a1.7 1.7 0 0 0-1-1.55 1.7 1.7 0 0 0-1.87.34l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.7 1.7 0 0 0 4.6 15a1.7 1.7 0 0 0-1.55-1H3a2 2 0 1 1 0-4h.09A1.7 1.7 0 0 0 4.6 9a1.7 1.7 0 0 0-.34-1.87l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.7 1.7 0 0 0 9 4.6a1.7 1.7 0 0 0 1-1.55V3a2 2 0 1 1 4 0v.09a1.7 1.7 0 0 0 1 1.55 1.7 1.7 0 0 0 1.87-.34l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.7 1.7 0 0 0 19.4 9a1.7 1.7 0 0 0 1.55 1H21a2 2 0 1 1 0 4h-.09a1.7 1.7 0 0 0-1.55 1Z" stroke-linejoin="round"/></svg></div>
+        <h3>Automated Trading</h3>
+        <p>Once your account is connected, execution and reporting operate automatically. No screens to watch, no orders to place by hand.</p>
+      </article>
+      <article class="card why-card reveal" style="--stagger-i:4">
+        <div class="why-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M14 3v5h5" stroke-linejoin="round"/><path d="M6 3h8l5 5v13a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1Z" stroke-linejoin="round"/><path d="M8 13h8M8 17h5" stroke-linecap="round"/></svg></div>
+        <h3>Daily Reports</h3>
+        <p>Subscribers receive a concise post-market report summarizing the day's activity, execution and platform status.</p>
+      </article>
+      <article class="card why-card reveal" style="--stagger-i:5">
+        <div class="why-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M3 12a9 9 0 1 1 3 6.7" stroke-linecap="round"/><path d="M3 21v-5h5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        <h3>Continuous Improvement</h3>
+        <p>Strategies continue evolving through ongoing quantitative research and operational improvements — versioned and documented at every step.</p>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- ================================ TRUST ================================== -->
+<section class="trust section-pad-tight">
+  <div class="container trust-inner reveal">
+    <div class="trust-head">
+      <h3>Built on Process, Not Promises</h3>
+      <p>No guarantees. No "secret strategy." Just a disciplined, auditable process.</p>
+    </div>
+    <div class="trust-pillars">
+      <div class="trust-pillar">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M9 6h11M9 12h11M9 18h11" stroke-linecap="round"/><circle cx="4.5" cy="6" r="1.4" fill="currentColor" stroke="none"/><circle cx="4.5" cy="12" r="1.4" fill="currentColor" stroke="none"/><circle cx="4.5" cy="18" r="1.4" fill="currentColor" stroke="none"/></svg>
+        <div><h4>Systematic Decisions</h4><p>Trades follow predefined rules, not emotions.</p></div>
+      </div>
+      <div class="trust-pillar">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 3l7 3v6c0 4.5-3 7.5-7 9-4-1.5-7-4.5-7-9V6l7-3Z" stroke-linejoin="round"/></svg>
+        <div><h4>Defined Risk</h4><p>Every strategy is designed with risk management at its core.</p></div>
+      </div>
+      <div class="trust-pillar">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3" stroke-linecap="round"/></svg>
+        <div><h4>Continuous Research</h4><p>Models evolve through ongoing testing and refinement.</p></div>
+      </div>
+      <div class="trust-pillar">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M4 4v16h16" stroke-linecap="round" stroke-linejoin="round"/><path d="M8 15l3-4 3 2 4-6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <div><h4>Transparent Operations</h4><p>Daily reports and platform status keep subscribers informed.</p></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================== STRATEGIES =============================== -->
+<section class="section-pad" id="strategies">
+  <div class="container">
+    <div class="section-head center reveal">
+      <p class="eyebrow">Our Strategies</p>
+      <h2 class="section-title">One Platform. Three Specialized Strategies.</h2>
+      <p class="section-sub">Each strategy is designed for a distinct market behaviour rather than attempting to solve every market condition — its own research process, execution framework and risk methodology, under one disciplined platform.</p>
+    </div>
+
+    <div class="strategy-grid reveal-stagger">
+
+      <article class="card strategy-card reveal" style="--strategy-color: var(--color-ivrv); --stagger-i:0">
+        <div class="strategy-top">
+          <div class="strategy-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M2 12c1.5-4 3-6 4.5-6s2 8 3.5 8 2-8 3.5-8 2 8 3.5 8 3-4 4.5-4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+          <div class="strategy-health">Health Score<b>96/100</b></div>
+        </div>
+        <h3>IVRV</h3>
+        <p class="strategy-tagline">Systematic Volatility Trading</p>
+        <p class="strategy-desc">Trades volatility rather than predicting direction — an institutional-inspired strategy that participates only when implied and realized volatility diverge meaningfully.</p>
+        <div class="strategy-meta">
+          <div><span>Expected Trades</span><b>15–30 / yr</b></div>
+          <div><span>Holding Period</span><b>Several Days</b></div>
+          <div><span>Recommended Capital</span><b>₹3L+</b></div>
+          <div><span>Status</span><b style="color:var(--color-success)">Operational</b></div>
+        </div>
+        <button class="btn btn-secondary" data-strategy-open="ivrv">Explore IVRV</button>
+      </article>
+
+      <article class="card strategy-card reveal" style="--strategy-color: var(--color-gamma); --stagger-i:1">
+        <div class="strategy-top">
+          <div class="strategy-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M13 2 4 14h7l-1 8 9-12h-7l1-8Z" stroke-linejoin="round"/></svg>
+          </div>
+          <div class="strategy-health">Health Score<b>91/100</b></div>
+        </div>
+        <h3>Gamma Flip</h3>
+        <p class="strategy-tagline">Systematic Momentum Trading</p>
+        <p class="strategy-desc">An intraday momentum strategy that responds to high-conviction market moves through rapid, rules-based execution and disciplined risk controls.</p>
+        <div class="strategy-meta">
+          <div><span>Typical Activity</span><b>1–6 / active day</b></div>
+          <div><span>Holding Period</span><b>Seconds–Minutes</b></div>
+          <div><span>Recommended Capital</span><b>₹3L+</b></div>
+          <div><span>Status</span><b style="color:var(--color-success)">Operational</b></div>
+        </div>
+        <button class="btn btn-secondary" data-strategy-open="gamma">Explore Gamma Flip</button>
+      </article>
+
+      <article class="card strategy-card reveal" style="--strategy-color: var(--color-vwap); --stagger-i:2">
+        <div class="strategy-top">
+          <div class="strategy-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M3 17l6-6 4 4 8-9" stroke-linecap="round" stroke-linejoin="round"/><path d="M15 6h6v6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+          <div class="strategy-health">Health Score<b>94/100</b></div>
+        </div>
+        <h3>VWAP</h3>
+        <p class="strategy-tagline">Institutional Trend Following</p>
+        <p class="strategy-desc">Inspired by institutional execution principles — disciplined participation in established intraday directional movement, not reversal forecasting.</p>
+        <div class="strategy-meta">
+          <div><span>Typical Activity</span><b>Several / week</b></div>
+          <div><span>Holding Period</span><b>Minutes–Hours</b></div>
+          <div><span>Recommended Capital</span><b>₹3L+</b></div>
+          <div><span>Status</span><b style="color:var(--color-success)">Operational</b></div>
+        </div>
+        <button class="btn btn-secondary" data-strategy-open="vwap">Explore VWAP</button>
+      </article>
+
+    </div>
+  </div>
+</section>
+
+<!-- ============================= MISSION CONTROL =========================== -->
+<section class="section-pad mission" id="mission-control">
+  <div class="mission-texture" id="missionTexture" aria-hidden="true"></div>
+  <div class="container">
+    <div class="section-head center reveal">
+      <p class="eyebrow">Mission Control</p>
+      <h2 class="section-title">Real-time operational status of the Viksit Analyst platform.</h2>
+      <p class="section-sub">Every evening, the platform regenerates this view automatically — nothing here is edited by hand.</p>
+    </div>
+
+    <div class="mission-panel reveal">
+      <div class="mission-grid">
+        <div class="mission-node">
+          <div class="mission-node-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M13 2 4 14h7l-1 8 9-12h-7l1-8Z" stroke-linejoin="round"/></svg></div>
+          <span class="mission-node-label">Execution</span>
+          <span class="mission-node-value">Operational</span>
+        </div>
+        <div class="mission-node">
+          <div class="mission-node-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3" stroke-linecap="round"/></svg></div>
+          <span class="mission-node-label">Research</span>
+          <span class="mission-node-value">Operational</span>
+        </div>
+        <div class="mission-node">
+          <div class="mission-node-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M14 3v5h5" stroke-linejoin="round"/><path d="M6 3h8l5 5v13a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1Z" stroke-linejoin="round"/></svg></div>
+          <span class="mission-node-label">Reports</span>
+          <span class="mission-node-value">Published</span>
+        </div>
+        <div class="mission-node">
+          <div class="mission-node-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M3 12a9 9 0 1 1 3 6.7" stroke-linecap="round"/><path d="M3 21v-5h5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+          <span class="mission-node-label">Website</span>
+          <span class="mission-node-value">Healthy</span>
+        </div>
+        <div class="mission-node">
+          <div class="mission-node-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3.5 2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+          <span class="mission-node-label">Last Update</span>
+          <span class="mission-node-value live"><span class="status-dot"></span><span id="lastUpdateText">Just now</span></span>
+        </div>
+      </div>
+
+      <div class="mission-meta">
+        <div class="mission-brokers">
+          <span class="broker-chip"><span class="status-dot"></span>Upstox</span>
+          <span class="broker-chip is-soon"><span class="status-dot"></span>Zerodha — Coming Soon</span>
+        </div>
+        <div class="mission-regime">
+          Today's Market Regime <span class="regime-dot"></span> <b>Neutral</b>
+        </div>
+        <div class="mission-updated mono" id="missionTimestamp">31 Jul 2026 · Website v2.3.1 · Research v19</div>
+      </div>
+
+      <p class="mission-footnote">Mission Control reflects platform-level status only — execution, research and reporting health. It never displays customer positions, broker credentials, or strategy logic. See our <a href="#" style="text-decoration:underline">status page</a> for full uptime history.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============================== HOW IT WORKS ============================= -->
+<section class="section-pad" id="how-it-works">
+  <div class="container">
+    <div class="section-head center reveal">
+      <p class="eyebrow">How It Works</p>
+      <h2 class="section-title">From subscription to automated execution.</h2>
+      <p class="section-sub">Six steps, most of them handled for you. Once verification is complete, the platform runs on its own.</p>
+    </div>
+
+    <div class="steps-track reveal-stagger">
+      <div class="step reveal" style="--stagger-i:0"><div class="step-num">01</div><h3>Choose Strategy</h3><p>Pick IVRV, Gamma Flip, or VWAP based on your risk appetite and capital.</p></div>
+      <div class="step reveal" style="--stagger-i:1"><div class="step-num">02</div><h3>Subscribe</h3><p>Complete onboarding and the monthly subscription securely.</p></div>
+      <div class="step reveal" style="--stagger-i:2"><div class="step-num">03</div><h3>Connect Broker</h3><p>Link your Upstox account in a few guided steps.</p></div>
+      <div class="step reveal" style="--stagger-i:3"><div class="step-num">04</div><h3>Verification</h3><p>We confirm broker access and subscription status before going live.</p></div>
+      <div class="step reveal" style="--stagger-i:4"><div class="step-num">05</div><h3>Automated Execution</h3><p>Signals are validated and orders placed automatically — no manual steps.</p></div>
+      <div class="step reveal" style="--stagger-i:5"><div class="step-num">06</div><h3>Daily Reports</h3><p>Receive a concise summary of the day's activity after market close.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ================================ PRICING ================================ -->
+<section class="section-pad section-pad-tight" id="pricing" style="background:var(--bg-sunken)">
+  <div class="container">
+    <div class="section-head center reveal">
+      <p class="eyebrow">Pricing</p>
+      <h2 class="section-title">One plan. Full platform access.</h2>
+      <p class="section-sub">A single Professional plan covers every strategy — automated execution, reporting, and ongoing research improvements.</p>
+    </div>
+
+    <div class="pricing-wrap reveal">
+      <div class="card pricing-card">
+        <span class="pricing-badge mono">PROFESSIONAL PLAN</span>
+        <h3>Everything you need to trade systematically.</h3>
+        <p class="pricing-lead">No hidden tiers. No performance-fee surprises.</p>
+
+        <div class="price-rows">
+          <div class="price-row">
+            <span class="p-label">One-Time Onboarding</span>
+            <span class="p-value mono">₹9,999</span>
+          </div>
+          <div class="price-row">
+            <span class="p-label">Monthly Subscription</span>
+            <span class="p-value mono">₹999 <small>/ month</small></span>
+          </div>
+        </div>
+
+        <ul class="price-includes">
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><path d="M20 6L9 17l-5-5" stroke-linecap="round" stroke-linejoin="round"/></svg>Automated Execution</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><path d="M20 6L9 17l-5-5" stroke-linecap="round" stroke-linejoin="round"/></svg>Strategy Updates</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><path d="M20 6L9 17l-5-5" stroke-linecap="round" stroke-linejoin="round"/></svg>Daily Reports</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><path d="M20 6L9 17l-5-5" stroke-linecap="round" stroke-linejoin="round"/></svg>Research Improvements</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><path d="M20 6L9 17l-5-5" stroke-linecap="round" stroke-linejoin="round"/></svg>Email Support</li>
+        </ul>
+
+        <div class="price-capital">
+          <span class="p-cap-label">Recommended Trading Capital</span>
+          <span class="p-cap-value mono">₹3,00,000+</span>
+          <p class="p-cap-note">A trading capital of ₹3 lakh or above is recommended for efficient position sizing and disciplined risk management.</p>
+        </div>
+
+        <a href="#contact" class="btn btn-primary btn-block btn-lg">Start Now</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================================== FAQ =================================== -->
+<section class="section-pad" id="faq">
+  <div class="container">
+    <div class="section-head center reveal">
+      <p class="eyebrow">FAQ</p>
+      <h2 class="section-title">Common questions.</h2>
+      <p class="section-sub">A few of the things people ask before subscribing.</p>
+    </div>
+
+    <div class="faq-list reveal">
+      <div class="faq-item">
+        <button class="faq-q" aria-expanded="false">How does automated execution work?<span class="faq-plus" aria-hidden="true"></span></button>
+        <div class="faq-a"><div class="faq-a-inner">Every signal generated by a strategy passes through a fixed sequence — risk validation, subscription check, broker validation and margin check — before an order is placed. Execution, logging and reporting then continue automatically, in that order, every time.</div></div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q" aria-expanded="false">Which brokers are supported?<span class="faq-plus" aria-hidden="true"></span></button>
+        <div class="faq-a"><div class="faq-a-inner">Upstox is fully supported today. Zerodha integration is in active development and will follow. Additional brokers are added to the platform over time as integrations are validated.</div></div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q" aria-expanded="false">How often are strategies updated?<span class="faq-plus" aria-hidden="true"></span></button>
+        <div class="faq-a"><div class="faq-a-inner">Strategies are continuously researched. Meaningful changes move through internal validation and limited live testing before reaching production — and every release is versioned, so you always know exactly what you're running.</div></div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q" aria-expanded="false">How are reports delivered?<span class="faq-plus" aria-hidden="true"></span></button>
+        <div class="faq-a"><div class="faq-a-inner">A concise report is generated after each trading session and delivered by email, summarizing execution activity, trades, platform status, and any relevant updates for that day.</div></div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q" aria-expanded="false">What capital is recommended?<span class="faq-plus" aria-hidden="true"></span></button>
+        <div class="faq-a"><div class="faq-a-inner">A trading capital of ₹3,00,000 or above is recommended across all three strategies, to allow for efficient position sizing and disciplined risk management at the position level.</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<!-- =============================== FOOTER =================================== -->
+<footer class="footer" id="contact">
+  <div class="container">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <a href="#top" class="brand" aria-label="Viksit Analyst home">
+          <svg class="brand-mark" viewBox="0 0 32 20" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <path d="M1 15L8 8L13 12L21 4L31 6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            <circle cx="21" cy="4" r="2.5"/>
+          </svg>
+          Viksit Analyst
+        </a>
+        <p>A quantitative execution platform with continuously researched strategies — research, execution, reporting and infrastructure working together, not a static algorithm frozen in time.</p>
+        <div class="footer-social">
+          <a href="#" aria-label="GitHub"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 .3a12 12 0 0 0-3.8 23.4c.6.1.8-.3.8-.6v-2.2c-3.3.7-4-1.6-4-1.6-.6-1.3-1.3-1.7-1.3-1.7-1-.7.1-.7.1-.7 1.2.1 1.8 1.2 1.8 1.2 1 1.8 2.8 1.3 3.4 1 .1-.8.4-1.3.7-1.6-2.7-.3-5.5-1.3-5.5-5.9 0-1.3.5-2.4 1.2-3.2-.1-.3-.5-1.5.1-3.2 0 0 1-.3 3.3 1.2a11.5 11.5 0 0 1 6 0c2.3-1.5 3.3-1.2 3.3-1.2.6 1.7.2 2.9.1 3.2.8.8 1.2 1.9 1.2 3.2 0 4.6-2.8 5.6-5.5 5.9.4.4.8 1.1.8 2.2v3.3c0 .3.2.7.8.6A12 12 0 0 0 12 .3Z"/></svg></a>
+          <a href="#" aria-label="LinkedIn"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M6.94 5a2 2 0 1 1-4 0 2 2 0 0 1 4 0ZM3.3 8.75h3.28V21H3.3V8.75Zm6.2 0h3.14v1.68h.05c.44-.83 1.5-1.7 3.1-1.7 3.3 0 3.9 2.18 3.9 5v7.27h-3.28v-6.45c0-1.54-.03-3.53-2.15-3.53-2.16 0-2.49 1.69-2.49 3.43v6.55H9.5V8.75Z"/></svg></a>
+          <a href="#" aria-label="X (Twitter)"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M18.9 2H22l-7.6 8.7L23.4 22h-7l-5.5-7.2L4.6 22H1.5l8.1-9.3L1 2h7.2l5 6.6L18.9 2Zm-1.2 18h1.7L7.4 3.9H5.6L17.7 20Z"/></svg></a>
+        </div>
+      </div>
+
+      <div class="footer-col">
+        <h4>Quick Links</h4>
+        <ul>
+          <li><a href="#top">Home</a></li>
+          <li><a href="#strategies">Strategies</a></li>
+          <li><a href="#pricing">Pricing</a></li>
+          <li><a href="#mission-control">Mission Control</a></li>
+          <li><a href="#faq">FAQ</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-col">
+        <h4>Legal</h4>
+        <ul>
+          <li><a href="#">Privacy Policy</a></li>
+          <li><a href="#">Terms of Service</a></li>
+          <li><a href="#">Risk Disclosure</a></li>
+          <li><a href="#">Refund Policy</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-col">
+        <h4>Contact</h4>
+        <span class="contact-label">Support</span>
+        <p class="contact-line"><a href="mailto:support@viksitanalyst.com">support@viksitanalyst.com</a></p>
+        <span class="contact-label">Business</span>
+        <p class="contact-line"><a href="mailto:hello@viksitanalyst.com">hello@viksitanalyst.com</a></p>
+        <span class="contact-label">Response Time</span>
+        <p class="contact-line">Within 1 business day</p>
+      </div>
+    </div>
+
+    <p class="footer-disclaimer">Quantitative trading involves risk, including the possible loss of principal. Historical and backtested figures shown on this site are provided for informational purposes only and are not a guarantee of future performance. Viksit Analyst does not provide investment advice; please review the Risk Disclosure before subscribing.</p>
+
+    <div class="footer-bottom">
+      <span>© <span id="year">2026</span> Viksit Analyst. All rights reserved.</span>
+      <span class="mono">Website v2.3.1</span>
+    </div>
+  </div>
+</footer>
+
+<!-- ========================== STRATEGY DETAIL MODAL ========================= -->
+<div class="modal-overlay" id="strategyModal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+  <div class="modal" id="modalContent">
+    <button class="modal-close" id="modalClose" aria-label="Close">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M18 6L6 18M6 6l12 12" stroke-linecap="round"/></svg>
+    </button>
+    <div id="modalBody"><!-- populated by script.js --></div>
+  </div>
 </div>
 
-<div class="card">
-
-<h2>📊 Gammaflip Algo</h2>
-
-<p>Monthly Subscription</p>
-
-<button onclick="buy('gammaflip')">
-Subscribe
-</button>
-
-</div>
-
-<div class="card">
-
-<h2>📉 VWAP Algo</h2>
-
-<p>Monthly Subscription</p>
-
-<button onclick="buy('vwap')">
-Subscribe
-</button>
-
-</div>
-
-<div class="footer">
-
-Secure Payment via Razorpay
-
-</div>
-
-</div>
-
-<script src="app.js"></script>
-
+<script src="script.js"></script>
 </body>
 </html>
