@@ -1,1 +1,250 @@
-1
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mission Control · Viksit Analyst</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="mission-control.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.4/chart.umd.min.js"></script>
+</head>
+<body>
+
+<div class="mc-app" id="mcApp">
+
+  <!-- ================================ TOP NAV ================================ -->
+  <header class="mc-topnav">
+    <button class="mc-sidebar-toggle" id="mcSidebarToggle" aria-label="Toggle sidebar">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6h16M4 12h16M4 18h16" stroke-linecap="round"/></svg>
+    </button>
+
+    <div class="mc-topnav-brand">
+      <div class="mc-logo-mark">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" aria-hidden="true"><path d="M2 12c1.5-4 3-6 4.5-6s2 8 3.5 8 2-8 3.5-8 2 8 3.5 8 3-4 4.5-4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </div>
+      <div>
+        <span>Mission Control</span>
+        <small>VIKSIT ANALYST OPS</small>
+      </div>
+    </div>
+
+    <button class="mc-search" id="mcSearchTrigger">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3" stroke-linecap="round"/></svg>
+      <input type="text" placeholder="Search customers, payments, tickets…" readonly>
+      <kbd>⌘K</kbd>
+    </button>
+
+    <div class="mc-topnav-right">
+      <div class="mc-status-pill" id="mcSystemStatus">
+        <span class="mc-dot"></span><span>Operational</span>
+      </div>
+
+      <div style="position:relative;">
+        <button class="mc-icon-btn" id="mcNotifBtn" aria-label="Notifications">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9" stroke-linecap="round" stroke-linejoin="round"/><path d="M13.73 21a2 2 0 0 1-3.46 0" stroke-linecap="round"/></svg>
+          <span class="mc-badge" id="mcNotifBadge">4</span>
+        </button>
+        <div class="mc-dropdown" id="mcNotifDropdown">
+          <div class="mc-dropdown-head"><h4>Notifications</h4><button id="mcNotifMarkRead">Mark all read</button></div>
+          <div class="mc-dropdown-list" id="mcNotifList"></div>
+        </div>
+      </div>
+
+      <div class="mc-admin" id="mcAdminMenu">
+        <div class="mc-admin-avatar">VA</div>
+        <span>Admin</span>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg>
+      </div>
+    </div>
+  </header>
+
+  <!-- ================================ SIDEBAR ================================ -->
+  <nav class="mc-sidebar" id="mcSidebar">
+    <div class="mc-nav-group">
+      <div class="mc-nav-label">Overview</div>
+      <a class="mc-nav-item active" data-view="dashboard">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="9" rx="1.5"/><rect x="14" y="3" width="7" height="5" rx="1.5"/><rect x="14" y="12" width="7" height="9" rx="1.5"/><rect x="3" y="16" width="7" height="5" rx="1.5"/></svg>
+        <span>Dashboard</span>
+      </a>
+    </div>
+
+    <div class="mc-nav-group">
+      <div class="mc-nav-label">Revenue Ops</div>
+      <a class="mc-nav-item" data-view="customers">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" stroke-linecap="round"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75" stroke-linecap="round"/></svg>
+        <span>Customers</span>
+      </a>
+      <a class="mc-nav-item" data-view="subscriptions">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 10h18M8 2v4M16 2v4" stroke-linecap="round"/></svg>
+        <span>Subscriptions</span>
+      </a>
+      <a class="mc-nav-item" data-view="payments">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20" stroke-linecap="round"/></svg>
+        <span>Payments</span>
+      </a>
+      <a class="mc-nav-item" data-view="renewals">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12a9 9 0 1 1-3-6.7M21 3v6h-6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <span>Renewals</span>
+      </a>
+    </div>
+
+    <div class="mc-nav-group">
+      <div class="mc-nav-label">Execution</div>
+      <a class="mc-nav-item" data-view="brokers">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 21V9l8-6 8 6v12" stroke-linecap="round" stroke-linejoin="round"/><path d="M9 21v-6h6v6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <span>Broker Connections</span>
+      </a>
+      <a class="mc-nav-item" data-view="bots">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="8" width="16" height="12" rx="2"/><path d="M12 8V4M9 2h6" stroke-linecap="round"/><circle cx="9" cy="14" r="1.3" fill="currentColor" stroke="none"/><circle cx="15" cy="14" r="1.3" fill="currentColor" stroke="none"/></svg>
+        <span>Bots</span>
+      </a>
+      <a class="mc-nav-item" data-view="infrastructure">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="6" rx="1.5"/><rect x="2" y="15" width="20" height="6" rx="1.5"/><circle cx="6" cy="6" r="0.6" fill="currentColor" stroke="none"/><circle cx="6" cy="18" r="0.6" fill="currentColor" stroke="none"/></svg>
+        <span>Infrastructure</span>
+      </a>
+    </div>
+
+    <div class="mc-nav-group">
+      <div class="mc-nav-label">Communication</div>
+      <a class="mc-nav-item" data-view="emails">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m2 7 10 6 10-6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <span>Email Queue</span>
+      </a>
+      <a class="mc-nav-item" data-view="support">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <span>Support</span>
+        <span class="mc-nav-flag" id="mcSupportFlag">–</span>
+      </a>
+    </div>
+
+    <div class="mc-nav-group">
+      <div class="mc-nav-label">Intelligence</div>
+      <a class="mc-nav-item" data-view="analytics">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3v18h18" stroke-linecap="round"/><path d="m19 9-5 5-4-4-4 4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <span>Analytics</span>
+      </a>
+      <a class="mc-nav-item" data-view="reports">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" stroke-linecap="round" stroke-linejoin="round"/><path d="M14 2v6h6M9 13h6M9 17h6" stroke-linecap="round"/></svg>
+        <span>Reports</span>
+      </a>
+      <a class="mc-nav-item" data-view="logs">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6h16M4 12h10M4 18h13" stroke-linecap="round"/></svg>
+        <span>Logs</span>
+      </a>
+      <a class="mc-nav-item" data-view="audit">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2 3 6v6c0 5.5 3.8 9.7 9 11 5.2-1.3 9-5.5 9-11V6z" stroke-linecap="round" stroke-linejoin="round"/><path d="m9 12 2 2 4-4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <span>Audit Trail</span>
+      </a>
+    </div>
+
+    <div class="mc-nav-group">
+      <div class="mc-nav-label">System</div>
+      <a class="mc-nav-item" data-view="health">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <span>System Health</span>
+      </a>
+      <a class="mc-nav-item" data-view="settings">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.9l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.9-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1-1.6 1.7 1.7 0 0 0-1.9.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.9 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1 1.7 1.7 0 0 0-.3-1.9l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.9.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.9-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.9V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <span>Settings</span>
+      </a>
+    </div>
+  </nav>
+
+  <!-- ================================ MAIN ================================ -->
+  <main class="mc-main">
+
+    <!-- ============ DASHBOARD VIEW ============ -->
+    <section class="mc-view active" id="view-dashboard">
+      <div class="mc-view-head">
+        <div>
+          <div class="mc-eyebrow">Executive Overview</div>
+          <h1>Good to see you, Admin.</h1>
+          <p>A live read on revenue, execution health and everything that needs your attention right now.</p>
+        </div>
+        <div class="mc-view-actions">
+          <button class="mc-btn" id="mcRefreshDashboard">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12a9 9 0 1 1-3-6.7M21 3v6h-6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            Refresh
+          </button>
+          <button class="mc-btn mc-btn-accent">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14" stroke-linecap="round"/></svg>
+            Run Health Check
+          </button>
+        </div>
+      </div>
+
+      <div class="mc-stat-grid" id="mcStatGrid"><!-- stat cards injected --></div>
+
+      <div class="mc-row-2">
+        <div class="mc-card">
+          <div class="mc-panel-title"><h3>Revenue — Last 30 Days</h3><span class="mc-link mc-mono" id="mcRevTotal">—</span></div>
+          <div class="mc-chart-wrap"><canvas id="chartRevenue"></canvas></div>
+        </div>
+        <div class="mc-card">
+          <div class="mc-panel-title"><h3>Strategy Distribution</h3><span class="mc-link mc-mono">by subscriber</span></div>
+          <div class="mc-chart-wrap"><canvas id="chartStrategy"></canvas></div>
+        </div>
+      </div>
+
+      <div class="mc-row-2">
+        <div class="mc-card">
+          <div class="mc-panel-title"><h3>Renewals Due Soon</h3><a class="mc-link mc-mono" data-view-link="renewals">view all →</a></div>
+          <table class="mc-table">
+            <thead><tr><th>Customer</th><th>Strategy</th><th>Status</th><th>Renewal</th></tr></thead>
+            <tbody id="mcExpiringTable"></tbody>
+          </table>
+        </div>
+        <div class="mc-card">
+          <div class="mc-panel-title"><h3>Failed Payments</h3><a class="mc-link mc-mono" data-view-link="payments">view all →</a></div>
+          <table class="mc-table">
+            <thead><tr><th>ID</th><th>Customer</th><th>Amount</th><th>Status</th></tr></thead>
+            <tbody id="mcFailedPaymentsTable"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="mc-card">
+        <div class="mc-panel-title"><h3>Customer Growth</h3><span class="mc-link mc-mono">cumulative</span></div>
+        <div class="mc-chart-wrap" style="height:180px;"><canvas id="chartGrowth"></canvas></div>
+      </div>
+    </section>
+
+    <!-- ============ PHASED-MODULE PLACEHOLDER VIEWS ============ -->
+    <!-- Each of these becomes a full module in its listed phase. Shell + nav
+         + adminAPI wiring already work — swap the placeholder for real markup
+         when that phase lands, no routing changes needed. -->
+    <section class="mc-view" id="view-customers" data-phase="Phase 2"></section>
+    <section class="mc-view" id="view-subscriptions" data-phase="Phase 2"></section>
+    <section class="mc-view" id="view-payments" data-phase="Phase 3"></section>
+    <section class="mc-view" id="view-renewals" data-phase="Phase 3"></section>
+    <section class="mc-view" id="view-brokers" data-phase="Phase 4"></section>
+    <section class="mc-view" id="view-bots" data-phase="Phase 4"></section>
+    <section class="mc-view" id="view-infrastructure" data-phase="Phase 4"></section>
+    <section class="mc-view" id="view-emails" data-phase="Phase 5"></section>
+    <section class="mc-view" id="view-support" data-phase="Phase 5"></section>
+    <section class="mc-view" id="view-analytics" data-phase="Phase 6"></section>
+    <section class="mc-view" id="view-reports" data-phase="Phase 6"></section>
+    <section class="mc-view" id="view-logs" data-phase="Phase 6"></section>
+    <section class="mc-view" id="view-audit" data-phase="Phase 6"></section>
+    <section class="mc-view" id="view-health" data-phase="Phase 6"></section>
+    <section class="mc-view" id="view-settings" data-phase="Phase 6"></section>
+
+  </main>
+</div>
+
+<!-- ================================ GLOBAL SEARCH MODAL ================================ -->
+<div class="mc-search-panel" id="mcSearchPanel">
+  <div class="mc-search-modal">
+    <div class="mc-search-modal-input">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3" stroke-linecap="round"/></svg>
+      <input type="text" id="mcSearchInput" placeholder="Search customers, payments, tickets…" autocomplete="off">
+    </div>
+    <div class="mc-search-modal-results" id="mcSearchResults"></div>
+  </div>
+</div>
+
+<script src="adminAPI.js"></script>
+<script src="mission-control.js"></script>
+</body>
+</html>
