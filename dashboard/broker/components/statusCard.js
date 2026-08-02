@@ -2,7 +2,7 @@
 // indicator. Deliberately simple: one badge, one line of context.
 
 import { cardHeader, bindCard } from './cardShell.js';
-import { statusToBadgeVariant, statusToLabel } from '../brokerValidator.js';
+import { statusToBadgeVariant, statusToLabel } from '../js/brokerValidator.js';
 
 const icon = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M9 12l2 2 4-4" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
 
