@@ -54,14 +54,27 @@
    * happy to add it, but it needs to actually do something, not just
    * exist as an unused constant.
    */
-  const ErrorCodes = Object.freeze({
-    NETWORK: 'NETWORK',
-    TIMEOUT: 'TIMEOUT',
-    HTTP_ERROR: 'HTTP_ERROR',
-    BAD_JSON: 'BAD_JSON',
-    REQUEST_FAILED: 'REQUEST_FAILED',
-    CONFIG_MISSING: 'CONFIG_MISSING',
-  });
+   const ErrorCodes = Object.freeze({
+   
+     NETWORK: 'NETWORK',
+     TIMEOUT: 'TIMEOUT',
+     HTTP_ERROR: 'HTTP_ERROR',
+     BAD_JSON: 'BAD_JSON',
+     REQUEST_FAILED: 'REQUEST_FAILED',
+     CONFIG_MISSING: 'CONFIG_MISSING',
+   
+     INVALID_EMAIL: 'INVALID_EMAIL',
+     EMAIL_NOT_FOUND: 'EMAIL_NOT_FOUND',
+     OTP_INVALID: 'OTP_INVALID',
+     OTP_EXPIRED: 'OTP_EXPIRED',
+     OTP_MAX_ATTEMPTS: 'OTP_MAX_ATTEMPTS',
+     SESSION_EXPIRED: 'SESSION_EXPIRED',
+     UNAUTHORIZED: 'UNAUTHORIZED',
+     RATE_LIMITED: 'RATE_LIMITED',
+     RESEND_TOO_SOON: 'RESEND_TOO_SOON',
+     RESEND_LIMIT_REACHED: 'RESEND_LIMIT_REACHED'
+   
+   });
 
   /**
    * Resolves the Apps Script Web App URL from config.js each time it's
