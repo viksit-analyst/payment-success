@@ -3,8 +3,8 @@
 // and literal rather than decorative (no bouncing, no spinning — VDS).
 
 import { cardHeader, skeleton, bindCard } from './cardShell.js';
-import { isBotAlive } from '../vmConnector.js';
-import { timeAgo } from '../utils.js';
+import { isBotAlive } from '../js/vmConnector.js';
+import { timeAgo } from '../js/utils.js';
 
 const icon = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 12h4l2 6 3-12 2 8 2-4h5" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
 
