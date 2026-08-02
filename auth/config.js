@@ -24,8 +24,7 @@
      * Left as a placeholder intentionally — this repo ships no working
      * backend URL. api.js will throw a clear error if this is not set.
      */
-    API_BASE_URL: 'https://script.google.com/macros/s/REPLACE_WITH_YOUR_DEPLOYMENT_ID/exec',
-
+    API_BASE_URL: "https://script.google.com/macros/s/AKfycbxzbo25oQHBZRB-oZUgdtKiXo_R1EP0Gsu7Q5D_vGhgnzCowsLNBkEmUMC-YuwGRkxU/exec",
     /**
      * Logical endpoint names. api.js maps these to `?action=<name>` query
      * parameters on the single Apps Script `doPost`/`doGet` entry point,
@@ -34,8 +33,8 @@
      * action names.
      */
     ENDPOINTS: {
-      SEND_OTP: 'sendOTP',
-      VERIFY_OTP: 'verifyOTP',
+      SEND_OTP: "sendOtp"
+      VERIFY_OTP: "verifyOtp"
       LOGOUT: 'logout',
       VALIDATE_SESSION: 'validateSession',
       REFRESH_SESSION: 'refreshSession',
