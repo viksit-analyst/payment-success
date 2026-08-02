@@ -3,10 +3,10 @@
 // to strategyActivation.js; this file only renders and wires clicks.
 
 import { cardHeader } from './cardShell.js';
-import { escapeHtml } from '../utils.js';
+import { escapeHtml } from '../js/utils.js';
 import {
   STRATEGIES, selectStrategy, getSelectedStrategyId, canActivate, activate, deactivate,
-} from '../strategyActivation.js';
+} from '../js/strategyActivation.js';
 
 const icon = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 17l5-5 4 4 9-9" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
 
