@@ -2,7 +2,7 @@
 // profile endpoint, proxied through the backend. Nothing here is editable.
 
 import { cardHeader, kvList, skeleton, bindCard } from './cardShell.js';
-import { escapeHtml } from '../utils.js';
+import { escapeHtml } from '../js/utils.js';
 
 const icon = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="8" r="4"/><path d="M4 20c1.5-4 4.5-6 8-6s6.5 2 8 6" stroke-linecap="round"/></svg>`;
 
