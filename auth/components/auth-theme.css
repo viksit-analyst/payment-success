@@ -1,0 +1,322 @@
+/* ==========================================================================
+   VIKSIT ANALYST — AUTH MODULE
+   components/auth-theme.css
+
+   Shared foundation for every screen under /auth (login.html, verify.html,
+   and any future recovery/invite screens). Loaded AFTER ../assets/css/styles.css
+   and ../assets/css/legal.css, BEFORE the page-specific stylesheet
+   (login.css / verify.css) and toast.css.
+
+   Owns:
+     1. --va-* tokens (restated standalone, same values as the VDS palette,
+        so this module never silently drifts if the marketing site's
+        styles.css is refactored)
+     2. The centered auth-card shell (.auth-section / .auth-card-wrap / .auth-card)
+     3. Buttons' loading state, spinner, checkboxes — additions the base
+        site's .btn / .form-consent don't need outside auth flows
+     4. The OTP input group (.va-otp-group / .va-otp-box)
+     5. Shared post-form states: success check, locked icon
+     6. The "resume" callout banner shown when a code is already in flight
+
+   This file intentionally does NOT redefine .btn, .card, .form-group,
+   .callout or .form-status — those come from the real site stylesheets,
+   unmodified, so auth pages stay pixel-consistent with the rest of
+   Viksit Analyst.
+   ========================================================================== */
+
+:root {
+  /* ---- Restated brand tokens (auth-local namespace, VDS values) ---- */
+  --va-primary: #0B1F3A;
+  --va-secondary: #1F3A5F;
+  --va-accent: #FF9933;
+  --va-accent-blue: #2E6BE6;
+  --va-accent-blue-hover: #6FA0FF;
+  --va-success: #1FA971;
+  --va-warning: #F5A623;
+  --va-error: #D64545;
+
+  --va-text-primary: #F3F6FA;
+  --va-text-secondary: #AEB9CC;
+  --va-text-tertiary: #7C879C;
+
+  --va-font-heading: 'Space Grotesk', 'Segoe UI', sans-serif;
+  --va-font-body: 'Inter', 'Segoe UI', sans-serif;
+  --va-font-mono: 'IBM Plex Mono', 'SFMono-Regular', Menlo, monospace;
+
+  --va-radius-sm: 10px;
+  --va-radius-md: 14px;
+  --va-radius-lg: 20px;
+
+  --va-ease: cubic-bezier(0.16, 1, 0.3, 1);
+  --va-dur-fast: 150ms;
+  --va-dur-base: 240ms;
+}
+
+/* --------------------------------------------------------------------------
+   1. SHELL — centered auth card on the site's existing page background
+   -------------------------------------------------------------------------- */
+.auth-section {
+  min-height: calc(100vh - 72px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 64px 20px 80px;
+}
+
+.auth-card-wrap {
+  width: 100%;
+  max-width: 420px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.auth-logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 28px;
+  font-family: var(--va-font-heading);
+  font-weight: 600;
+  font-size: 15px;
+  color: var(--va-text-primary);
+}
+.auth-logo .brand-mark { width: 28px; height: 18px; }
+.auth-logo .brand-mark path { stroke: var(--va-accent-blue); }
+.auth-logo .brand-mark circle { fill: var(--va-accent); }
+
+.auth-card {
+  width: 100%;
+  padding: 36px 34px 30px;
+}
+@media (max-width: 480px) {
+  .auth-card { padding: 28px 22px 24px; }
+}
+
+.auth-card .eyebrow {
+  font-family: var(--va-font-mono);
+  font-size: 11.5px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--va-accent);
+  margin-bottom: 10px;
+}
+.auth-card h1 {
+  font-family: var(--va-font-heading);
+  font-size: 26px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  margin-bottom: 8px;
+}
+.auth-card h2 {
+  font-family: var(--va-font-heading);
+  font-size: 21px;
+  font-weight: 600;
+  margin: 14px 0 6px;
+}
+.auth-subtitle {
+  color: var(--va-text-secondary);
+  font-size: 14.5px;
+  line-height: 1.6;
+  margin-bottom: 26px;
+}
+
+.auth-footer-links {
+  margin-top: 22px;
+  text-align: center;
+  font-size: 13px;
+  color: var(--va-text-tertiary);
+  line-height: 1.8;
+}
+.auth-footer-links a { color: var(--va-accent-blue-hover); font-weight: 600; }
+.auth-footer-links a:hover { text-decoration: underline; }
+
+/* --------------------------------------------------------------------------
+   2. RESUME CALLOUT — shown when a code is already in flight
+   -------------------------------------------------------------------------- */
+.resume-callout {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+.resume-callout svg { width: 20px; height: 20px; flex-shrink: 0; color: var(--va-accent-blue-hover); }
+.resume-callout p { margin: 0; flex: 1; font-size: 13px; }
+.resume-banner-action {
+  background: none;
+  border: none;
+  padding: 0;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--va-accent-blue-hover);
+  cursor: pointer;
+  flex-shrink: 0;
+}
+.resume-banner-action:hover { text-decoration: underline; }
+
+/* --------------------------------------------------------------------------
+   3. BUTTON LOADING STATE + SPINNER
+   -------------------------------------------------------------------------- */
+.btn-loading {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+.btn[data-loading="true"] .btn-label,
+.btn[data-loading="true"] .btn-loading[hidden] { display: none; }
+.btn[data-loading="true"] .btn-loading { display: inline-flex; }
+.btn[data-loading="true"] { pointer-events: none; opacity: 0.85; }
+
+.spinner {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  border: 2px solid rgba(255, 255, 255, 0.35);
+  border-top-color: #fff;
+  animation: va-spin 0.7s linear infinite;
+  flex-shrink: 0;
+}
+.btn-ghost .spinner,
+.btn-secondary .spinner {
+  border-color: rgba(11, 31, 58, 0.2);
+  border-top-color: var(--va-primary);
+}
+@keyframes va-spin { to { transform: rotate(360deg); } }
+
+/* --------------------------------------------------------------------------
+   4. OTP INPUT GROUP (rendered by components/otp-input.js)
+   -------------------------------------------------------------------------- */
+.va-otp-group {
+  display: flex;
+  gap: 10px;
+  justify-content: space-between;
+}
+.va-otp-box {
+  width: 100%;
+  aspect-ratio: 1;
+  max-width: 52px;
+  text-align: center;
+  font-family: var(--va-font-mono);
+  font-size: 22px;
+  font-weight: 600;
+  color: var(--va-text-primary);
+  background: rgba(248, 250, 252, 0.04);
+  border: 1px solid rgba(248, 250, 252, 0.14);
+  border-radius: var(--va-radius-sm);
+  transition: border-color var(--va-dur-fast), box-shadow var(--va-dur-fast), transform var(--va-dur-fast);
+}
+.va-otp-box:focus {
+  outline: none;
+  border-color: var(--va-accent-blue);
+  box-shadow: 0 0 0 3px rgba(46, 107, 230, 0.18);
+}
+.va-otp-box.is-filled { border-color: rgba(248, 250, 252, 0.28); }
+.va-otp-box.is-error {
+  border-color: var(--va-error);
+  animation: va-shake 380ms var(--va-ease);
+}
+@keyframes va-shake {
+  10%, 90% { transform: translateX(-1px); }
+  20%, 80% { transform: translateX(2px); }
+  30%, 50%, 70% { transform: translateX(-4px); }
+  40%, 60% { transform: translateX(4px); }
+}
+
+.otp-attempts-note {
+  font-size: 12px;
+  color: var(--va-text-tertiary);
+  margin-top: 8px;
+}
+.otp-attempts-note:empty { display: none; }
+.otp-attempts-note.is-warning { color: var(--va-warning); }
+
+.otp-expiry-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  margin-top: 18px;
+  font-size: 12.5px;
+  color: var(--va-text-tertiary);
+}
+.otp-expiry-row svg { width: 14px; height: 14px; }
+.otp-expiry-row.is-expiring { color: var(--va-warning); }
+.otp-expiry-row.is-expired { color: var(--va-error); }
+
+.resend-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  margin-top: 28px;
+  font-size: 13px;
+  color: var(--va-text-tertiary);
+}
+
+.verify-email-row {
+  font-size: 14.5px;
+  color: var(--va-text-secondary);
+  line-height: 1.7;
+  margin-bottom: 24px;
+}
+.change-email-btn {
+  background: none;
+  border: none;
+  padding: 0;
+  margin-top: 2px;
+  color: var(--va-accent-blue-hover);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+}
+.change-email-btn:hover { text-decoration: underline; }
+
+/* --------------------------------------------------------------------------
+   5. POST-FORM STATES — success / locked
+   -------------------------------------------------------------------------- */
+.verify-state {
+  text-align: center;
+  padding: 12px 4px 4px;
+}
+.verify-state h2 { margin-top: 18px; }
+.verify-state p { color: var(--va-text-tertiary); font-size: 14px; margin-top: 6px; line-height: 1.6; }
+
+.va-success-check {
+  width: 64px;
+  height: 64px;
+  margin: 0 auto;
+  border-radius: 50%;
+  background: rgba(31, 169, 113, 0.12);
+  color: var(--va-success);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: va-pop 420ms var(--va-ease);
+}
+.va-success-check svg { width: 28px; height: 28px; }
+@keyframes va-pop {
+  0% { transform: scale(0.6); opacity: 0; }
+  70% { transform: scale(1.08); opacity: 1; }
+  100% { transform: scale(1); }
+}
+
+.va-locked-icon {
+  width: 64px;
+  height: 64px;
+  margin: 0 auto;
+  border-radius: 50%;
+  background: rgba(214, 69, 69, 0.12);
+  color: var(--va-error);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.va-locked-icon svg { width: 26px; height: 26px; }
+
+/* --------------------------------------------------------------------------
+   6. RESPONSIVE
+   -------------------------------------------------------------------------- */
+@media (max-width: 360px) {
+  .va-otp-group { gap: 6px; }
+  .va-otp-box { font-size: 18px; }
+}
