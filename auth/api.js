@@ -92,8 +92,8 @@
     const url = new URL(CONFIG.API_BASE_URL);
     url.searchParams.set('action', action);
 
-    const headers = { 'Content-Type': 'application/json' };
-
+    const headers = {};
+    
     if (opts.auth) {
       // Lazily read the token so api.js has no hard dependency on session.js
       // load order beyond "loaded before this call is made".
@@ -115,7 +115,9 @@
         // Apps Script web apps do not support custom preflight-triggering
         // headers well with credentials; the session token travels in the
         // Authorization header above instead of a cookie.
-        body: method === 'GET' ? undefined : JSON.stringify(body || {}),
+        body: method === 'GET'
+            ? undefined
+            : new URLSearchParams(body || {}),
         signal: controller.signal,
         redirect: 'follow',
       });
@@ -162,9 +164,17 @@
    * @param {boolean} rememberDevice
    * @returns {Promise<{ otpExpiresInSeconds?: number, resendAvailableInSeconds?: number }>}
    */
-  function sendOTP(email, rememberDevice) {
-    return request(CONFIG.ENDPOINTS.SEND_OTP, 'POST', { email, rememberDevice: !!rememberDevice });
-  }
+    function sendOTP(email, rememberDevice) {
+        const url = new URL(CONFIG.API_BASE_URL);
+    
+        url.searchParams.set("action", CONFIG.ENDPOINTS.SEND_OTP);
+        url.searchParams.set("email", email);
+        url.searchParams.set("rememberDevice", rememberDevice);
+    
+        return fetch(url)
+            .then(r => r.json())
+            .then(handleResponse);
+    }
 
   /**
    * POST /action=verifyOTP
