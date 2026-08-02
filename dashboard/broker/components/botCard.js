@@ -4,8 +4,8 @@
 // distinction is visible.
 
 import { cardHeader, bindCard } from './cardShell.js';
-import { stopBot } from '../vmConnector.js';
-import { getSelectedStrategyId } from '../strategyActivation.js';
+import { stopBot } from '../js/vmConnector.js';
+import { getSelectedStrategyId } from '../js/strategyActivation.js';
 
 const icon = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="4" y="4" width="16" height="16" rx="4"/><path d="M9 9h6v6H9z"/></svg>`;
 
