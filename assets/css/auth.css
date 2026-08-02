@@ -1,0 +1,268 @@
+/**
+ * components/auth.css
+ * ─────────────────────────────────────────────────────────────────────────
+ * Additive styles ONLY. This file defines zero colors, zero fonts, and
+ * zero spacing scales of its own — every value here is a VDS token from
+ * the site's real styles.css (--color-*, --bg-*, --text-*, --radius-*,
+ * --shadow-*, --font-*, --dur-*, --ease-*). Load order on every auth page:
+ *
+ *   styles.css  → the real design system (required)
+ *   legal.css   → .form-group / .form-consent / .form-status / .callout
+ *                 (already built for contact.html — reused as-is here)
+ *   auth.css    → this file: only what doesn't already exist anywhere else
+ *
+ * If a rule here could instead be `.btn`, `.card`, `.form-group`,
+ * `.callout`, `.modal`, or `.badge` from the core stylesheets, it belongs
+ * there, not here. What's actually new: the centered auth shell, the OTP
+ * boxes, a button loading state, the success checkmark, the idle-timeout
+ * modal's ring/countdown, and the toast notifications.
+ * ───────────────────────────────────────────────────────────────────────── */
+
+/* ── Auth shell: centers a single floating card, nav/footer stay real ─── */
+.auth-section {
+  min-height: calc(100svh - var(--nav-height));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 56px var(--container-pad) 64px;
+}
+
+.auth-card-wrap {
+  width: 100%;
+  max-width: 440px;
+}
+
+.auth-logo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  margin-bottom: 28px;
+}
+.auth-logo .brand-mark { width: 32px; height: 21px; }
+.auth-logo span {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: var(--fs-md);
+  color: var(--text-primary);
+}
+
+.auth-card {
+  padding: 40px;
+  text-align: center;
+}
+@media (max-width: 520px) {
+  .auth-card { padding: 32px 24px; }
+}
+
+.auth-card .eyebrow { justify-content: center; }
+.auth-card h1 {
+  font-size: var(--fs-xl);
+  margin-bottom: 8px;
+}
+.auth-card .auth-subtitle {
+  font-size: var(--fs-sm);
+  color: var(--text-secondary);
+  line-height: 1.6;
+  margin-bottom: 28px;
+}
+.auth-card form { text-align: left; }
+
+.auth-footer-links {
+  margin-top: 24px;
+  text-align: center;
+  font-size: var(--fs-xs);
+  color: var(--text-tertiary);
+  line-height: 1.8;
+}
+.auth-footer-links a { color: var(--color-secondary); text-decoration: underline; text-underline-offset: 2px; }
+[data-theme="dark"] .auth-footer-links a { color: #9FC2FF; }
+
+/* ── Error variant of the existing .form-status (legal.css only ships
+   the success/green styling, since contact.html only ever shows success) ── */
+.form-status.is-error {
+  background: rgba(214, 69, 69, 0.08);
+  color: var(--color-error);
+  border-color: rgba(214, 69, 69, 0.24);
+}
+.form-status[hidden] { display: none; }
+
+/* ── Buttons: loading state ──────────────────────────────────────────── */
+/* Both labels live in the DOM permanently, toggled via [hidden], so the
+   button never changes size when its state changes. */
+.btn .btn-label,
+.btn .btn-loading { display: inline-flex; align-items: center; gap: 8px; }
+.btn.is-loading { pointer-events: none; opacity: 0.85; }
+
+.spinner {
+  width: 16px; height: 16px;
+  border-radius: 50%;
+  border: 2px solid rgba(255, 255, 255, 0.35);
+  border-top-color: currentColor;
+  animation: auth-spin 700ms linear infinite;
+  flex-shrink: 0;
+}
+.btn-secondary .spinner,
+.btn-ghost .spinner { border-color: var(--border-default); border-top-color: var(--color-primary); }
+@keyframes auth-spin { to { transform: rotate(360deg); } }
+@media (prefers-reduced-motion: reduce) {
+  .spinner { animation-duration: 1400ms; }
+}
+
+/* ── OTP boxes ────────────────────────────────────────────────────────── */
+.va-otp-group {
+  display: flex;
+  gap: 10px;
+  justify-content: space-between;
+}
+.va-otp-box {
+  width: 100%;
+  aspect-ratio: 1;
+  max-width: 54px;
+  text-align: center;
+  font-family: var(--font-mono);
+  font-size: var(--fs-lg);
+  font-weight: 600;
+  background: var(--bg-base);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-sm);
+  color: var(--text-primary);
+  caret-color: var(--color-accent);
+  transition: border-color var(--dur-base) var(--ease-standard), box-shadow var(--dur-base) var(--ease-standard);
+}
+.va-otp-box:hover { border-color: var(--color-primary); }
+.va-otp-box:focus {
+  outline: none;
+  border-color: var(--color-accent);
+  box-shadow: 0 0 0 3px rgba(255, 153, 51, 0.16);
+}
+.va-otp-box:disabled { opacity: 0.5; }
+.va-otp-group[data-disabled="true"] { opacity: 0.65; }
+
+.va-otp-shake { animation: va-otp-shake 420ms var(--ease-standard); }
+@keyframes va-otp-shake {
+  10%, 90% { transform: translateX(-1px); }
+  20%, 80% { transform: translateX(2px); }
+  30%, 50%, 70% { transform: translateX(-4px); }
+  40%, 60% { transform: translateX(4px); }
+}
+
+/* ── Success checkmark (verify.html completion state) ────────────────── */
+.va-success-check {
+  width: 56px; height: 56px;
+  margin: 0 auto 18px;
+  border-radius: 50%;
+  background: rgba(31, 169, 113, 0.12);
+  display: flex; align-items: center; justify-content: center;
+}
+.va-success-check svg { width: 24px; height: 24px; color: var(--color-success); }
+.va-success-check svg path {
+  stroke-dasharray: 24;
+  stroke-dashoffset: 24;
+  animation: va-draw-check 420ms var(--ease-out) 120ms forwards;
+}
+@keyframes va-draw-check { to { stroke-dashoffset: 0; } }
+
+.va-locked-icon {
+  width: 56px; height: 56px;
+  margin: 0 auto 18px;
+  border-radius: 50%;
+  background: rgba(214, 69, 69, 0.1);
+  display: flex; align-items: center; justify-content: center;
+}
+.va-locked-icon svg { width: 22px; height: 22px; color: var(--color-error); }
+
+/* ── Idle-timeout modal — reuses .modal / .modal-overlay from styles.css,
+   these rules only add the ring + countdown that content needs. ──────── */
+.idle-ring {
+  width: 60px; height: 60px;
+  margin: 0 auto 18px;
+  position: relative;
+  display: flex; align-items: center; justify-content: center;
+}
+.idle-ring svg { width: 60px; height: 60px; transform: rotate(-90deg); }
+.idle-ring circle { fill: none; stroke-width: 4; }
+.idle-ring .track { stroke: var(--border-default); }
+.idle-ring .progress {
+  stroke: var(--color-accent);
+  stroke-linecap: round;
+  transition: stroke-dashoffset 1s linear;
+}
+.idle-ring-count {
+  position: absolute; inset: 0;
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--font-mono);
+  font-size: var(--fs-md);
+  font-weight: 600;
+  color: var(--text-primary);
+}
+.modal.idle-modal { max-width: 380px; text-align: center; }
+.modal.idle-modal .modal-desc { margin-inline: auto; }
+.idle-modal-actions { display: flex; flex-direction: column; gap: 10px; margin-top: 8px; }
+
+/* ── Toast notifications ──────────────────────────────────────────────── */
+.va-toast-region {
+  position: fixed;
+  top: calc(var(--nav-height) + 16px);
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 500;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: min(420px, calc(100vw - 32px));
+  pointer-events: none;
+}
+.va-toast {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 14px 16px;
+  border-radius: var(--radius-md);
+  background: var(--bg-raised);
+  border: 1px solid var(--border-subtle);
+  box-shadow: var(--shadow-lg);
+  pointer-events: auto;
+  opacity: 0;
+  transform: translateY(-10px) scale(0.98);
+  animation: va-toast-in 220ms var(--ease-out) forwards;
+}
+.va-toast.is-leaving { animation: va-toast-out 180ms var(--ease-standard) forwards; }
+@keyframes va-toast-in { to { opacity: 1; transform: translateY(0) scale(1); } }
+@keyframes va-toast-out { to { opacity: 0; transform: translateY(-8px) scale(0.98); } }
+
+.va-toast-icon { flex-shrink: 0; width: 20px; height: 20px; margin-top: 1px; }
+.va-toast--success .va-toast-icon { color: var(--color-success); }
+.va-toast--error .va-toast-icon { color: var(--color-error); }
+.va-toast--info .va-toast-icon { color: var(--color-ivrv); }
+
+.va-toast-body { flex: 1; min-width: 0; }
+.va-toast-title { font-size: var(--fs-xs); font-weight: 600; color: var(--text-primary); margin: 0 0 2px; }
+.va-toast-message { font-size: var(--fs-xs); line-height: 1.5; color: var(--text-secondary); margin: 0; word-wrap: break-word; }
+
+.va-toast-close {
+  flex-shrink: 0;
+  width: 22px; height: 22px;
+  border-radius: var(--radius-sm);
+  border: none;
+  background: transparent;
+  color: var(--text-tertiary);
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer;
+  transition: background-color var(--dur-fast) var(--ease-standard), color var(--dur-fast) var(--ease-standard);
+}
+.va-toast-close:hover { background: var(--bg-sunken); color: var(--text-primary); }
+
+@media (prefers-reduced-motion: reduce) {
+  .va-toast { animation: none; opacity: 1; transform: none; }
+}
+
+.va-sr-only {
+  position: absolute;
+  width: 1px; height: 1px;
+  padding: 0; margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
