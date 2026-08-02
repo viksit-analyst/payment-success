@@ -8,16 +8,16 @@ import { startPolling } from './connectionStatus.js';
 import { startTokenWatch } from './tokenManager.js';
 import { getState, onChange, isConnected } from './brokerSession.js';
 
-import { mountBrokerCard } from './components/brokerCard.js';
-import { mountStatusCard } from './components/statusCard.js';
-import { mountAccountCard } from './components/accountCard.js';
-import { mountPermissionCard } from './components/permissionCard.js';
-import { mountTokenCard } from './components/tokenCard.js';
-import { mountHealthCard } from './components/healthCard.js';
-import { mountHeartbeatCard } from './components/heartbeatCard.js';
-import { mountServerCard } from './components/serverCard.js';
-import { mountBotCard } from './components/botCard.js';
-import { mountStrategyCard } from './components/strategyCard.js';
+import { mountBrokerCard } from '../components/brokerCard.js';
+import { mountStatusCard } from '../components/statusCard.js';
+import { mountAccountCard } from '../components/accountCard.js';
+import { mountPermissionCard } from '../components/permissionCard.js';
+import { mountTokenCard } from '../components/tokenCard.js';
+import { mountHealthCard } from '../components/healthCard.js';
+import { mountHeartbeatCard } from '../components/heartbeatCard.js';
+import { mountServerCard } from '../components/serverCard.js';
+import { mountBotCard } from '../components/botCard.js';
+import { mountStrategyCard } from '../components/strategyCard.js';
 
 function initTheme() {
   const toggle = document.getElementById('themeToggle');
