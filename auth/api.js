@@ -1,237 +1,224 @@
-/**
- * api.js
- * ─────────────────────────────────────────────────────────────────────────
- * The ONLY file in this module that calls `fetch()`. Every other module
- * (auth.js, session.js, routeGuard.js) goes through the functions exported
- * here. This keeps request construction, error shaping, timeouts, and auth
- * headers in exactly one place.
- *
- * Backend contract
- * ─────────────────
- * This module talks to a single Google Apps Script Web App endpoint using
- * `?action=<name>` query params (Apps Script exposes one URL, not a REST
- * router). Every response is expected to be JSON of the shape:
- *
- *   Success:  { success: true,  ...payload }
- *   Failure:  { success: false, code: 'SOME_ERROR_CODE', message: 'Human readable' }
- *
- * If your backend responds differently, this is the only file you need to
- * change — every caller in this module receives a normalized result.
- *
- * Depends on: config.js (window.VA_AUTH_CONFIG)
- * Exposes:    window.VA_API
- * ───────────────────────────────────────────────────────────────────────── */
+/* ==========================================================================
+   VIKSIT ANALYST — AUTH API CLIENT
+   Plain global script — no import/export, no type="module". Matches the
+   rest of the auth frontend (auth.js, login.js, verify.js, session.js),
+   which are all classic <script> tags sharing the page's global scope.
 
-(function (global) {
+   Talks to the already-deployed Apps Script backend's five auth actions
+   (see AuthApi.gs): sendOtp, verifyOtp, validateSession, logout, me.
+   The backend is fixed and out of scope here — every call below is
+   shaped to match what AuthApi.gs actually reads and returns.
+
+   REQUEST FORMAT — GET only, query-string params only. Two things force
+   this, not just preference:
+
+   1. CORS preflight avoidance. A GET request with no custom headers and
+      no body is always a CORS "simple request" — never triggers an
+      OPTIONS preflight. Apps Script Web Apps don't handle OPTIONS, so a
+      preflighted request just fails.
+   2. It's the only format the backend actually reads for these actions.
+      AuthApi.gs's own header is explicit: handleAuthApi_(e) is called
+      "from inside Code.gs's existing doGet()" — these five actions are
+      wired to GET only. Code.gs's doPost() is reserved exclusively for
+      Razorpay webhook events (EVENT_HANDLERS keyed by event name, not
+      by e.parameter.action) and never reads action= at all. A POST here
+      wouldn't be routed anywhere — GET is the only path that reaches
+      the backend as deployed, not a style choice.
+
+   CONFIG — the deployment URL comes from window.VA_AUTH_CONFIG.API_BASE_URL
+   (config.js), not hardcoded here. Redeploying Apps Script means updating
+   one file, not hunting through every script that calls the backend.
+
+   PUBLIC SURFACE — window.VA_API. sendOtp/verifyOtp exposed under both
+   their backend-matching names and the sendOTP/verifyOTP spelling the
+   existing frontend already calls — JS is case-sensitive and rewriting
+   every caller wasn't worth it for a casing difference. No refreshSession
+   (the backend has no such action). No loadProfile — replaced by me(),
+   matching the backend's actual action name instead of an invented one.
+   ========================================================================== */
+
+(function () {
   'use strict';
 
-  const CONFIG = global.VA_AUTH_CONFIG;
-  if (!CONFIG) {
-    throw new Error('[api.js] VA_AUTH_CONFIG is missing — load config.js first.');
-  }
+  const AUTH_REQUEST_TIMEOUT_MS = 15000;
 
   /**
-   * Standard error shape thrown by every function in this file.
-   * Callers should catch ApiError specifically to branch on `.code`.
-   */
-  class ApiError extends Error {
-    constructor(code, message, status) {
-      super(message || code);
-      this.name = 'ApiError';
-      this.code = code || 'UNKNOWN_ERROR';
-      this.status = status ?? null;
-    }
-  }
-
-  /**
-   * Known, stable error codes the UI layer branches on. The backend is
-   * expected to return one of these in `code` where applicable; anything
-   * else surfaces as SERVER_ERROR with the backend's message preserved.
+   * Every `.code` value ApiError actually throws in this file — nothing
+   * more. Not adding a placeholder like INVALID_EMAIL here: this client
+   * does no local email/OTP format validation of its own, it just
+   * forwards to the backend, which validates server-side and returns a
+   * plain message (AuthService.sendOtp: "Email is required.", "No
+   * active subscription found.", etc.), not a code. If auth.js branches
+   * on API.ErrorCodes.INVALID_EMAIL specifically, that's client-side
+   * validation logic that doesn't exist yet anywhere in this file —
+   * happy to add it, but it needs to actually do something, not just
+   * exist as an unused constant.
    */
   const ErrorCodes = Object.freeze({
-    NETWORK_ERROR: 'NETWORK_ERROR',
+    NETWORK: 'NETWORK',
     TIMEOUT: 'TIMEOUT',
-    SERVER_ERROR: 'SERVER_ERROR',
-    INVALID_RESPONSE: 'INVALID_RESPONSE',
-    UNAUTHORIZED: 'UNAUTHORIZED',
-    EMAIL_NOT_FOUND: 'EMAIL_NOT_FOUND',
-    INVALID_EMAIL: 'INVALID_EMAIL',
-    OTP_EXPIRED: 'OTP_EXPIRED',
-    OTP_INVALID: 'OTP_INVALID',
-    OTP_MAX_ATTEMPTS: 'OTP_MAX_ATTEMPTS',
-    RESEND_TOO_SOON: 'RESEND_TOO_SOON',
-    RESEND_LIMIT_REACHED: 'RESEND_LIMIT_REACHED',
-    RATE_LIMITED: 'RATE_LIMITED',
-    SESSION_EXPIRED: 'SESSION_EXPIRED',
-    CONFIG_ERROR: 'CONFIG_ERROR',
+    HTTP_ERROR: 'HTTP_ERROR',
+    BAD_JSON: 'BAD_JSON',
+    REQUEST_FAILED: 'REQUEST_FAILED',
+    CONFIG_MISSING: 'CONFIG_MISSING',
   });
 
-  function isPlaceholderBaseUrl() {
-    return !CONFIG.API_BASE_URL || CONFIG.API_BASE_URL.includes('REPLACE_WITH_YOUR_DEPLOYMENT_ID');
+  /**
+   * Resolves the Apps Script Web App URL from config.js each time it's
+   * needed (not cached at script-load time) so load order mistakes fail
+   * with a clear message instead of a broken "undefined/exec" URL.
+   */
+  function getApiBaseUrl_() {
+    const url = window.VA_AUTH_CONFIG && window.VA_AUTH_CONFIG.API_BASE_URL;
+    if (!url) {
+      throw new ApiError(
+        'API_BASE_URL is not configured. Make sure config.js loads before api.js.',
+        { code: 'CONFIG_MISSING' }
+      );
+    }
+    return url;
   }
 
   /**
-   * Core request function. Every exported API call funnels through here.
-   *
-   * @param {string} action       - one of CONFIG.ENDPOINTS values
-   * @param {'GET'|'POST'} method
-   * @param {object} [body]       - JSON-serializable payload for POST
-   * @param {object} [opts]
-   * @param {boolean} [opts.auth] - attach Authorization header from session token
-   * @returns {Promise<object>}  - the parsed `payload` on success
-   * @throws {ApiError}
+   * Thrown for every failure this module surfaces — network/timeout,
+   * non-OK HTTP status, malformed JSON, and business-level failures the
+   * backend reports as { success: false, message }. Callers catch one
+   * error type regardless of which layer failed and read `.message` for
+   * display; `.code` is available when a caller wants to branch on
+   * failure kind instead of just showing the message.
    */
-  async function request(action, method, body, opts = {}) {
-    if (isPlaceholderBaseUrl()) {
-      throw new ApiError(
-        ErrorCodes.CONFIG_ERROR,
-        'Authentication backend is not configured yet. Set API_BASE_URL in config.js to your Apps Script Web App URL.'
-      );
+  class ApiError extends Error {
+    constructor(message, options) {
+      options = options || {};
+      super(message);
+      this.name = 'ApiError';
+      this.code = options.code || 'UNKNOWN';
+      this.status = options.status || null;
     }
+  }
 
-    const url = new URL(CONFIG.API_BASE_URL);
+  /**
+   * Core GET request helper. Every public method below funnels through
+   * this — one place enforces "GET, query string only, no custom
+   * headers" so a future edit can't accidentally reintroduce a
+   * preflight-triggering request shape.
+   */
+  async function request_(action, params) {
+    params = params || {};
+
+    const url = new URL(getApiBaseUrl_());
     url.searchParams.set('action', action);
-
-    const headers = {};
-    
-    if (opts.auth) {
-      // Lazily read the token so api.js has no hard dependency on session.js
-      // load order beyond "loaded before this call is made".
-      const token = global.VA_SESSION && global.VA_SESSION.getToken ? global.VA_SESSION.getToken() : null;
-      if (!token) {
-        throw new ApiError(ErrorCodes.UNAUTHORIZED, 'No active session.');
+    Object.keys(params).forEach(function (key) {
+      const value = params[key];
+      if (value !== undefined && value !== null) {
+        url.searchParams.set(key, String(value));
       }
-      headers.Authorization = `Bearer ${token}`;
-    }
+    });
 
     const controller = new AbortController();
-    const timeout = setTimeout(() => controller.abort(), CONFIG.REQUEST_TIMEOUT_MS);
+    const timeoutId = setTimeout(function () { controller.abort(); }, AUTH_REQUEST_TIMEOUT_MS);
 
     let response;
     try {
-      response = await fetch(url.toString(), {
-        method,
-        headers,
-        // Apps Script web apps do not support custom preflight-triggering
-        // headers well with credentials; the session token travels in the
-        // Authorization header above instead of a cookie.
-        body: method === 'GET'
-            ? undefined
-            : new URLSearchParams(body || {}),
-        signal: controller.signal,
-        redirect: 'follow',
-      });
+      // No headers object, no body -> guaranteed CORS-simple GET.
+      response = await fetch(url.toString(), { method: 'GET', signal: controller.signal });
     } catch (err) {
-      clearTimeout(timeout);
       if (err.name === 'AbortError') {
-        throw new ApiError(ErrorCodes.TIMEOUT, 'The request took too long. Please check your connection and try again.');
+        throw new ApiError('The server took too long to respond.', { code: 'TIMEOUT' });
       }
-      throw new ApiError(ErrorCodes.NETWORK_ERROR, 'Could not reach the server. Please check your connection and try again.');
+      throw new ApiError('Network error — check your connection and try again.', { code: 'NETWORK' });
+    } finally {
+      clearTimeout(timeoutId);
     }
-    clearTimeout(timeout);
 
-    let json;
+    if (!response.ok) {
+      throw new ApiError('Server error (' + response.status + ')', {
+        code: 'HTTP_ERROR',
+        status: response.status,
+      });
+    }
+
+    let data;
     try {
-      json = await response.json();
+      data = await response.json();
     } catch (err) {
-      throw new ApiError(
-        ErrorCodes.INVALID_RESPONSE,
-        'The server returned an unexpected response.',
-        response.status
-      );
+      throw new ApiError('Received an invalid response from the server.', { code: 'BAD_JSON' });
     }
 
-    if (!response.ok || json.success !== true) {
-      const code = json && json.code ? json.code : ErrorCodes.SERVER_ERROR;
-      const message = (json && json.message) || 'Something went wrong. Please try again.';
-      throw new ApiError(code, message, response.status);
+    if (!data || data.success !== true) {
+      // AuthApi.gs uses `message` for every failure case (not `error`,
+      // which other actions in Code.gs use) — matched exactly here.
+      throw new ApiError((data && data.message) || 'Request failed.', { code: 'REQUEST_FAILED' });
     }
 
-    // Strip the envelope, return just the payload.
-    const { success, code, message, ...payload } = json;
-    return payload;
-  }
-
-  // ── Public API surface ────────────────────────────────────────────────
-  // Exactly the function set requested by the auth spec. Each function
-  // does ONE thing: build the request and return a normalized payload.
-  // All UI/flow logic (attempt counters, cooldowns, redirects) lives in
-  // auth.js — not here.
-
-  /**
-   * POST /action=sendOTP
-   * @param {string} email
-   * @param {boolean} rememberDevice
-   * @returns {Promise<{ otpExpiresInSeconds?: number, resendAvailableInSeconds?: number }>}
-   */
-    function sendOTP(email, rememberDevice) {
-        const url = new URL(CONFIG.API_BASE_URL);
-    
-        url.searchParams.set("action", CONFIG.ENDPOINTS.SEND_OTP);
-        url.searchParams.set("email", email);
-        url.searchParams.set("rememberDevice", rememberDevice);
-    
-        return fetch(url)
-            .then(r => r.json())
-            .then(handleResponse);
-    }
-
-  /**
-   * POST /action=verifyOTP
-   * @param {string} email
-   * @param {string} otp
-   * @param {boolean} rememberDevice
-   * @returns {Promise<{ sessionToken: string, expiresAt: string, user: object }>}
-   */
-  function verifyOTP(email, otp, rememberDevice) {
-    return request(CONFIG.ENDPOINTS.VERIFY_OTP, 'POST', { email, otp, rememberDevice: !!rememberDevice });
+    return data;
   }
 
   /**
-   * POST /action=logout — best-effort server-side session invalidation.
-   * Callers should clear local session state regardless of outcome.
+   * Starts login for an existing, ACTIVE customer. Resolves with the
+   * backend's confirmation message; throws ApiError (e.g. "No active
+   * subscription found.") otherwise.
    */
-  function logout() {
-    return request(CONFIG.ENDPOINTS.LOGOUT, 'POST', {}, { auth: true }).catch(() => {
-      // Logout must never block the user from being logged out locally.
-      return {};
+  async function sendOtp(email) {
+    const data = await request_('sendOtp', { email: email });
+    return { message: data.message };
+  }
+
+  /**
+   * Completes login. Resolves with exactly what AuthApi.gs's
+   * authVerifyOtpApi_ returns on success: { token, expiry, customer }
+   * where customer is { customerId, name, email, bot }. Throws ApiError
+   * with the backend's message on incorrect/expired/exhausted OTP.
+   */
+  async function verifyOtp(email, otp, rememberDevice) {
+    const data = await request_('verifyOtp', {
+      email: email,
+      otp: otp,
+      rememberDevice: rememberDevice ? 'true' : 'false',
     });
+    return { token: data.token, expiry: data.expiry, customer: data.customer };
   }
 
   /**
-   * GET /action=validateSession — confirms the current token is still
-   * valid server-side. Never trust the locally-stored expiry alone for
-   * granting access to protected content.
-   * @returns {Promise<{ valid: boolean, expiresAt?: string, user?: object }>}
+   * Checks whether a session token is currently valid. Resolves with
+   * { customerId, email, expiry } (note: `session`, not `customer` — the
+   * backend deliberately returns a narrower shape here than me() does).
+   * Throws ApiError if invalid/expired rather than returning a falsy value.
    */
-  function validateSession() {
-    return request(CONFIG.ENDPOINTS.VALIDATE_SESSION, 'GET', undefined, { auth: true });
+  async function validateSession(token) {
+    const data = await request_('validateSession', { token: token });
+    return data.session;
+  }
+
+  /** Explicit logout. Resolves with the backend's confirmation message. */
+  async function logout(token) {
+    const data = await request_('logout', { token: token });
+    return { message: data.message };
   }
 
   /**
-   * POST /action=refreshSession — extends / rotates the current session.
-   * @returns {Promise<{ sessionToken: string, expiresAt: string }>}
+   * Resolves a session token to the customer's public profile —
+   * { customerId, name, email, bot }. Replacement for the previous
+   * loadProfile(); matches the backend's actual action name (`me`).
    */
-  function refreshSession() {
-    return request(CONFIG.ENDPOINTS.REFRESH_SESSION, 'POST', {}, { auth: true });
+  async function me(token) {
+    const data = await request_('me', { token: token });
+    return data.customer;
   }
 
-  /**
-   * GET /action=loadProfile
-   * @returns {Promise<{ user: object }>}
-   */
-  function loadProfile() {
-    return request(CONFIG.ENDPOINTS.LOAD_PROFILE, 'GET', undefined, { auth: true });
-  }
+  window.VA_API = Object.freeze({
+    ApiError: ApiError,
+    ErrorCodes: ErrorCodes,
 
-  global.VA_API = Object.freeze({
-    ErrorCodes,
-    ApiError,
-    sendOTP,
-    verifyOTP,
-    logout,
-    validateSession,
-    refreshSession,
-    loadProfile,
+    sendOtp: sendOtp,
+    sendOTP: sendOtp, // existing frontend (login.js/verify.js) calls this casing
+
+    verifyOtp: verifyOtp,
+    verifyOTP: verifyOtp, // same — kept so nothing else needs to change
+
+    validateSession: validateSession,
+    logout: logout,
+    me: me,
   });
-})(window);
+
+})();
