@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 230 44" role="img" aria-label="Viksit Analyst">
+  <!--
+    Full lockup for contexts that need one self-contained file (GitHub
+    README, social/OG previews, external tools) rather than the mark +
+    separate <span> text used in the actual site header. Same mark as
+    logo-mark.svg, plus the wordmark set in the site's display font.
+
+    Default treatment is light-background / dark-text (the text
+    primary token in light mode, #0B1F3A) since that's the site's
+    default root theme. Say the word if you also want a dark-background/monochrome
+    variant (light-on-dark) matching the "Monochrome Logos" panel in
+    the design reference — same file, inverted text/mark fills.
+
+    Text is real <text>, not outlined to paths, so it renders crisp at
+    any size and stays editable — but it depends on Space Grotesk being
+    available (loaded via Google Fonts on every real page already).
+    Falls back to system sans-serif if not. For a context where the
+    font truly can't be guaranteed (e.g. some PDF/print tools), convert
+    to outlines first.
+  -->
+  <g transform="translate(2, 12)">
+    <path d="M1 15L8 8L13 12L21 4L31 6"
+          fill="none" stroke="#2E6BE6" stroke-width="2"
+          stroke-linecap="round" stroke-linejoin="round"/>
+    <circle cx="21" cy="4" r="2.5" fill="#FF9933"/>
+  </g>
+  <text x="46" y="29"
+        font-family="'Space Grotesk', 'Segoe UI', sans-serif"
+        font-weight="600" font-size="24" letter-spacing="-0.01em"
+        fill="#0B1F3A">Viksit Analyst</text>
+</svg>

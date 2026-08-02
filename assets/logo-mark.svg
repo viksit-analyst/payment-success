@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 20" role="img" aria-label="Viksit Analyst">
+  <!--
+    Identical geometry to the inline .brand-mark SVG in every page's
+    header (index.html, contact.html, onboarding.html, etc.) — this is
+    that same mark extracted into a standalone, reusable asset.
+    Colors are the resolved hex values of the CSS custom properties the
+    inline version references in styles.css: path stroke is the token
+    named color ivrv, #2E6BE6; circle fill is the token named color
+    accent, #FF9933. Hardcoded here rather than var(...) because
+    standalone SVGs referenced via img or background image don't
+    inherit the parent document's custom properties. If used inline in
+    HTML instead, feel free to swap back to the var(...) form.
+  -->
+  <path d="M1 15L8 8L13 12L21 4L31 6"
+        fill="none" stroke="#2E6BE6" stroke-width="2"
+        stroke-linecap="round" stroke-linejoin="round"/>
+  <circle cx="21" cy="4" r="2.5" fill="#FF9933"/>
+</svg>
