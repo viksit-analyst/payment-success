@@ -1,0 +1,72 @@
+/* ==========================================================================
+   VIKSIT ANALYST — ADMIN MODULE FOUNDATION
+   assets/css/admin.css
+
+   Mirrors the role assets/css/dashboard.css, broker.css and onboarding.css
+   play for their modules: the restated-standalone token layer + a bare
+   reset, loaded BEFORE the page file (admin/styles.css, formerly
+   mission-control.css). The ~50 `.mc-*` component classes (sidebar, topnav,
+   stat cards, tables, badges, search modal…) already live in that page file
+   and are intentionally NOT duplicated here — this file only owns what's
+   safe to share if a second admin page (e.g. a future audit-log screen) is
+   added and needs the same foundation without pulling in Mission-Control-
+   specific component styles.
+   ========================================================================== */
+
+:root {
+  --color-primary: #0B1F3A;
+  --color-secondary: #1F3A5F;
+  --color-accent: #FF9933;
+  --color-accent-rgb: 255, 153, 51;
+  --color-success: #1FA971;
+  --color-success-rgb: 31, 169, 113;
+  --color-warning: #F5A623;
+  --color-warning-rgb: 245, 166, 35;
+  --color-error: #D64545;
+  --color-error-rgb: 214, 69, 69;
+  --color-ivrv: #2E6BE6;
+  --color-gamma: #FF9933;
+  --color-vwap: #1FA971;
+
+  --font-display: 'Space Grotesk', 'Segoe UI', sans-serif;
+  --font-body: 'Inter', 'Segoe UI', sans-serif;
+  --font-mono: 'IBM Plex Mono', 'SFMono-Regular', Menlo, monospace;
+
+  --radius-sm: 10px;
+  --radius-md: 14px;
+  --radius-lg: 20px;
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; }
+body {
+  font-family: var(--font-body);
+  background: #060F1F;
+  color: #F3F6FA;
+  -webkit-font-smoothing: antialiased;
+}
+img, svg { display: block; max-width: 100%; }
+button, input, select, textarea { font: inherit; color: inherit; }
+button { cursor: pointer; }
+
+::selection { background: rgba(255, 153, 51, 0.28); color: #F3F6FA; }
+::-webkit-scrollbar { width: 10px; height: 10px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: rgba(248, 250, 252, 0.16); border-radius: 999px; border: 2px solid #060F1F; }
+::-webkit-scrollbar-thumb:hover { background: rgba(248, 250, 252, 0.28); }
+
+:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}
