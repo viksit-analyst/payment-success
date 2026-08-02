@@ -124,10 +124,10 @@
     const result = await API.verifyOTP(pending.email, otp, pending.remember);
 
     SESSION.createSession({
-      token: result.sessionToken,
-      expiresAt: result.expiresAt,
-      remembered: pending.remember,
-      user: result.user || null,
+        token: result.token,
+        expiresAt: result.expiry,
+        remembered: pending.remember,
+        user: result.customer || null
     });
     SESSION.clearPendingAuth();
 
