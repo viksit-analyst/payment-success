@@ -10,140 +10,215 @@
 
 <link rel="icon" type="image/svg+xml" href="../assets/favicon.svg">
 <link rel="shortcut icon" href="../favicon.ico">
-<meta name="theme-color" content="#060A12">
-<meta name="color-scheme" content="dark">
+<meta name="theme-color" content="#0B1F3A">
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 
-<link rel="stylesheet" href="components/auth-theme.css">
-<link rel="stylesheet" href="components/toast.css">
-<link rel="stylesheet" href="login.css">
+<!-- Real Viksit Analyst design system, unmodified — same as every other page. -->
+<link rel="stylesheet" href="../styles.css">
+<!-- .form-group / .form-consent / .form-status / .callout — already built for contact.html. -->
+<link rel="stylesheet" href="../legal.css">
+<!-- Auth-only additions: shell, OTP boxes, button loading state. Defines no colors/fonts of its own. -->
+<link rel="stylesheet" href="components/auth.css">
+<link rel="manifest" href="../manifest.webmanifest">
 </head>
 <body>
-<a href="#main" class="va-skip-link">Skip to main content</a>
+<a href="#main" class="skip-link">Skip to main content</a>
 
-<div class="va-shell">
+<!-- ============================== NAVIGATION ============================== -->
+<header class="nav" id="siteNav">
+  <div class="container nav-inner">
+    <a href="../index.html" class="brand" aria-label="Viksit Analyst home">
+      <svg class="brand-mark" viewBox="0 0 32 20" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <path d="M1 15L8 8L13 12L21 4L31 6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        <circle cx="21" cy="4" r="2.5"/>
+      </svg>
+      Viksit Analyst
+    </a>
 
-  <!-- ============================ BRAND PANEL ============================ -->
-  <aside class="va-brand-panel" aria-hidden="true">
-    <svg class="va-brand-panel-texture" viewBox="0 0 400 500" preserveAspectRatio="xMidYMid slice">
-      <path class="va-login-texture-path" d="M20 420 L70 360 L110 400 L160 300 L210 350 L260 250 L310 300 L360 200"/>
-    </svg>
+    <nav class="nav-links" aria-label="Primary">
+      <a href="../index.html">Home</a>
+      <a href="../index.html#strategies">Strategies</a>
+      <a href="../index.html#pricing">Pricing</a>
+      <a href="../index.html#mission-control">Mission Control</a>
+      <a href="../index.html#faq">FAQ</a>
+      <a href="../contact.html">Contact</a>
+    </nav>
 
-    <div class="va-brand-panel-logo">
-      <svg viewBox="0 0 32 20" fill="none" xmlns="http://www.w3.org/2000/svg" class="va-brand-mark">
+    <div class="nav-actions">
+      <button class="theme-toggle" id="themeToggle" aria-label="Toggle dark mode" type="button">
+        <svg class="icon-sun" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4" stroke-linecap="round"/></svg>
+        <svg class="icon-moon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 12.8A9 9 0 1 1 11.2 3 7 7 0 0 0 21 12.8Z" stroke-linejoin="round"/></svg>
+      </button>
+      <a href="../index.html#pricing" class="btn btn-primary">Subscribe</a>
+      <button class="nav-toggle" id="navToggle" aria-label="Open menu" aria-expanded="false" type="button"><span></span></button>
+    </div>
+  </div>
+
+  <div class="mobile-drawer" id="mobileDrawer">
+    <a href="../index.html">Home</a>
+    <a href="../index.html#strategies">Strategies</a>
+    <a href="../index.html#pricing">Pricing</a>
+    <a href="../index.html#mission-control">Mission Control</a>
+    <a href="../index.html#faq">FAQ</a>
+    <a href="../contact.html">Contact</a>
+    <div class="drawer-actions">
+      <a href="../index.html#pricing" class="btn btn-primary btn-block">Subscribe</a>
+    </div>
+  </div>
+</header>
+
+<main id="main">
+
+<!-- ============================= AUTH CARD ============================= -->
+<section class="auth-section">
+  <div class="auth-card-wrap">
+
+    <a href="../index.html" class="auth-logo" aria-label="Viksit Analyst home">
+      <svg class="brand-mark" viewBox="0 0 32 20" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
         <path d="M1 15L8 8L13 12L21 4L31 6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
         <circle cx="21" cy="4" r="2.5"/>
       </svg>
       <span>Viksit Analyst</span>
-    </div>
+    </a>
 
-    <div>
-      <div class="va-brand-panel-quote">
-        <p>Trade with discipline, not emotion.</p>
-        <p>Research-driven quantitative strategies, executed automatically, with full transparency into every decision your system makes.</p>
-      </div>
-      <div class="va-brand-panel-stats">
-        <div>
-          <div class="va-brand-stat-value">3</div>
-          <div class="va-brand-stat-label">Live Strategies</div>
-        </div>
-        <div>
-          <div class="va-brand-stat-value">24/7</div>
-          <div class="va-brand-stat-label">Mission Control</div>
-        </div>
-        <div>
-          <div class="va-brand-stat-value">100%</div>
-          <div class="va-brand-stat-label">Rules-Based</div>
-        </div>
-      </div>
-    </div>
+    <div class="card auth-card reveal">
+      <p class="eyebrow">Secure Sign-In</p>
+      <h1>Welcome back.</h1>
+      <p class="auth-subtitle" id="loginSubtitle">Enter your email and we'll send you a one-time code.</p>
 
-    <div class="va-brand-panel-footer">
-      <span>SEBI-aware · No custody of funds</span>
-      <span>Maharashtra, India</span>
-    </div>
-  </aside>
-
-  <!-- ============================= FORM PANEL ============================= -->
-  <main id="main" class="va-form-panel">
-    <div class="va-form-card">
-
-      <div class="va-mobile-brand">
-        <svg viewBox="0 0 32 20" fill="none" xmlns="http://www.w3.org/2000/svg" class="va-brand-mark va-mobile-brand-mark">
-          <path d="M1 15L8 8L13 12L21 4L31 6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-          <circle cx="21" cy="4" r="2.5"/>
-        </svg>
-        <span class="va-mobile-brand-name">Viksit Analyst</span>
-      </div>
-
-      <p class="va-eyebrow">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3" y="11" width="18" height="10" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4" stroke-linecap="round"/></svg>
-        Secure Sign In
-      </p>
-      <h1 class="va-title">Welcome back.</h1>
-      <p class="va-subtitle" id="loginSubtitle">Enter your email and we'll send you a one-time code. No password required.</p>
-
-      <div class="va-resume-banner" id="resumeBanner" hidden>
+      <div class="callout resume-callout" id="resumeBanner" hidden>
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 8v4l3 2" stroke-linecap="round"/><circle cx="12" cy="12" r="9"/></svg>
-        <span id="resumeBannerText">You already have a code on the way.</span>
-        <button type="button" id="resumeContinue">Continue</button>
+        <p id="resumeBannerText">You already have a code on the way.</p>
+        <button type="button" class="resume-banner-action" id="resumeContinue">Continue</button>
       </div>
 
       <form id="loginForm" novalidate>
-        <div class="va-field">
-          <label class="va-label" for="email">Email address</label>
-          <div class="va-input-wrap">
-            <input
-              type="email"
-              id="email"
-              name="email"
-              class="va-input"
-              placeholder="you@example.com"
-              autocomplete="email"
-              inputmode="email"
-              spellcheck="false"
-              required
-              aria-describedby="emailError"
-              aria-invalid="false"
-            >
-          </div>
-          <p class="va-field-error" id="emailError" role="alert"></p>
+        <div class="form-group">
+          <label for="email">Email address</label>
+          <input
+            type="email"
+            id="email"
+            name="email"
+            placeholder="you@example.com"
+            autocomplete="email"
+            inputmode="email"
+            spellcheck="false"
+            required
+            aria-describedby="emailError"
+            aria-invalid="false"
+          >
+          <p class="form-hint" id="emailError" role="alert" style="color: var(--color-error);"></p>
         </div>
 
-        <div class="va-checkbox-row">
+        <div class="form-consent">
           <input type="checkbox" id="rememberDevice" name="rememberDevice">
           <label for="rememberDevice">Remember this device for 30 days</label>
         </div>
 
-        <div class="va-checkbox-row">
+        <div class="form-consent">
           <input type="checkbox" id="acceptTerms" name="acceptTerms" required aria-describedby="termsError">
           <label for="acceptTerms">I agree to the <a href="../terms.html" target="_blank" rel="noopener noreferrer">Terms of Service</a> and <a href="../privacy.html" target="_blank" rel="noopener noreferrer">Privacy Policy</a></label>
         </div>
-        <p class="va-field-error" id="termsError" role="alert"></p>
+        <p class="form-hint" id="termsError" role="alert" style="color: var(--color-error); margin-top: -12px; margin-bottom: 18px;"></p>
 
-        <button type="submit" class="va-btn va-btn-primary" id="continueBtn">
-          <span class="va-btn-label">Continue with Email</span>
-          <span class="va-btn-loading" hidden>
-            <span class="va-spinner" aria-hidden="true"></span>
+        <button type="submit" class="btn btn-primary btn-lg btn-block" id="continueBtn">
+          <span class="btn-label">Continue with Email</span>
+          <span class="btn-loading" hidden>
+            <span class="spinner" aria-hidden="true"></span>
             <span>Sending code…</span>
           </span>
         </button>
 
-        <p class="va-login-form-status va-field-error" id="formStatus" role="alert" hidden></p>
+        <p class="form-status is-error" id="formStatus" role="alert" hidden></p>
       </form>
 
-      <p class="va-footer-note">
-        Don't have a subscription yet? <a href="../index.html#pricing">View plans</a><br>
-        Need help signing in? <a href="../contact.html">Contact support</a>
+      <p class="auth-footer-links">
+        Don't have a subscription? <a href="../index.html#pricing">View plans</a><br>
+        Need help? <a href="../contact.html">Contact support</a>
       </p>
     </div>
-  </main>
+  </div>
+</section>
 
+</main>
+
+<!-- =============================== FOOTER =================================== -->
+<footer class="footer" id="contact">
+  <div class="container">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <a href="../index.html" class="brand" aria-label="Viksit Analyst home">
+          <svg class="brand-mark" viewBox="0 0 32 20" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <path d="M1 15L8 8L13 12L21 4L31 6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            <circle cx="21" cy="4" r="2.5"/>
+          </svg>
+          Viksit Analyst
+        </a>
+        <p>A quantitative execution platform with continuously researched strategies — research, execution, reporting and infrastructure working together, not a static algorithm frozen in time.</p>
+        <div class="footer-social">
+          <a href="#" aria-label="GitHub"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 .3a12 12 0 0 0-3.8 23.4c.6.1.8-.3.8-.6v-2.2c-3.3.7-4-1.6-4-1.6-.6-1.3-1.3-1.7-1.3-1.7-1-.7.1-.7.1-.7 1.2.1 1.8 1.2 1.8 1.2 1 1.8 2.8 1.3 3.4 1 .1-.8.4-1.3.7-1.6-2.7-.3-5.5-1.3-5.5-5.9 0-1.3.5-2.4 1.2-3.2-.1-.3-.5-1.5.1-3.2 0 0 1-.3 3.3 1.2a11.5 11.5 0 0 1 6 0c2.3-1.5 3.3-1.2 3.3-1.2.6 1.7.2 2.9.1 3.2.8.8 1.2 1.9 1.2 3.2 0 4.6-2.8 5.6-5.5 5.9.4.4.8 1.1.8 2.2v3.3c0 .3.2.7.8.6A12 12 0 0 0 12 .3Z"/></svg></a>
+          <a href="#" aria-label="LinkedIn"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M6.94 5a2 2 0 1 1-4 0 2 2 0 0 1 4 0ZM3.3 8.75h3.28V21H3.3V8.75Zm6.2 0h3.14v1.68h.05c.44-.83 1.5-1.7 3.1-1.7 3.3 0 3.9 2.18 3.9 5v7.27h-3.28v-6.45c0-1.54-.03-3.53-2.15-3.53-2.16 0-2.49 1.69-2.49 3.43v6.55H9.5V8.75Z"/></svg></a>
+          <a href="#" aria-label="X (Twitter)"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M18.9 2H22l-7.6 8.7L23.4 22h-7l-5.5-7.2L4.6 22H1.5l8.1-9.3L1 2h7.2l5 6.6L18.9 2Zm-1.2 18h1.7L7.4 3.9H5.6L17.7 20Z"/></svg></a>
+        </div>
+      </div>
+
+      <div class="footer-col">
+        <h4>Quick Links</h4>
+        <ul>
+          <li><a href="../index.html">Home</a></li>
+          <li><a href="../index.html#strategies">Strategies</a></li>
+          <li><a href="../index.html#pricing">Pricing</a></li>
+          <li><a href="../index.html#mission-control">Mission Control</a></li>
+          <li><a href="../index.html#faq">FAQ</a></li>
+          <li><a href="../contact.html">Contact</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-col">
+        <h4>Legal</h4>
+        <ul>
+          <li><a href="../privacy.html">Privacy Policy</a></li>
+          <li><a href="../terms.html">Terms of Service</a></li>
+          <li><a href="../terms.html#risk-disclosure">Risk Disclosure</a></li>
+          <li><a href="../refund.html">Refund Policy</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-col">
+        <h4>Contact</h4>
+        <span class="contact-label">Support</span>
+        <p class="contact-line"><a href="mailto:support@viksitanalyst.com">support@viksitanalyst.com</a></p>
+        <span class="contact-label">Business</span>
+        <p class="contact-line"><a href="mailto:hello@viksitanalyst.com">hello@viksitanalyst.com</a></p>
+        <span class="contact-label">Response Time</span>
+        <p class="contact-line">Within 1 business day</p>
+      </div>
+    </div>
+
+    <p class="footer-disclaimer">Quantitative trading involves risk, including the possible loss of principal. Historical and backtested figures shown on this site are provided for informational purposes only and are not a guarantee of future performance. Viksit Analyst does not provide investment advice; please review the Risk Disclosure before subscribing.</p>
+
+    <div class="footer-bottom">
+      <span>© <span id="year">2026</span> Viksit Analyst. All rights reserved.</span>
+      <span class="mono">Website v2.3.1</span>
+    </div>
+  </div>
+</footer>
+
+<!-- Strategy modal skeleton required by the shared script.js (unused here) -->
+<div class="modal-overlay" id="strategyModal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+  <div class="modal" id="modalContent">
+    <button class="modal-close" id="modalClose" aria-label="Close">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M18 6L6 18M6 6l12 12" stroke-linecap="round"/></svg>
+    </button>
+    <div id="modalBody"></div>
+  </div>
 </div>
 
+<!-- Real, unmodified site script.js first, then the auth module. -->
+<script src="../script.js"></script>
 <script src="config.js"></script>
 <script src="api.js"></script>
 <script src="session.js"></script>
