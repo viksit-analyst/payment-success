@@ -75,13 +75,13 @@
     ROUTES: {
       LOGIN: '/auth/login.html',
       VERIFY: '/auth/verify.html',
-      DEFAULT_AFTER_LOGIN: '/dashboard.html',
+      DEFAULT_AFTER_LOGIN: "/dashboard/dashboard.html"
       HOME: '/index.html',
       // Additional destinations the redirect resolver below can route to.
       // Add more here as the product grows (e.g. BROKER_CONNECT,
       // ADMIN_DASHBOARD) — nothing in auth.js needs to change to use them.
-      ONBOARDING: '/onboarding.html',
-      MISSION_CONTROL: '/mission-control.html',
+      ONBOARDING: '/onboarding/index.html',
+      MISSION_CONTROL: '/admin/mission-control.html',
       PROFILE: '/profile.html',
     },
 
