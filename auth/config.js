@@ -75,7 +75,7 @@
     ROUTES: {
       LOGIN: '/auth/login.html',
       VERIFY: '/auth/verify.html',
-      DEFAULT_AFTER_LOGIN: "/dashboard/dashboard.html"
+      DEFAULT_AFTER_LOGIN: "/dashboard/dashboard.html",
       HOME: '/index.html',
       // Additional destinations the redirect resolver below can route to.
       // Add more here as the product grows (e.g. BROKER_CONNECT,
