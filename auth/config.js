@@ -32,14 +32,14 @@
      * Adjust here — and nowhere else — if your backend uses different
      * action names.
      */
-    ENDPOINTS: {
-      SEND_OTP: "sendOtp"
-      VERIFY_OTP: "verifyOtp"
-      LOGOUT: 'logout',
-      VALIDATE_SESSION: 'validateSession',
-      REFRESH_SESSION: 'refreshSession',
-      LOAD_PROFILE: 'loadProfile',
-    },
+      ENDPOINTS: {
+        SEND_OTP: "sendOtp",
+        VERIFY_OTP: "verifyOtp",
+        LOGOUT: "logout",
+        VALIDATE_SESSION: "validateSession",
+        REFRESH_SESSION: "refreshSession",
+        LOAD_PROFILE: "loadProfile",
+      },
 
     // ── Timing ────────────────────────────────────────────────────────────
     REQUEST_TIMEOUT_MS: 15_000,
