@@ -5,7 +5,7 @@
 // Keeps each card file focused purely on its own content (Single
 // Responsibility, per VABR Coding Philosophy).
 
-import { escapeHtml } from '../utils.js';
+import { escapeHtml } from '../js/utils.js';
 
 export function cardHeader(title, sub = '', icon = '') {
   return `
