@@ -3,10 +3,10 @@
 // field for it anywhere in brokerSession's state shape).
 
 import { cardHeader, kvList, skeleton } from './cardShell.js';
-import { getCountdownLabel } from '../tokenManager.js';
-import { enableAutoLogin, disableAutoLogin } from '../brokerAPI.js';
-import { setState } from '../brokerSession.js';
-import { showToast, escapeHtml } from '../utils.js';
+import { getCountdownLabel } from '../js/tokenManager.js';
+import { enableAutoLogin, disableAutoLogin } from '../js/brokerAPI.js';
+import { setState } from '../js/brokerSession.js';
+import { showToast, escapeHtml } from '../js/utils.js';
 
 function autoLoginSection(autoLoginEnabled) {
   if (autoLoginEnabled) {
