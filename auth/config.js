@@ -78,6 +78,40 @@
       VERIFY: '/auth/verify.html',
       DEFAULT_AFTER_LOGIN: '/dashboard.html',
       HOME: '/index.html',
+      // Additional destinations the redirect resolver below can route to.
+      // Add more here as the product grows (e.g. BROKER_CONNECT,
+      // ADMIN_DASHBOARD) — nothing in auth.js needs to change to use them.
+      ONBOARDING: '/onboarding.html',
+      MISSION_CONTROL: '/mission-control.html',
+      PROFILE: '/profile.html',
+    },
+
+    /**
+     * Configurable post-login redirect hook.
+     *
+     * auth.js never hardcodes "always go to /dashboard.html" — it calls
+     * this function with the `user` object returned by verifyOTP() and
+     * uses whatever relative path it returns. Return `null`/`undefined` to
+     * fall through to ROUTES.DEFAULT_AFTER_LOGIN.
+     *
+     * This is the single place to teach login "where different kinds of
+     * customers should land" as the product grows (incomplete onboarding,
+     * broker not yet connected, admin accounts, etc.) without touching
+     * auth.js, login.js, or verify.js.
+     *
+     * @param {object|null} user - whatever `verifyOTP()` returned as `user`
+     * @returns {string|null}
+     */
+    resolvePostLoginRoute(user) {
+      // Example (uncomment and adapt once the backend returns these fields):
+      //
+      // if (user && user.onboardingComplete === false) {
+      //   return this.ROUTES.ONBOARDING;
+      // }
+      // if (user && user.brokerConnected === false) {
+      //   return this.ROUTES.MISSION_CONTROL; // or a dedicated broker-connect page
+      // }
+      return null;
     },
 
     // Pages that require an authenticated session. routeGuard.js checks the
