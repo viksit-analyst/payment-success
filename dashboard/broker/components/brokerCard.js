@@ -2,11 +2,11 @@
 // primary connect/disconnect/reconnect action for it.
 
 import { cardHeader, bindCard } from './cardShell.js';
-import { statusToBadgeVariant, statusToLabel } from '../brokerValidator.js';
-import { timeAgo, escapeHtml } from '../utils.js';
-import { beginConnect } from '../oauth.js';
-import { disconnectBroker } from '../brokerAPI.js';
-import { setState } from '../brokerSession.js';
+import { statusToBadgeVariant, statusToLabel } from '../js/brokerValidator.js';
+import { timeAgo, escapeHtml } from '../js/utils.js';
+import { beginConnect } from '../js/oauth.js';
+import { disconnectBroker } from '../js/brokerAPI.js';
+import { setState } from '../js/brokerSession.js';
 
 const brokerIcon = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 12h4l2-6 4 12 2-6h4" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
 
