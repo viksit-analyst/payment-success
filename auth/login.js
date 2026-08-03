@@ -30,6 +30,22 @@
 
   let submitting = false;
 
+  // ── H3 fix: a logged-in visitor landing here (bookmark, back button,
+  //    stale tab) shouldn't see the login form again — bounce them
+  //    straight to the dashboard. This mirrors routeGuard.js's own fast
+  //    LOCAL check (isValidLocally()); it deliberately does not also call
+  //    the authoritative API.validateSession() here — that round trip
+  //    happens on the destination page itself (routeGuard.js), so a
+  //    revoked-but-not-yet-expired session still gets caught immediately
+  //    after the bounce instead of delaying this redirect on a network call.
+  function redirectIfAlreadyLoggedIn() {
+    if (window.VA_SESSION && window.VA_SESSION.isValidLocally()) {
+      window.location.replace(withRedirectParam(CONFIG.ROUTES.DEFAULT_AFTER_LOGIN));
+      return true;
+    }
+    return false;
+  }
+
   // ── If a pending login already exists (e.g. user hit "back" from
   //    verify.html), offer to resume it instead of starting over silently.
   function checkForPendingLogin() {
@@ -130,6 +146,8 @@
     if (termsCheckbox.checked) termsError.textContent = '';
   });
 
-  checkForPendingLogin();
-  emailInput.focus();
+  if (!redirectIfAlreadyLoggedIn()) {
+    checkForPendingLogin();
+    emailInput.focus();
+  }
 })();
