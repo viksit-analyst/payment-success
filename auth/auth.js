@@ -131,7 +131,12 @@
     });
     SESSION.clearPendingAuth();
 
-    return { user: result.user || null };
+    // Was: result.user (never set anywhere in the verifyOTP response —
+    // only result.customer is, three lines up, which IS what got stored
+    // into the session). This returned null on every successful login
+    // regardless of the actual customer, independent of anything in
+    // api.js — a bug within this file, not a contract mismatch.
+    return { user: result.customer || null };
   }
 
   /**
