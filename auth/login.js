@@ -27,6 +27,7 @@
   const resumeBanner = document.getElementById('resumeBanner');
   const resumeBannerText = document.getElementById('resumeBannerText');
   const resumeContinueBtn = document.getElementById('resumeContinue');
+  const resumeDismissBtn = document.getElementById('resumeUseDifferentEmail');
 
   let submitting = false;
 
@@ -48,17 +49,32 @@
 
   // ── If a pending login already exists (e.g. user hit "back" from
   //    verify.html), offer to resume it instead of starting over silently.
+  //    Fix: this used to show the resume banner ON TOP OF the full form,
+  //    so the page showed two differently-labeled "Continue" buttons at
+  //    once (the banner's, and the form's own "Continue with Email"
+  //    submit button) — confusing, since only one of them is the right
+  //    next step. The form is now hidden while a login is resumable;
+  //    "Use a different email" abandons it and reveals the form again.
   function checkForPendingLogin() {
     const pending = AUTH.getPendingLogin();
     if (!pending) return;
 
     resumeBannerText.textContent = `We already sent a code to ${AUTH.maskEmail(pending.email)}.`;
     resumeBanner.hidden = false;
+    form.hidden = true;
     emailInput.value = pending.email;
   }
 
   resumeContinueBtn?.addEventListener('click', () => {
     window.location.href = withRedirectParam(CONFIG.ROUTES.VERIFY);
+  });
+
+  resumeDismissBtn?.addEventListener('click', () => {
+    AUTH.cancelPendingLogin();
+    resumeBanner.hidden = true;
+    form.hidden = false;
+    emailInput.value = '';
+    emailInput.focus();
   });
 
   function withRedirectParam(basePath) {
