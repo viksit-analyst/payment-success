@@ -7,6 +7,7 @@ import { handleCallbackIfPresent, beginConnect } from './oauth.js';
 import { startPolling } from './connectionStatus.js';
 import { startTokenWatch } from './tokenManager.js';
 import { getState, onChange, isConnected } from './brokerSession.js';
+import { waitForAuthenticatedConfig } from './sessionBridge.js';
 
 import { mountBrokerCard } from '../components/brokerCard.js';
 import { mountStatusCard } from '../components/statusCard.js';
@@ -57,6 +58,22 @@ function setPlatformBadge() {
 
 async function main() {
   initTheme();
+
+  // Gate on the real, logged-in customer before touching brokerAPI.js —
+  // routeGuard (loaded on broker.html) has already kept the page hidden
+  // and redirected anonymous visitors to login by this point, so a
+  // rejection here means the auth layer isn't wired into the page.
+  try {
+    await waitForAuthenticatedConfig();
+  } catch (err) {
+    console.error(err);
+    document.body.innerHTML = '<div class="ob-empty" style="margin:80px auto;text-align:center;">Unable to verify your session. Please <a href="/auth/login.html">sign in again</a>.</div>';
+    document.documentElement.classList.remove('va-preauth-hidden'); // C3 fix — reveal the error message itself
+    return;
+  }
+
+  document.documentElement.classList.remove('va-preauth-hidden'); // C3 fix — auth confirmed, safe to show the real app now
+
   setPlatformBadge();
 
   document.getElementById('connectUpstoxBtn')?.addEventListener('click', () => beginConnect('BR001'));
