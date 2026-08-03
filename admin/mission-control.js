@@ -155,9 +155,15 @@ const MC = (() => {
     state.chartInstances = {};
   }
 
+  // Low-priority audit item — see the matching note in charts.js.
+  function prefersReducedMotion_() {
+    return !!(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
+  }
+
   function chartDefaults() {
     return {
       responsive: true, maintainAspectRatio: false,
+      animation: prefersReducedMotion_() ? false : undefined,
       plugins: { legend: { display: false } },
       scales: {
         x: { grid: { display: false }, ticks: { color: 'rgba(248,250,252,0.42)', font: { family: 'IBM Plex Mono', size: 10 }, maxTicksLimit: 7 } },
@@ -198,6 +204,7 @@ const MC = (() => {
       },
       options: {
         responsive: true, maintainAspectRatio: false, cutout: '68%',
+        animation: prefersReducedMotion_() ? false : undefined,
         plugins: { legend: { position: 'bottom', labels: { color: 'rgba(248,250,252,0.66)', font: { family: 'Inter', size: 11 }, padding: 14, usePointStyle: true, pointStyle: 'circle' } } },
       },
     });
@@ -345,7 +352,19 @@ const MC = (() => {
     document.getElementById('mcRefreshDashboard').addEventListener('click', loadDashboard);
   }
 
-  document.addEventListener('DOMContentLoaded', init);
+  // M5 fix: previously ran unconditionally on DOMContentLoaded, which
+  // meant every visitor — including ones adminGuard.js was about to deny —
+  // paid the cost of wiring up the dashboard and calling adminAPI.js, and
+  // assumed Chart.js (now lazy-loaded, see adminGuard.js) was already on
+  // the page. Now waits for BOTH the DOM and adminGuard's "va:admin-ready"
+  // signal, handling either firing first.
+  let domReady = false;
+  let adminReady = false;
+  function maybeInit() {
+    if (domReady && adminReady) init();
+  }
+  document.addEventListener('DOMContentLoaded', () => { domReady = true; maybeInit(); });
+  document.addEventListener('va:admin-ready', () => { adminReady = true; maybeInit(); }, { once: true });
 
   return { navigate, registerView };
 })();
