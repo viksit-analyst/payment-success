@@ -146,7 +146,8 @@
 
   /**
    * Update the expiry (and optionally rotate the token) after a successful
-   * refreshSession() call, without disturbing anything else in the record.
+   * validateSession() call, without disturbing anything else in the record.
+   * (There is no refreshSession backend action — see routeGuard.js/api.js.)
    */
   function extendSession({ token, expiresAt }) {
     const s = readRaw();
@@ -266,9 +267,11 @@
     return { start, stop, reset };
   }
 
-  // ── Silent refresh scheduling ───────────────────────────────────────────
-  // Pure interval scaffolding; auth.js supplies the actual refreshSession()
-  // network call as the callback so this module stays network-free.
+  // ── Silent re-validation scheduling ─────────────────────────────────────
+  // Pure interval scaffolding; routeGuard.js supplies the actual
+  // validateSession() network call as the callback so this module stays
+  // network-free. (Named "SilentRefresh" for historical/back-compat reasons;
+  // it re-validates, it does not extend the server-side expiry.)
 
   function createSilentRefreshScheduler(callback) {
     let intervalId = null;
