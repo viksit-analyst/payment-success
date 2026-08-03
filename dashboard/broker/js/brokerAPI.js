@@ -21,6 +21,16 @@ class BrokerApiError extends Error {
 
 async function callBackend(action, { method = 'GET', body, silent = false } = {}) {
   const { apiBase, customerId, sessionToken } = getConfig();
+
+  // M2 fix: previously apiBase silently defaulted to '/api' (see
+  // utils.js#getConfig) and this just fetch()'d it like anything else —
+  // the resulting failure was indistinguishable from a real, temporary
+  // network blip. Fail fast with a specific message instead.
+  if (!apiBase) {
+    if (!silent) showToast('Broker backend isn\u2019t configured for this session. Contact support if this persists.', 'error');
+    throw new BrokerApiError('apiBase not configured', 'ERR_NOT_CONFIGURED');
+  }
+
   const url = new URL(apiBase, window.location.origin);
   url.searchParams.set('action', action);
   if (method === 'GET' && customerId) url.searchParams.set('customerId', customerId);
@@ -133,3 +143,4 @@ export function disableAutoLogin() {
 }
 
 export { BrokerApiError };
+
