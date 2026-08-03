@@ -18,12 +18,20 @@
   const AXIS_TICK_FONT_MONO = { family: 'IBM Plex Mono', size: 10 };
   const GRID_COLOR = 'rgba(255,255,255,0.06)';
 
+  // Low-priority audit item: this codebase's CSS-based prefers-reduced-motion
+  // handling (see assets/css/admin.css) can't reach Chart.js's own internal
+  // canvas enter-animation, since that's driven by JS, not CSS transitions.
+  function prefersReducedMotion_() {
+    return !!(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
+  }
+
   /** Shared line/bar axis + legend defaults. Doughnuts define their own
    * (they need a bottom legend, not hidden axes). */
   function lineBarDefaults() {
     return {
       responsive: true,
       maintainAspectRatio: false,
+      animation: prefersReducedMotion_() ? false : undefined,
       plugins: { legend: { display: false } },
       scales: {
         x: { grid: { display: false }, ticks: { color: AXIS_TICK_COLOR, font: AXIS_TICK_FONT_MONO, maxTicksLimit: 7 } },
@@ -73,6 +81,7 @@
       options: {
         responsive: true,
         maintainAspectRatio: false,
+        animation: prefersReducedMotion_() ? false : undefined,
         cutout: '68%',
         plugins: {
           legend: {
