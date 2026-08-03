@@ -1478,7 +1478,7 @@ RENDERERS.support = function (target) {
         <div class="card">
           <div class="card-head"><div class="card-title">${ICONS.mail}Contact Support</div></div>
           <p class="text-sm text-secondary" style="line-height:1.7;margin-bottom:16px;">Typical first response within 4 business hours on trading days.</p>
-          <div class="flex items-center gap-10 mb-16" style="margin-bottom:12px;"><span class="stat-icon-wrap">${ICONS.mail}</span><span class="text-sm font-mono">support@viksitanalyst.com</span></div>
+          <div class="flex items-center gap-10 mb-16" style="margin-bottom:12px;"><span class="stat-icon-wrap">${ICONS.mail}</span><span class="text-sm font-mono">analyst@viksitanalyst.com</span></div>
           <div class="flex items-center gap-10" style="margin-bottom:16px;"><span class="stat-icon-wrap">${ICONS.clock}</span><span class="text-sm">Mon–Fri, 9:00 AM – 6:00 PM IST</span></div>
           <button class="btn btn-secondary btn-block" id="liveChatBtn">Live Chat</button>
         </div>
