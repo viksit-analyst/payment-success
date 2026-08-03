@@ -37,8 +37,13 @@
         VERIFY_OTP: "verifyOtp",
         LOGOUT: "logout",
         VALIDATE_SESSION: "validateSession",
-        REFRESH_SESSION: "refreshSession",
-        LOAD_PROFILE: "loadProfile",
+        ME: "me",
+        // REFRESH_SESSION removed — the backend has no such action and
+        // never will (SessionRepository.gs has no "extend expiry" method;
+        // a session's lifetime is fixed at login). See api.js/routeGuard.js
+        // for how periodic re-validation replaced the silent-refresh idea.
+        // LOAD_PROFILE removed — the backend's actual action is `me`
+        // (AuthApi.gs), used above.
       },
 
     // ── Timing ────────────────────────────────────────────────────────────
@@ -55,8 +60,8 @@
     SESSION_DURATION_DEFAULT_MS: 24 * 60 * 60 * 1000, // 24h — not remembered
     SESSION_DURATION_REMEMBERED_MS: 30 * 24 * 60 * 60 * 1000, // 30d — remembered device
 
-    SILENT_REFRESH_INTERVAL_MS: 10 * 60 * 1000, // ping refreshSession every 10 min while active
-    SILENT_REFRESH_MIN_REMAINING_MS: 5 * 60 * 1000, // don't bother refreshing if >5min already left after interval
+    SILENT_REFRESH_INTERVAL_MS: 10 * 60 * 1000, // ping validateSession every 10 min while active (re-validates, doesn't extend expiry — see routeGuard.js)
+    SILENT_REFRESH_MIN_REMAINING_MS: 5 * 60 * 1000, // don't bother re-validating if >5min already left after interval
 
     IDLE_WARNING_AFTER_MS: 14 * 60 * 1000, // show "are you still there" warning after 14 min idle
     IDLE_COUNTDOWN_SECONDS: 60, // then auto-logout after 60s unless extended
@@ -75,7 +80,10 @@
     ROUTES: {
       LOGIN: '/auth/login.html',
       VERIFY: '/auth/verify.html',
-      DEFAULT_AFTER_LOGIN: "/dashboard/dashboard.html",
+      // Was "/dashboard/dashboard.html" — doesn't exist. The real
+      // dashboard entry point is dashboard/index.html; dashboard.js and
+      // dashboard.css are assets it loads, not a page of their own.
+      DEFAULT_AFTER_LOGIN: "/dashboard/index.html",
       HOME: '/index.html',
       // Additional destinations the redirect resolver below can route to.
       // Add more here as the product grows (e.g. BROKER_CONNECT,
@@ -117,13 +125,16 @@
     // current pathname against this list (matched by filename, so this
     // module works whether the site is served from a root domain or a
     // sub-path like /app/).
+    // The dashboard is a single-page app (dashboard/index.html) — billing,
+    // reports, downloads, profile, and settings are RENDERERS inside it,
+    // not separate pages, so they were never real routeGuard targets.
+    // mission-control.html (under /admin/) is a genuinely separate page
+    // and stays. Matched by filename, so this works whether the site is
+    // served from a root domain or a sub-path.
     PROTECTED_PAGES: [
-      'dashboard.html',
-      'billing.html',
-      'reports.html',
-      'downloads.html',
-      'profile.html',
-      'settings.html',
+      'index.html', // dashboard/index.html — routeGuard.js itself decides
+                     // whether to run via which page includes it, this
+                     // list is a secondary sanity check some callers use
       'mission-control.html',
     ],
   });
