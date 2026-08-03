@@ -1,17 +1,37 @@
-const SCRIPT_URL =
-    "https://script.google.com/macros/s/AKfycbxzbo25oQHBZRB-oZUgdtKiXo_R1EP0Gsu7Q5D_vGhgnzCowsLNBkEmUMC-YuwGRkxU/exec";
+// M3 fix: this used to be its own hardcoded copy of the Apps Script
+// deployment URL — one of three independent copies (this file, auth/config.js,
+// onboarding/api.js) that could silently drift out of sync on redeploy.
+// auth/config.js is now the single source of truth; index.html loads it
+// before this script (see index.html's script tags). No hardcoded fallback
+// URL here on purpose — a silent fallback would just reintroduce a second
+// copy that can drift; missing config should fail loudly instead.
+const SCRIPT_URL = window.VA_AUTH_CONFIG && window.VA_AUTH_CONFIG.API_BASE_URL;
+
+// Low-priority audit item: this file's payment flow previously called
+// console.log directly, logging full Razorpay request/response objects
+// unconditionally. Not a secrets leak (no keys are logged), but noisy in
+// production. Gated behind DEBUG now — append ?debug=1 to the URL to see
+// these while diagnosing a checkout issue.
+const DEBUG = /[?&]debug=1\b/.test(window.location.search);
+function debugLog(...args) { if (DEBUG) console.log(...args); }
 
 let paymentInProgress = false;
 
 async function buy(bot) {
-    console.log("buy() called:", bot);
+    debugLog("buy() called:", bot);
     if (paymentInProgress) return;
+
+    if (!SCRIPT_URL) {
+        alert("Something went wrong.\n\nPayments aren't configured correctly on this page. Please contact support.");
+        console.error('[app.js] window.VA_AUTH_CONFIG.API_BASE_URL is missing — make sure auth/config.js loads before app.js.');
+        return;
+    }
 
     paymentInProgress = true;
 
     try {
 
-        console.log("Sending request...");
+        debugLog("Sending request...");
         
         const response = await fetch(
             SCRIPT_URL +
@@ -19,24 +39,24 @@ async function buy(bot) {
             encodeURIComponent(bot)
         );
         
-        console.log("Fetch completed");
+        debugLog("Fetch completed");
         
-        console.log("HTTP Status:", response.status);
+        debugLog("HTTP Status:", response.status);
 
         if (!response.ok) {
             throw new Error(`Server Error ${response.status}`);
         }
         const text = await response.text();
         
-        console.log("Raw Response:");
+        debugLog("Raw Response:");
         
-        console.log(text);
+        debugLog(text);
         
         const data = JSON.parse(text);
         
-        console.log("Parsed Data:");
+        debugLog("Parsed Data:");
         
-        console.log(data);
+        debugLog(data);
 
         if (
             data.success !== true &&
@@ -98,12 +118,12 @@ async function buy(bot) {
             }
 
         };
-        console.log("Options:");
+        debugLog("Options:");
         
-        console.log(options);
+        debugLog(options);
         const rzp = new Razorpay(options);
         
-        console.log("Opening Razorpay...");
+        debugLog("Opening Razorpay...");
         
         rzp.on("payment.failed", function (response) {
         
