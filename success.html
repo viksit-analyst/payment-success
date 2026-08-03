@@ -6,6 +6,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
+    <!-- H6 fix: this page renders a "payment successful" state purely from
+         an unverified ?payment_id= URL param (see the script near the end
+         of this file) — nothing here should be indexed or treated as a
+         canonical, shareable page. -->
+    <meta name="robots" content="noindex, nofollow">
+
     <title>Payment Successful | Viksit Analyst</title>
 
     <link rel="stylesheet" href="assets/css/styles.css">
@@ -279,6 +285,17 @@
 </div>
 
 <script>
+
+// ⚠ PRODUCTION TODO (audit finding H6): paymentId below is read straight
+// from the URL with zero server-side verification — a hand-crafted link
+// like /success.html?payment_id=anything shows this exact "success"
+// screen without anyone having paid. It's low-severity today because this
+// page grants no real access on its own (no session/cookie is created
+// here — see auth/* for the actual access-granting flow), but it's a
+// spoofing/trust gap worth closing before launch: either verify payment_id
+// against the backend (e.g. a `paymentStatus` action — see Code.gs's
+// GET_ACTIONS) before rendering the success state, or replace the raw
+// payment_id with a short-lived signed token minted at redirect time.
 
 const params = new URLSearchParams(window.location.search);
 
