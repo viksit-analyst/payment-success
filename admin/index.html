@@ -3,12 +3,23 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<!-- H1 fix: Mission Control is an internal admin tool and must never be indexed. -->
+<meta name="robots" content="noindex, nofollow">
 <title>Mission Control · Viksit Analyst</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<!-- M5 fix: fonts loaded async (preload + swap media trick) instead of a
+     render-blocking <link rel="stylesheet">, so first paint isn't held up
+     by a page that's already gated behind two auth checks. -->
+<link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" media="print" onload="this.media='all'">
+<noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap"></noscript>
 <link rel="stylesheet" href="../assets/css/admin.css">
 <link rel="stylesheet" href="mission-control.css">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.4/chart.umd.min.js"></script>
+<!-- M5 fix: Chart.js is no longer loaded unconditionally here — most
+     visitors to this URL are denied by adminGuard.js and never need it.
+     adminGuard.js injects it only once admin access is confirmed, then
+     fires "va:admin-ready" (see mission-control.js). -->
 </head>
 <body>
 
@@ -245,9 +256,20 @@
   </div>
 </div>
 
-<script src="utils.js"></script>
-<script src="charts.js"></script>
-<script src="adminAPI.js"></script>
-<script src="mission-control.js"></script>
+<!-- Shared authentication layer (frozen — do not duplicate), plus the
+     admin-only gate on top of it. Mission Control had no auth at all
+     before this change. -->
+<script src="../auth/config.js" defer></script>
+<script src="../auth/api.js" defer></script>
+<script src="../auth/session.js" defer></script>
+<script src="../auth/auth.js" defer></script>
+<script src="../auth/components/toast.js" defer></script>
+<script src="../auth/routeGuard.js" defer></script>
+<script src="adminGuard.js" defer></script>
+
+<script src="utils.js" defer></script>
+<script src="charts.js" defer></script>
+<script src="adminAPI.js" defer></script>
+<script src="mission-control.js" defer></script>
 </body>
 </html>
