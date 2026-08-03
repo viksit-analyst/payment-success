@@ -127,7 +127,7 @@
   if (missionTimestampEl) {
     const now = new Date();
     const dateStr = now.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
-    missionTimestampEl.textContent = `${dateStr} · Website v2.3.1 · Research v19`;
+    missionTimestampEl.textContent = `${dateStr} · Research v19`;
   }
   if (lastUpdateEl) {
     let seconds = 0;
