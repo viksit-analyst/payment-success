@@ -1,9 +1,9 @@
 /**
  * routeGuard.js
  * ─────────────────────────────────────────────────────────────────────────
- * Include this on every protected page (dashboard.html, billing.html,
- * reports.html, downloads.html, profile.html, settings.html,
- * mission-control.html) — nowhere else.
+ * Include this on every protected page (dashboard/index.html, and any
+ * future page under /dashboard/ that isn't itself part of the SPA) —
+ * nowhere else.
  *
  *   <script src="/auth/config.js"></script>
  *   <script src="/auth/api.js"></script>
@@ -11,8 +11,15 @@
  *   <script src="/auth/auth.js"></script>
  *   <script src="/auth/components/toast.js"></script>
  *   <script src="/auth/components/toast.css" ... (as a <link>, not here) />
- *   <script src="/auth/components/idle-warning.js"></script>
  *   <script src="/auth/routeGuard.js"></script>
+ *
+ * idle-warning.js is OPTIONAL and does not currently exist in this repo —
+ * this file checks `global.VA_IDLE_WARNING` and simply skips the
+ * "are you still there?" modal if it's absent (idle logout itself still
+ * works via SESSION.createIdleMonitor's onTimeout, just without a warning
+ * first). Add /auth/components/idle-warning.js later if that UX is
+ * wanted; nothing here needs to change when it's added — it's picked up
+ * automatically.
  *
  * What it does, in order:
  *   1. Hides the page (visibility, not display, so layout doesn't jump)
@@ -99,13 +106,24 @@
   // ── Step 4: idle timeout + silent refresh + cross-tab sync ───────────
   let idleMonitor = null;
 
+  // NOTE — no refreshSession(). The backend has no such action and
+  // SessionRepository.gs has no "extend expiry" method at all; a
+  // session's expiry is fixed at login (24h, or 30d if remembered) and
+  // cannot be pushed out. Both places that used to call
+  // API.refreshSession() below now call API.validateSession() instead —
+  // that re-confirms the session is still ACTIVE server-side (catches
+  // revocation/logout-elsewhere) without pretending to extend anything.
+  // Practically: "Extend Session" resets the LOCAL idle timer (giving
+  // more time before the idle-timeout fires), but the token's own
+  // server-side expiry is unaffected either way — a session that's 5
+  // minutes from its real expiry will still end then, idle or not.
   function armSessionLifecycle() {
     const idleModal = global.VA_IDLE_WARNING
       ? global.VA_IDLE_WARNING.createIdleWarningModal({
           onExtend: async () => {
             try {
-              const res = await API.refreshSession();
-              SESSION.extendSession(res);
+              const res = await API.validateSession();
+              if (res.expiresAt) SESSION.extendSession({ expiresAt: res.expiresAt });
               if (idleMonitor) idleMonitor.reset();
             } catch (err) {
               if (global.VA_TOAST) global.VA_TOAST.error(AUTH.describeError(err));
@@ -124,24 +142,28 @@
     });
     idleMonitor.start();
 
-    const refreshScheduler = SESSION.createSilentRefreshScheduler(async () => {
+    const revalidateScheduler = SESSION.createSilentRefreshScheduler(async () => {
       try {
-        const res = await API.refreshSession();
-        SESSION.extendSession(res);
+        await API.validateSession();
+        // Deliberately not extending local expiry from this response —
+        // the server-reported expiry hasn't changed and won't; this
+        // call exists purely to detect early revocation between full
+        // page loads, not to keep the session alive longer than its
+        // original grant.
       } catch (err) {
         // A transient network hiccup shouldn't log the user out — only
         // an explicit auth failure should. The next validateSession() on
-        // navigation will catch anything the refresh silently missed.
+        // navigation will catch anything this silently missed.
         if (err instanceof API.ApiError && (err.code === API.ErrorCodes.UNAUTHORIZED || err.code === API.ErrorCodes.SESSION_EXPIRED)) {
           AUTH.logout();
         }
       }
     });
-    refreshScheduler.start();
+    revalidateScheduler.start();
 
     SESSION.onCrossTabLogout(() => {
       if (idleMonitor) idleMonitor.stop();
-      refreshScheduler.stop();
+      revalidateScheduler.stop();
       redirectToLogin();
     });
   }
