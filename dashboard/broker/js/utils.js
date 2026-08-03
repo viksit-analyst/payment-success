@@ -12,7 +12,18 @@
 export function getConfig() {
   const cfg = window.VIKSIT_CONFIG || {};
   return {
-    apiBase: cfg.apiBase || '/api', // Apps Script Web App exec URL, reverse-proxied
+    // M2 fix: '/api' resolved to nothing on this static-hosting setup —
+    // every brokerAPI.js call silently failed as soon as it was actually
+    // exercised. Per Code.gs (BrokerRouter.gs's actions are routed through
+    // the SAME Apps Script Web App's doGet()/doPost() as the payment/auth
+    // backend — see isBrokerApiAction_ in Code.gs), there's only one
+    // deployment URL for this whole platform, and it's already published
+    // as window.VA_AUTH_CONFIG.API_BASE_URL by auth/config.js (loaded
+    // before this module on every page that includes it — see
+    // sessionBridge.js). Fall back to that; fall back to null (not
+    // another fake string) if even that's missing, so callers can tell
+    // "not configured at all" apart from "configured wrong".
+    apiBase: cfg.apiBase || (window.VA_AUTH_CONFIG && window.VA_AUTH_CONFIG.API_BASE_URL) || null,
     customerId: cfg.customerId || null,
     sessionToken: cfg.sessionToken || null, // portal session JWT, NOT a broker token
     pollIntervalMs: cfg.pollIntervalMs || 15000,
