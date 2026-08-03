@@ -1,10 +1,27 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="dark">
+<html lang="en" data-theme="dark" class="va-preauth-hidden">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Broker · Viksit Analyst</title>
 <meta name="robots" content="noindex, nofollow">
+
+<!-- C3 fix: this page's visibility used to depend entirely on
+     auth/routeGuard.js running its own JS-driven hide (a style tag it
+     injects at runtime). If routeGuard.js isn't loaded — wrong include
+     order, someone opens this file directly, a future edit reorders
+     scripts — nothing hid the page, so raw unstyled broker markup could
+     flash before js/broker.js's own error message replaced it.
+     This inline style is a markup-level fail-safe: it hides the page the
+     instant the HTML parser sees the <html> tag, before ANY script has
+     had a chance to run, and does not depend on routeGuard.js at all.
+     js/broker.js removes the "va-preauth-hidden" class once it's safe to
+     show something — either the real app (auth confirmed) or its own
+     "please sign in again" message (auth layer missing/failed). Worst
+     case if js/broker.js itself never runs at all: the page stays
+     hidden forever, which is the correct fail-closed behavior for a
+     page like this, not a regression. -->
+<style>html.va-preauth-hidden { visibility: hidden !important; }</style>
 
 <link rel="icon" type="image/svg+xml" href="../../assets/favicon.svg">
 <meta name="theme-color" content="#0B1F3A">
@@ -108,6 +125,19 @@
 
 <div class="va-toast-stack" id="toastStack" aria-live="polite"></div>
 
+<!-- Shared authentication layer (frozen — do not duplicate). Must load
+     before js/broker.js: routeGuard hides the page until a validated
+     session exists, then js/sessionBridge.js hands the logged-in
+     customer + token to the existing broker widget contract
+     (window.VIKSIT_CONFIG), which brokerAPI.js already reads. -->
+<script src="../../auth/config.js"></script>
+<script src="../../auth/api.js"></script>
+<script src="../../auth/session.js"></script>
+<script src="../../auth/auth.js"></script>
+<script src="../../auth/components/toast.js"></script>
+<script src="../../auth/routeGuard.js"></script>
+
 <script type="module" src="js/broker.js"></script>
 </body>
 </html>
+
