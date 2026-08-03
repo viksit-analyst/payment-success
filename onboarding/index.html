@@ -104,6 +104,22 @@
 <div class="ob-toast-region" id="obToastRegion" role="status" aria-live="polite"></div>
 
 <script src="../assets/js/script.js"></script>
+
+<!-- Shared authentication layer (frozen — do not duplicate). Onboarding's
+     own emailed-link token (Api.getSessionToken(), above) remains the
+     primary way in — this only lets an already-logged-in customer be
+     offered a sign-in path instead of a dead end when they land here
+     without that link. -->
+<script src="../auth/config.js"></script>
+<script src="../auth/session.js"></script>
+<!-- M7 fix: onboarding.js's "Go to Dashboard" fallback used to trust only
+     the local session check (isValidLocally()), so an expired-but-not-yet-
+     cleared local session could offer a link that immediately bounces back
+     to login. auth/api.js is now loaded so it can do the authoritative
+     validateSession() check instead — see renderMissingTokenState() in
+     onboarding.js. -->
+<script src="../auth/api.js"></script>
+
 <script type="module" src="onboarding.js"></script>
 </body>
 </html>
