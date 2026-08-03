@@ -76,6 +76,60 @@
   line-height: 1.8;
 }
 .auth-footer-links a { color: var(--color-secondary); text-decoration: underline; text-underline-offset: 2px; }
+
+/* ── Resume-pending-login callout ─────────────────────────────────────
+   Shown instead of (not alongside) the plain login form when a code is
+   already in flight for this visitor. Fix: neither of this file's two
+   near-duplicate drafts (auth/login.css's ".va-resume-banner", and
+   auth/components/auth-theme.css's ".resume-callout") was actually linked
+   from login.html, so the resume banner and its button rendered with no
+   styling at all. This is the one file login.html actually loads. */
+.resume-callout {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+  padding: 12px 14px;
+  border-radius: var(--radius-sm);
+  background: rgba(46, 107, 230, 0.1);
+  border: 1px solid rgba(46, 107, 230, 0.28);
+  font-size: 13px;
+  color: var(--text-secondary);
+  margin-bottom: 24px;
+}
+.resume-callout svg { width: 18px; height: 18px; color: var(--color-secondary); flex-shrink: 0; }
+.resume-callout p { margin: 0; flex: 1 1 auto; min-width: 140px; }
+.resume-banner-action {
+  margin-left: auto;
+  background: var(--color-secondary);
+  border: none;
+  border-radius: var(--radius-sm);
+  padding: 7px 14px;
+  color: #fff;
+  font-size: 12.5px;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.resume-banner-action:hover { background: var(--color-primary); }
+/* Deliberately quiet — this is the ONE change requested here: with the
+   resume banner showing, the full form (and its own "Continue with
+   Email" button) is now hidden (see login.js), so "Continue" above is
+   the only prominent action. This link just lets someone abandon the
+   pending code and start over, without competing for attention. */
+.resume-banner-dismiss {
+  background: none;
+  border: none;
+  color: var(--text-tertiary);
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  white-space: nowrap;
+  padding: 4px 0;
+  width: 100%;
+  text-align: right;
+}
+.resume-banner-dismiss:hover { color: var(--text-secondary); text-decoration: underline; }
 [data-theme="dark"] .auth-footer-links a { color: #9FC2FF; }
 
 /* ── Error variant of the existing .form-status (legal.css only ships
