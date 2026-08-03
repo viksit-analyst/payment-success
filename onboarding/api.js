@@ -33,9 +33,18 @@
 const Api = (() => {
   'use strict';
 
-  // Same Apps Script Web App project app.js already calls.
-  const SCRIPT_URL =
-    'https://script.google.com/macros/s/AKfycbxzbo25oQHBZRB-oZUgdtKiXo_R1EP0Gsu7Q5D_vGhgnzCowsLNBkEmUMC-YuwGRkxU/exec';
+  // M3 fix: this used to be its own hardcoded copy of the Apps Script
+  // deployment URL — one of three independent copies (this file,
+  // auth/config.js, assets/js/app.js) that could silently drift out of
+  // sync on redeploy. auth/config.js is now the single source of truth;
+  // onboarding/index.html loads it (classic script, synchronous) before
+  // this module, so it's guaranteed to be set by the time any Api method
+  // actually runs. No hardcoded fallback on purpose — see the guard below.
+  const SCRIPT_URL = window.VA_AUTH_CONFIG && window.VA_AUTH_CONFIG.API_BASE_URL;
+
+  if (!SCRIPT_URL) {
+    console.error('[onboarding/api.js] window.VA_AUTH_CONFIG.API_BASE_URL is missing — make sure auth/config.js loads before onboarding.js.');
+  }
 
   const REQUEST_TIMEOUT_MS = 15000;
 
@@ -74,6 +83,9 @@ const Api = (() => {
    * POST bodies, which is presumably why app.js already does this).
    */
   async function request(action, params = {}) {
+    if (!SCRIPT_URL) {
+      throw new ApiError('Onboarding backend isn\u2019t configured on this page.', { code: 'CONFIG_MISSING' });
+    }
     const url = new URL(SCRIPT_URL);
     url.searchParams.set('action', action);
     Object.entries(params).forEach(([key, value]) => {
