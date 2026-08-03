@@ -393,17 +393,64 @@ function toast({ type = 'info', title, desc = '', duration = 4200 }) {
 /* --------------------------------------------------------------------------
    6. GENERIC MODAL
    -------------------------------------------------------------------------- */
+// H4 fix: focus-trap state. The Escape-to-close behavior already existed
+// (see the document-level keydown handler in section 11 below); what was
+// missing was (a) trapping Tab/Shift+Tab inside the modal so keyboard
+// users can't tab into hidden background content, and (b) returning focus
+// to whatever triggered the modal once it closes.
+let modalReturnFocusEl_ = null;
+let modalKeydownHandler_ = null;
+
+function getFocusableEls_(container) {
+  return qsa(
+    'a[href], button:not([disabled]), textarea:not([disabled]), input:not([disabled]), select:not([disabled]), [tabindex]:not([tabindex="-1"])',
+    container
+  ).filter((el) => el.offsetParent !== null); // visible only
+}
+
 function openModal(html, { size = '' } = {}) {
   const overlay = qs('#genericModalOverlay');
   const modal = qs('#genericModal');
   modal.className = `modal ${size}`;
   modal.innerHTML = html;
   overlay.classList.add('is-open');
+
+  modalReturnFocusEl_ = document.activeElement;
+
   const first = modal.querySelector('[autofocus]') || modal.querySelector('button, input');
   if (first) first.focus();
   qsa('[data-close-modal]', modal).forEach((b) => b.addEventListener('click', closeModal));
+
+  modalKeydownHandler_ = (e) => {
+    if (e.key !== 'Tab') return;
+    const focusable = getFocusableEls_(modal);
+    if (!focusable.length) { e.preventDefault(); return; }
+    const firstEl = focusable[0];
+    const lastEl = focusable[focusable.length - 1];
+    if (e.shiftKey && document.activeElement === firstEl) {
+      e.preventDefault();
+      lastEl.focus();
+    } else if (!e.shiftKey && document.activeElement === lastEl) {
+      e.preventDefault();
+      firstEl.focus();
+    }
+  };
+  overlay.addEventListener('keydown', modalKeydownHandler_);
 }
-function closeModal() { qs('#genericModalOverlay').classList.remove('is-open'); }
+function closeModal() {
+  const overlay = qs('#genericModalOverlay');
+  overlay.classList.remove('is-open');
+  if (modalKeydownHandler_) {
+    overlay.removeEventListener('keydown', modalKeydownHandler_);
+    modalKeydownHandler_ = null;
+  }
+  // Return focus to whatever triggered the modal so keyboard users don't
+  // lose their place in the page when it closes.
+  if (modalReturnFocusEl_ && typeof modalReturnFocusEl_.focus === 'function') {
+    modalReturnFocusEl_.focus();
+  }
+  modalReturnFocusEl_ = null;
+}
 qs('#genericModalOverlay').addEventListener('click', (e) => { if (e.target.id === 'genericModalOverlay') closeModal(); });
 
 function confirmAction({ title, desc, confirmLabel = 'Confirm', danger = false, onConfirm }) {
@@ -563,7 +610,17 @@ function renderProfilePanel() {
     <div class="divider" style="margin:6px 0;"></div>
     <button class="profile-menu-item" id="logoutBtn" style="color:var(--color-error);">${ICONS.logout}Log out</button>`;
   qs('#logoutBtn').addEventListener('click', () => {
-    confirmAction({ title: 'Log out of Viksit Analyst?', desc: 'You will need to sign in again to access your dashboard.', confirmLabel: 'Log out', danger: true, onConfirm: showSessionExpired });
+    confirmAction({
+      title: 'Log out of Viksit Analyst?',
+      desc: 'You will need to sign in again to access your dashboard.',
+      confirmLabel: 'Log out',
+      danger: true,
+      // Reuses the shared, frozen auth service (auth/auth.js) — calls the
+      // backend logout endpoint, clears the session, and redirects to
+      // /auth/login.html. Falls back to the old mock screen only if the
+      // auth layer somehow isn't loaded on this page.
+      onConfirm: () => (window.VA_AUTH ? VA_AUTH.logout() : showSessionExpired()),
+    });
   });
 }
 qs('#profileBtn').addEventListener('click', (e) => {
@@ -1254,6 +1311,16 @@ RENDERERS.reports = function (target) {
    21. DOWNLOADS VIEW
    -------------------------------------------------------------------------- */
 RENDERERS.downloads = function (target) {
+  // Require active subscription — customers without a live subscription
+  // don't get the bot binary or docs, only a path back to billing.
+  const ACTIVE_STATUSES = ['ACTIVE', 'GRACE_PERIOD'];
+  if (!ACTIVE_STATUSES.includes(CUSTOMER.subscriptionStatus)) {
+    target.innerHTML = `
+      <div class="view-head"><div><div class="view-title">Downloads</div><div class="view-subtitle">Execution bot, documentation and version history.</div></div></div>
+      ${emptyStateHTML({ title: 'Downloads unlock with an active subscription', desc: `Your subscription is currently ${escapeHTML(SUBSCRIPTION_BADGE[CUSTOMER.subscriptionStatus] ? SUBSCRIPTION_BADGE[CUSTOMER.subscriptionStatus][1] : CUSTOMER.subscriptionStatus)}. Renew or activate a plan to download the bot, documentation and version history.`, iconName: 'download', actionLabel: 'Go to Billing', actionRoute: 'billing' })}`;
+    return;
+  }
+
   const bot = DOWNLOADS_CATALOG.strategyFiles[0];
   target.innerHTML = `
     <div class="view-head"><div><div class="view-title">Downloads</div><div class="view-subtitle">Execution bot, documentation and version history.</div></div></div>
@@ -1303,6 +1370,16 @@ RENDERERS.downloads = function (target) {
 /* --------------------------------------------------------------------------
    22. BILLING VIEW
    -------------------------------------------------------------------------- */
+// ⚠ PRODUCTION TODO (audit finding H5): every "save"/"update"/"cancel"
+// action in RENDERERS.billing, .profile, and .settings below only calls
+// toast({ type: 'success', ... }) — nothing is actually persisted, and
+// there is no backend endpoint yet to persist it to (see AdminService.gs /
+// DashboardApi.gs — no write actions exist for these fields today).
+// That's expected at this stage, but today it's indistinguishable in the
+// UI from a real save. Before this ships: wire each handler to a real
+// API call with its own loading/error state, and until that exists,
+// treat every "success" toast in this section as a demo confirmation,
+// not a persisted change.
 RENDERERS.billing = function (target) {
   target.innerHTML = `
     <div class="view-head"><div><div class="view-title">Billing</div><div class="view-subtitle">Subscription, payment method and invoice history.</div></div></div>
@@ -1447,6 +1524,9 @@ function openNewTicketModal() {
 
 /* --------------------------------------------------------------------------
    24. PROFILE VIEW
+   ⚠ Fake-success only, not yet persisted — see the H5 TODO above
+   RENDERERS.billing for the full note; applies to #saveProfileBtn and
+   #savePwBtn below too.
    -------------------------------------------------------------------------- */
 RENDERERS.profile = function (target) {
   target.innerHTML = `
@@ -1525,6 +1605,8 @@ RENDERERS.profile = function (target) {
 
 /* --------------------------------------------------------------------------
    25. SETTINGS VIEW
+   ⚠ Fake-success only, not yet persisted — see the H5 TODO above
+   RENDERERS.billing.
    -------------------------------------------------------------------------- */
 const SETTINGS_PANELS = ['general', 'notifications', 'privacy', 'api', 'devices', 'danger'];
 const SETTINGS_LABELS = { general: 'General', notifications: 'Notifications', privacy: 'Privacy', api: 'API Keys', devices: 'Connected Devices', danger: 'Danger Zone' };
@@ -1671,8 +1753,73 @@ function showSessionExpired() {
 }
 
 /* --------------------------------------------------------------------------
+   28b. AUTH INTEGRATION — full platform integration
+   Bridges the shared portal auth layer (auth/session.js, auth/api.js,
+   auth/routeGuard.js — frozen, included on dashboard/index.html before this
+   file) into the CUSTOMER object every RENDERERS.* function already reads.
+   No renderer, no route, no component below this point changes shape:
+   CUSTOMER stays the same object identity, we only patch its fields once
+   the real profile loads, then re-render whatever view is on screen.
+   -------------------------------------------------------------------------- */
+async function hydrateCustomerFromSession() {
+  if (!window.VA_SESSION || !window.VA_API) return; // auth layer not present — keep demo data
+
+  const sessionUser = VA_SESSION.getUser() || {};
+  const token = VA_SESSION.getToken();
+
+  // 1) Immediate, synchronous hydration from whatever routeGuard already
+  //    validated (name/email at minimum), so the topbar never shows the
+  //    wrong person even before the network call below resolves.
+  Object.assign(CUSTOMER, {
+    id: sessionUser.customerId || sessionUser.id || CUSTOMER.id,
+    name: sessionUser.name || CUSTOMER.name,
+    email: sessionUser.email || CUSTOMER.email,
+  });
+  // M1 fix: BROKER_CONNECTION.customerId was captured once at
+  // module-evaluation time (`customerId: CUSTOMER.id` above, before this
+  // function ever ran) and never updated again, so the mini broker card
+  // on the dashboard home view could show a stale/mock customer ID.
+  // Re-sync it every time CUSTOMER.id changes instead.
+  BROKER_CONNECTION.customerId = CUSTOMER.id;
+
+  // 2) Authoritative profile fetch — VA_API.me() is the existing, frozen
+  //    auth API client's real backend call (AuthApi.gs → action=me),
+  //    already used by no one else on this page. { customerId, name,
+  //    email, bot } per auth/api.js.
+  if (!token) return;
+  try {
+    const profile = await VA_API.me(token);
+    if (!profile) return;
+    Object.assign(CUSTOMER, {
+      id: profile.customerId || CUSTOMER.id,
+      name: profile.name || CUSTOMER.name,
+      email: profile.email || CUSTOMER.email,
+    });
+    BROKER_CONNECTION.customerId = CUSTOMER.id; // M1 fix — see note above
+    if (profile.bot) {
+      // Real bot status, when the backend includes it — everything else
+      // in BOT_STATUS (server, latencyMs, ...) stays on demo data until
+      // a dedicated bot-status endpoint exists (see production TODO).
+      Object.assign(BOT_STATUS, profile.bot);
+    }
+  } catch (err) {
+    // A failed profile fetch shouldn't block the dashboard — routeGuard
+    // already confirmed the session is valid; this is best-effort
+    // enrichment, not the auth check itself.
+    console.warn('[dashboard] VA_API.me() failed, showing session data only:', err);
+  }
+}
+
+/* --------------------------------------------------------------------------
    29. BOOTSTRAP
    -------------------------------------------------------------------------- */
+// M4 fix: previously an untracked setInterval with no way to clear it.
+// Harmless while this page never tears down its own init()'s scope, but
+// there was no teardown hook at all — tracking the handle and clearing it
+// on pagehide costs nothing and means this survives becoming embedded /
+// re-initialized elsewhere (e.g. inside an SPA shell) without leaking.
+let heartbeatIntervalId_ = null;
+
 function init() {
   applyTheme();
   applySidebar();
@@ -1680,12 +1827,34 @@ function init() {
   navigate(startRoute);
 
   // simulate loadNotifications() / loadBroker() background polling
-  setInterval(() => {
+  if (heartbeatIntervalId_) clearInterval(heartbeatIntervalId_);
+  heartbeatIntervalId_ = setInterval(() => {
     BOT_STATUS.lastHeartbeat = new Date().toISOString();
     const dot = qs('#sidebarSystemDot');
     if (dot) { dot.classList.remove('success'); void dot.offsetWidth; dot.classList.add('success'); }
   }, 15000);
 }
 
-if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);
-else init();
+window.addEventListener('pagehide', () => {
+  if (heartbeatIntervalId_) {
+    clearInterval(heartbeatIntervalId_);
+    heartbeatIntervalId_ = null;
+  }
+});
+
+async function boot() {
+  if (window.VA_ROUTE_GUARD) {
+    // routeGuard (auth/routeGuard.js, loaded before this file) keeps the
+    // page hidden and redirects unauthenticated visitors to login on its
+    // own. We just wait for it to say "this is a real, validated session"
+    // before hydrating real customer data and rendering the SPA.
+    await new Promise((resolve) => VA_ROUTE_GUARD.onReady(resolve));
+    await hydrateCustomerFromSession();
+  } else {
+    console.warn('[dashboard] VA_ROUTE_GUARD not found — running unauthenticated with demo data. Include auth/*.js on dashboard/index.html.');
+  }
+  init();
+}
+
+if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot);
+else boot();
