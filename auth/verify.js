@@ -162,8 +162,16 @@
     verifyBtn.disabled = isLoading;
     otpInput.setDisabled(isLoading);
     verifyBtn.classList.toggle('is-loading', isLoading);
-    verifyBtn.querySelector('.va-btn-label').toggleAttribute('hidden', isLoading);
-    verifyBtn.querySelector('.va-btn-loading').toggleAttribute('hidden', !isLoading);
+    const label = verifyBtn.querySelector(".va-btn-label");
+    const loading = verifyBtn.querySelector(".va-btn-loading");
+    
+    if (label) {
+        label.toggleAttribute("hidden", isLoading);
+    }
+    
+    if (loading) {
+        loading.toggleAttribute("hidden", !isLoading);
+    }
   }
 
   async function handleVerify(code) {
