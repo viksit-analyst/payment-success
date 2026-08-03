@@ -55,11 +55,12 @@
   // to the backend-provided message for anything not explicitly mapped,
   // so new backend error codes degrade gracefully instead of breaking.
   const ERROR_COPY = {
-    [API.ErrorCodes.NETWORK_ERROR]: "We couldn't reach Viksit Analyst. Check your connection and try again.",
+    [API.ErrorCodes.NETWORK]: "We couldn't reach Viksit Analyst. Check your connection and try again.",
     [API.ErrorCodes.TIMEOUT]: 'That took too long. Please try again.',
-    [API.ErrorCodes.SERVER_ERROR]: 'Something went wrong on our end. Please try again in a moment.',
-    [API.ErrorCodes.INVALID_RESPONSE]: 'Something went wrong on our end. Please try again in a moment.',
-    [API.ErrorCodes.CONFIG_ERROR]: 'Authentication isn\u2019t configured yet. Please contact support.',
+    [API.ErrorCodes.HTTP_ERROR]: 'Something went wrong on our end. Please try again.',
+    [API.ErrorCodes.BAD_JSON]: 'Unexpected server response. Please try again.',
+    [API.ErrorCodes.CONFIG_MISSING]: 'Authentication isn\u2019t configured yet. Please contact support.',
+    [API.ErrorCodes.REQUEST_FAILED]: 'Authentication failed.',
     [API.ErrorCodes.EMAIL_NOT_FOUND]: 'We couldn\u2019t find an account with that email. Double-check it, or subscribe first.',
     [API.ErrorCodes.INVALID_EMAIL]: 'Enter a valid email address.',
     [API.ErrorCodes.OTP_EXPIRED]: 'This code has expired. Request a new one below.',
@@ -171,7 +172,7 @@
    */
   async function logout({ redirect = true } = {}) {
     try {
-      await API.logout();
+            await API.logout(SESSION.getToken());
     } finally {
       SESSION.clearSession();
       if (redirect) {
