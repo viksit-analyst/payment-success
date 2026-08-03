@@ -743,6 +743,10 @@
 </div>
 
 <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+<!-- M3 fix: auth/config.js is the single source of truth for the Apps
+     Script deployment URL — app.js now reads window.VA_AUTH_CONFIG.API_BASE_URL
+     from it instead of carrying its own hardcoded copy. -->
+<script src="auth/config.js"></script>
 <script src="assets/js/app.js"></script>
 <script src="assets/js/script.js"></script>
   
