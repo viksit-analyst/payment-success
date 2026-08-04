@@ -274,6 +274,23 @@ section { position: relative; }
 }
 .btn:active { transform: translateY(1px); }
 
+/* UX ADDITION: shared loading-state treatment for buttons — same pattern
+   already used on the auth pages (auth/login.css), reused here so the
+   pricing "Subscribe" buttons and success.html's payment-status spinner
+   look and animate identically across the whole site. */
+.btn.is-loading { pointer-events: none; opacity: 0.85; }
+.btn .va-btn-loading { display: none; align-items: center; gap: 8px; }
+.btn.is-loading .va-btn-label { display: none; }
+.btn.is-loading .va-btn-loading { display: inline-flex; }
+
+.spinner {
+  width: 18px; height: 18px; border-radius: 50%;
+  border: 2px solid var(--border-default); border-top-color: var(--color-accent);
+  animation: spin 0.7s linear infinite;
+  display: inline-block;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
 .btn-primary {
   background: var(--color-primary);
   color: #fff;
