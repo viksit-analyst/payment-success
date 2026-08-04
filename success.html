@@ -4,7 +4,12 @@
 <head>
 
     <meta charset="UTF-8">
+
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; font-src 'self'; img-src 'self' data:; connect-src 'self' https://script.google.com; base-uri 'self'; form-action 'self'; object-src 'none';">
+
+    <meta name="referrer" content="strict-origin-when-cross-origin">
 
     <!-- H6 fix: this page renders a "payment successful" state purely from
          an unverified ?payment_id= URL param (see the script near the end
