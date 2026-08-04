@@ -17,7 +17,23 @@ function debugLog(...args) { if (DEBUG) console.log(...args); }
 
 let paymentInProgress = false;
 
-async function buy(bot) {
+// UX FIX: buy() previously gave zero visual feedback between the click and
+// Razorpay's checkout modal opening — just a silent paymentInProgress flag.
+// On a cold Apps Script execution (createOrder can genuinely take 1-3s)
+// the button looked broken, and nothing stopped a confused user clicking
+// it again. This swaps the label for a spinner and disables the button;
+// restored on every exit path below.
+function setButtonLoading(btn, isLoading) {
+    if (!btn) return;
+    btn.disabled = isLoading;
+    btn.classList.toggle('is-loading', isLoading);
+    const label = btn.querySelector('.va-btn-label');
+    const loading = btn.querySelector('.va-btn-loading');
+    if (label) label.hidden = isLoading;
+    if (loading) loading.hidden = !isLoading;
+}
+
+async function buy(bot, btn) {
     debugLog("buy() called:", bot);
     if (paymentInProgress) return;
 
@@ -28,6 +44,8 @@ async function buy(bot) {
     }
 
     paymentInProgress = true;
+    setButtonLoading(btn, true);
+    const resetButton = () => setButtonLoading(btn, false);
 
     try {
 
@@ -103,6 +121,7 @@ async function buy(bot) {
                 ondismiss: function () {
             
                     paymentInProgress = false;
+                    resetButton();
             
                 }
             
@@ -111,6 +130,10 @@ async function buy(bot) {
             handler: function (response) {
             
                 paymentInProgress = false;
+                // Intentionally no resetButton() here — we're about to
+                // navigate to success.html, so leaving the button in its
+                // loading state avoids a flash of the normal label right
+                // before the page unloads.
             
                 window.location.href =
                     `success.html?payment_id=${response.razorpay_payment_id}`;
@@ -124,6 +147,11 @@ async function buy(bot) {
         const rzp = new Razorpay(options);
         
         debugLog("Opening Razorpay...");
+
+        // The checkout modal is its own loading indicator from here on —
+        // drop the button's spinner right before it opens so the two
+        // don't run at the same time.
+        resetButton();
         
         rzp.on("payment.failed", function (response) {
         
@@ -159,6 +187,7 @@ async function buy(bot) {
         alert(e.message || "Something went wrong.");
 
         paymentInProgress = false;
+        resetButton();
 
     }
 
