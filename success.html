@@ -284,34 +284,8 @@
 
 </div>
 
-<script>
-
-// ⚠ PRODUCTION TODO (audit finding H6): paymentId below is read straight
-// from the URL with zero server-side verification — a hand-crafted link
-// like /success.html?payment_id=anything shows this exact "success"
-// screen without anyone having paid. It's low-severity today because this
-// page grants no real access on its own (no session/cookie is created
-// here — see auth/* for the actual access-granting flow), but it's a
-// spoofing/trust gap worth closing before launch: either verify payment_id
-// against the backend (e.g. a `paymentStatus` action — see Code.gs's
-// GET_ACTIONS) before rendering the success state, or replace the raw
-// payment_id with a short-lived signed token minted at redirect time.
-
-const params = new URLSearchParams(window.location.search);
-
-const paymentId = params.get("payment_id");
-
-if(paymentId){
-
-    document.getElementById("paymentId").textContent = paymentId;
-
-}else{
-
-    document.getElementById("paymentId").textContent = "Unavailable";
-
-}
-
-</script>
+<script src="auth/config.js"></script>
+<script src="success.js"></script>
 
 </body>
 
