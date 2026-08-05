@@ -3,6 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data:; connect-src 'self'; base-uri 'self'; form-action 'self'; object-src 'none';">
+<meta name="referrer" content="strict-origin-when-cross-origin">
 <title>Contact - Viksit Analyst</title>
 <meta name="description" content="Get in touch with Viksit Analyst for support, subscription questions, or business inquiries. Support email, response times, and a direct contact form.">
 <meta name="robots" content="index, follow">
@@ -258,37 +260,7 @@
 </div>
 
 <script src="assets/js/script.js"></script>
+<script src="assets/js/contact.js" defer></script>
   
-<script>
-  /* Contact form — mailto composer. Page-specific behavior only;
-     does not duplicate anything already handled by script.js. */
-  (() => {
-    'use strict';
-    const form = document.getElementById('contactForm');
-    const status = document.getElementById('formStatus');
-    if (!form) return;
-    form.addEventListener('submit', (e) => {
-      e.preventDefault();
-      if (!form.checkValidity()) { form.reportValidity(); return; }
-      const name = form.name.value.trim();
-      const email = form.email.value.trim();
-      const phone = form.phone.value.trim();
-      const topic = form.topic.value;
-      const message = form.message.value.trim();
-      const subject = encodeURIComponent(`[Viksit Analyst] ${topic} - ${name}`);
-      const bodyLines = [
-        `Name: ${name}`,
-        `Email: ${email}`,
-        phone ? `Phone: ${phone}` : null,
-        `Topic: ${topic}`,
-        '',
-        message
-      ].filter(Boolean);
-      const body = encodeURIComponent(bodyLines.join('\n'));
-      window.location.href = `mailto:analyst@viksitanalyst.com?subject=${subject}&body=${body}`;
-      status.classList.add('is-visible');
-    });
-  })();
-</script>
 </body>
 </html>
