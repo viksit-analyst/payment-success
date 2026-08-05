@@ -10,14 +10,16 @@
  * Include immediately after auth/routeGuard.js and before utils.js /
  * mission-control.js.
  *
- * ⚠ PRODUCTION TODO: this is a client-side convenience gate only. It reads
- * `user.role` / `user.isAdmin` from VA_API.me(), which the backend does not
- * currently return (see auth/api.js — response shape is today just
- * { customerId, name, email, bot }). Until AuthApi.gs adds a real role
- * field AND every Mission Control / adminAPI.js backend endpoint enforces
- * admin-only access server-side, this screen is UI polish, not security —
- * anyone can bypass it by editing JS. Do not treat this as sufficient
- * authorization on its own.
+* AUDIT FIX (C2): `user.role` now comes from a real Customers-sheet column
+ * (see Config.gs SHEET_HEADERS.CUSTOMERS / CustomerRepository.rowToCustomer_
+ * / AuthService.getCurrentCustomer) instead of not existing at all, and
+ * handleAdminApi_ in AdminService.gs enforces the same Role === "admin"
+ * check server-side via a real session token, independent of this file.
+ * This screen hiding early is still just UX polish on top of that — the
+ * actual authorization is the backend check, not this JS. One remaining
+ * manual step: a customer's Role cell has to be set to "admin" by hand in
+ * the sheet (no API path can set it) before that account sees anything
+ * here.
  * ───────────────────────────────────────────────────────────────────────── */
 (function (global, document) {
   'use strict';
