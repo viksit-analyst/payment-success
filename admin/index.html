@@ -14,9 +14,10 @@
      render-blocking <link rel="stylesheet">, so first paint isn't held up
      by a page that's already gated behind two auth checks. -->
 <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" media="print" onload="this.media='all'">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" media="print" data-font-swap>
 <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap"></noscript>
-<link rel="stylesheet" href="../assets/css/admin.css">
+<script src="assets/js/fonts.js" defer></script>
+     <link rel="stylesheet" href="../assets/css/admin.css">
 <link rel="stylesheet" href="mission-control.css">
 <!-- M5 fix: Chart.js is no longer loaded unconditionally here — most
      visitors to this URL are denied by adminGuard.js and never need it.
