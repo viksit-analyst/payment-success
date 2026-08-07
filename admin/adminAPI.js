@@ -37,8 +37,16 @@ async function _mcFetch(path, options = {}) {
   if (!ADMIN_API_CONFIG.baseUrl) {
     throw new Error(`adminAPI: no baseUrl configured — cannot call "${path}" against a real endpoint yet.`);
   }
+  // AUDIT FIX (preventive): 'application/json' is not a CORS-safelisted
+  // Content-Type, so it forces a preflight OPTIONS request. If baseUrl
+  // ever points at the Apps Script backend (as brokerAPI.js's identical
+  // mistake demonstrated — see dashboard/broker/js/brokerAPI.js), Apps
+  // Script cannot answer that preflight and every call here would be
+  // silently blocked by the browser. text/plain avoids the preflight;
+  // Apps Script's doGet/doPost just read the raw body regardless of the
+  // declared Content-Type.
   const res = await fetch(`${ADMIN_API_CONFIG.baseUrl}${path}`, {
-    headers: { 'Content-Type': 'application/json' },
+    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
     ...options,
   });
   if (!res.ok) throw new Error(`adminAPI: ${path} failed with ${res.status}`);
