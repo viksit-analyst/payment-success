@@ -33,13 +33,28 @@ async function callBackend(action, { method = 'GET', body, silent = false } = {}
 
   const url = new URL(apiBase, window.location.origin);
   url.searchParams.set('action', action);
+  // AUDIT FIX: Apps Script's doGet(e)/doPost(e) never exposes custom HTTP
+  // headers (see BrokerRouter.gs authenticateRequest_, and
+  // PaymentWebhookHandler.gs's own note on this same platform limitation)
+  // — an `Authorization` header was silently invisible server-side, so
+  // every call here was failing auth. BrokerRouter.gs actually reads the
+  // token from e.parameter.authorization, so it has to travel as a query
+  // param instead.
+  if (sessionToken) url.searchParams.set('authorization', sessionToken);
   if (method === 'GET' && customerId) url.searchParams.set('customerId', customerId);
 
   const init = {
     method,
     headers: {
-      'Content-Type': 'application/json',
-      ...(sessionToken ? { Authorization: `Bearer ${sessionToken}` } : {}),
+      // AUDIT FIX: 'application/json' is not a CORS-safelisted
+      // Content-Type, so it forces a preflight OPTIONS request — which
+      // Apps Script Web Apps cannot answer (no doOptions handler, by
+      // platform design), so the browser blocked every one of these
+      // calls before it ever reached Google's servers. text/plain keeps
+      // this a "simple request" (no preflight); BrokerRouter.gs already
+      // just JSON.parses the raw body regardless of the declared
+      // Content-Type, so this is safe.
+      'Content-Type': 'text/plain;charset=utf-8',
     },
   };
   if (method !== 'GET') {
