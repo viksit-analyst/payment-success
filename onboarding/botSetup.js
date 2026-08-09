@@ -16,17 +16,17 @@ import { showToast } from './components/toast.js';
 // an IIFE, not a module, and scoped to the marketing pages only).
 const STRATEGY_META = Object.freeze({
   ivrv: {
-    name: 'IVRV', tagline: 'Systematic Volatility Trading', color: 'var(--color-ivrv)',
+    name: 'IVRV', tagline: 'Systematic Volatility Strategy', color: 'var(--color-ivrv)',
     risk: 'Moderate', capital: '\u20b93,00,000+', hours: 'Multi-day holds, monitored continuously',
     instruments: 'Index options (Nifty)', execution: 'Systematic, selective entries',
   },
   gamma: {
-    name: 'Gamma Flip', tagline: 'Systematic Momentum Trading', color: 'var(--color-gamma)',
+    name: 'Gamma Flip', tagline: 'Systematic Momentum Strategy', color: 'var(--color-gamma)',
     risk: 'Higher', capital: '\u20b93,00,000+', hours: 'Intraday, concentrated sessions',
     instruments: 'Index options (Nifty)', execution: 'Rapid, rules-based intraday entries',
   },
   vwap: {
-    name: 'VWAP', tagline: 'Institutional Trend Participation', color: 'var(--color-vwap)',
+    name: 'VWAP', tagline: 'Systematic Intraday Trend Strategy', color: 'var(--color-vwap)',
     risk: 'Moderate', capital: '\u20b93,00,000+', hours: 'Intraday, trend windows',
     instruments: 'Index options (Nifty)', execution: 'Automated trend participation',
   },
