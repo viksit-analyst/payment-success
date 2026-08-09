@@ -151,7 +151,7 @@
     ivrv: {
       color: 'var(--color-ivrv)',
       name: 'IVRV',
-      tagline: 'Systematic Volatility Trading',
+      tagline: 'Systematic Volatility Strategy',
       desc: 'IVRV is a quantitative volatility strategy designed to identify periods where implied and realized market volatility diverge meaningfully. Rather than predicting market direction, it focuses on statistically significant volatility conditions and executes according to predefined quantitative rules.',
       highlights: [
         ['Strategy Type', 'Volatility'], ['Trading Style', 'Systematic'], ['Holding Period', 'Several Days'],
@@ -169,7 +169,7 @@
     gamma: {
       color: 'var(--color-gamma)',
       name: 'Gamma Flip',
-      tagline: 'Systematic Momentum Trading',
+      tagline: 'Systematic Momentum Strategy',
       desc: 'Gamma Flip is an intraday quantitative momentum strategy designed to respond to high-conviction market movements through rapid, rules-based execution, while maintaining disciplined risk controls throughout the session.',
       highlights: [
         ['Trading Style', 'Momentum'], ['Holding Period', 'Seconds–Minutes'], ['Typical Activity', '1–6 / active day'],
@@ -187,7 +187,7 @@
     vwap: {
       color: 'var(--color-vwap)',
       name: 'VWAP',
-      tagline: 'Institutional Trend Participation',
+      tagline: 'Systematic Intraday Trend Strategy',
       desc: 'VWAP is a systematic intraday trend-following strategy inspired by institutional execution principles. Rather than forecasting reversals, it seeks disciplined participation in established intraday directional movement.',
       highlights: [
         ['Trading Style', 'Trend Following'], ['Holding Period', 'Minutes–Hours'], ['Typical Activity', 'Several / week'],
