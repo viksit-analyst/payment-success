@@ -95,6 +95,7 @@
   color: var(--color-primary);
   box-shadow: 0 0 0 4px rgba(11, 31, 58, 0.08);
 }
+[data-theme="dark"] .ob-step.is-current .ob-step-dot { border-color: var(--color-accent); color: var(--color-accent); }
 [data-theme="dark"] .ob-step.is-current .ob-step-dot { box-shadow: 0 0 0 4px rgba(248, 250, 252, 0.08); }
 
 .ob-step-label {
@@ -240,6 +241,7 @@
 [data-theme="dark"] .ob-form-group input:focus,
 [data-theme="dark"] .ob-form-group select:focus,
 [data-theme="dark"] .ob-form-group textarea:focus {
+  border-color: var(--color-accent);
   box-shadow: 0 0 0 3px rgba(248, 250, 252, 0.1);
 }
 .ob-form-group input[readonly] { color: var(--text-tertiary); background: var(--bg-sunken); }
@@ -273,6 +275,7 @@
   font-weight: 700;
   color: var(--color-primary);
 }
+[data-theme="dark"] .ob-broker-logo { color: var(--color-accent); }
 .ob-broker-name { font-weight: 600; }
 .ob-broker-sub { font-size: var(--fs-xs); color: var(--text-tertiary); }
 
@@ -399,6 +402,7 @@
   color: var(--color-primary);
   animation: ob-spin 1s linear infinite;
 }
+[data-theme="dark"] .ob-activation-row.is-active .ob-activation-icon { border-color: var(--color-accent); color: var(--color-accent); }
 .ob-activation-row.is-done .ob-activation-icon { background: var(--color-success); border-color: var(--color-success); color: #fff; animation: none; }
 .ob-activation-row.is-error .ob-activation-icon { background: var(--color-error); border-color: var(--color-error); color: #fff; animation: none; }
 .ob-activation-text { display: flex; flex-direction: column; gap: 2px; }
@@ -420,6 +424,10 @@
   gap: 12px;
   transition: all var(--dur-base) var(--ease-standard);
 }
+/* botSetup.js sets `border-color:var(--color-primary)` inline for the
+   selected-bot state; scoping the variable itself (rather than only
+   border-color) fixes that inline usage too without touching the JS. */
+[data-theme="dark"] .ob-download-card { --color-primary: var(--color-accent); }
 .ob-download-card:hover { border-color: var(--color-primary); transform: translateY(-2px); box-shadow: var(--shadow-sm); }
 .ob-download-icon {
   width: 36px; height: 36px;
@@ -484,6 +492,7 @@
   font-size: var(--fs-sm);
   animation: ob-toast-in var(--dur-base) var(--ease-out);
 }
+[data-theme="dark"] .ob-toast { border-left-color: var(--color-accent); }
 .ob-toast.is-leaving { animation: ob-toast-out var(--dur-base) var(--ease-standard) forwards; }
 .ob-toast.is-success { border-left-color: var(--color-success); }
 .ob-toast.is-error { border-left-color: var(--color-error); }
@@ -509,3 +518,4 @@
   .ob-panel-footer .btn { width: 100%; }
   .ob-toast-region { left: 16px; right: 16px; bottom: 16px; max-width: none; }
 }
+
