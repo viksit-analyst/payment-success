@@ -819,11 +819,19 @@ body.is-armed .spark-node { animation: node-pop 0.4s var(--ease-out) forwards; }
   display: flex;
   align-items: center;
   justify-content: center;
-  background: var(--bg-sunken);
+  background: rgba(var(--color-primary-rgb), 0.08);
   color: var(--color-primary);
   margin-bottom: 20px;
 }
 .why-icon svg { width: 22px; height: 22px; }
+/* Bug fix: in dark mode --bg-sunken and --color-primary were both near-black
+   navy, so the icon stroke (currentColor) was invisible against its own
+   background. Dark mode now uses the accent color against a translucent
+   accent background for guaranteed contrast on any surface. */
+[data-theme="dark"] .why-icon {
+  background: rgba(var(--color-accent-rgb), 0.14);
+  color: var(--color-accent);
+}
 .why-card h3 { font-size: var(--fs-md); margin-bottom: 10px; font-weight: 500; }
 .why-card p { color: var(--text-secondary); font-size: var(--fs-sm); line-height: 1.65; }
 
