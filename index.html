@@ -93,6 +93,11 @@
     },
     {
       "@type": "Question",
+      "name": "Are you SEBI registered?",
+      "acceptedAnswer": { "@type": "Answer", "text": "Viksit Analyst is not currently registered as a SEBI Research Analyst (RA). This status is stated plainly here and on the Trust & Security page, and will be kept current as it changes." }
+    },
+    {
+      "@type": "Question",
       "name": "What capital is recommended?",
       "acceptedAnswer": { "@type": "Answer", "text": "A trading capital of ₹3,00,000 or above is recommended across strategies, to allow for efficient position sizing and disciplined risk management." }
     },
@@ -140,10 +145,11 @@
 
     <nav class="nav-links" aria-label="Primary">
       <a href="#top">Home</a>
-      <a href="#overview">Overview</a>
       <a href="#strategies">Strategies</a>
       <a href="#pricing">Pricing</a>
       <a href="#mission-control">Mission Control</a>
+      <a href="research.html">Research</a>
+      <a href="trust.html">Trust &amp; Security</a>
       <a href="#faq">FAQ</a>
       <a href="#contact">Contact</a>
     </nav>
@@ -161,10 +167,11 @@
 
   <div class="mobile-drawer" id="mobileDrawer">
     <a href="#top">Home</a>
-    <a href="#overview">Overview</a>
     <a href="#strategies">Strategies</a>
     <a href="#pricing">Pricing</a>
     <a href="#mission-control">Mission Control</a>
+    <a href="research.html">Research</a>
+    <a href="trust.html">Trust &amp; Security</a>
     <a href="#faq">FAQ</a>
     <a href="#contact">Contact</a>
     <div class="drawer-actions">
@@ -183,20 +190,20 @@
   <div class="container hero-grid">
 
     <div class="hero-copy">
-      <p class="eyebrow hero-eyebrow">Research-Driven Algo Trading for Indian Markets</p>
-      <h1>Algo Trading,<br><span class="accent-line">Built on Research.</span></h1>
-      <p class="hero-sub">Viksit Analyst builds systematic algo trading strategies for Indian markets and executes them automatically through supported brokers - combining quantitative research, predefined rules and disciplined risk controls. No signals to interpret, no screens to watch, no emotional decisions along the way.</p>
+      <p class="eyebrow hero-eyebrow">Governed Systematic Trading</p>
+      <h1>The Logic Is Private.<br><span class="accent-line">The Process Isn't.</span></h1>
+      <p class="hero-sub">Viksit Analyst runs three fully-automated, black-box strategies on your own broker account. Every trade passes a documented, versioned sequence of checks you can see - even though the strategy logic behind it stays undisclosed, by design. No guarantees. No "secret strategy." Just a disciplined, auditable process.</p>
 
       <div class="hero-actions">
-        <a href="#strategies" class="btn btn-accent btn-lg">Explore Strategies</a>
-        <a href="#pricing" class="btn btn-secondary btn-lg">
-            View Plans
+        <a href="#how-it-works" class="btn btn-accent btn-lg">See How a Trade Gets Placed</a>
+        <a href="#mission-control" class="btn btn-secondary btn-lg">
+            View Mission Control
         </a>
       </div>
 
       <div class="hero-badges">
-        <span class="hero-badge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><path d="M20 6L9 17l-5-5" stroke-linecap="round" stroke-linejoin="round"/></svg>Algo Trading Platform</span>
-        <span class="hero-badge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><path d="M20 6L9 17l-5-5" stroke-linecap="round" stroke-linejoin="round"/></svg>Quantitative Research</span>
+        <span class="hero-badge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><path d="M20 6L9 17l-5-5" stroke-linecap="round" stroke-linejoin="round"/></svg>Non-Custodial - Capital Stays In Your Broker Account</span>
+        <span class="hero-badge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><path d="M20 6L9 17l-5-5" stroke-linecap="round" stroke-linejoin="round"/></svg>Versioned, Documented Research</span>
         <span class="hero-badge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><path d="M20 6L9 17l-5-5" stroke-linecap="round" stroke-linejoin="round"/></svg>Automated Execution</span>
         <span class="hero-badge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><path d="M20 6L9 17l-5-5" stroke-linecap="round" stroke-linejoin="round"/></svg>Recommended Capital ₹3L+</span>
       </div>
@@ -317,6 +324,17 @@
         <h3>Execution &amp; Reporting</h3>
         <p>Orders that pass validation are placed automatically through your connected broker - nothing is sent to you to act on manually. After the session closes, you receive a report summarizing what happened, not a signal for you to interpret.</p>
       </article>
+    </div>
+  </div>
+</section>
+
+<!-- ======================== CORE DIFFERENTIATION =========================== -->
+<section class="section-pad section-pad-tight" id="differentiation" style="background:var(--bg-sunken)">
+  <div class="container">
+    <div class="section-head center reveal">
+      <p class="eyebrow">Not a Builder. Not a Marketplace.</p>
+      <h2 class="section-title">Neither a blank canvas, nor someone else's unverifiable stats.</h2>
+      <p class="section-sub">Most platforms hand you a tool to build your own strategy, or a marketplace of someone else's. Viksit does neither - three fixed, fully-managed strategies, run the same disciplined way every time. The strategy logic is undisclosed by design; the operating process that runs it is documented, versioned, and visible whether or not the logic behind it is.</p>
     </div>
   </div>
 </section>
@@ -512,10 +530,10 @@
         <div class="mission-regime">
           Today's Market Regime <span class="regime-dot"></span> <b>Neutral</b>
         </div>
-        <div class="mission-updated mono" id="missionTimestamp">31 Jul 2026 · Research v19</div>
+        <div class="mission-updated mono" id="missionTimestamp">31 Jul 2026 · <a href="research.html" style="color:inherit;text-decoration:underline">Research v19</a></div>
       </div>
 
-      <p class="mission-footnote">Mission Control reflects platform-level status only - execution, research and reporting health. It never displays customer positions, broker credentials, or strategy logic. See our <a href="#" style="text-decoration:underline">status page</a> for full uptime history.</p>
+      <p class="mission-footnote">Mission Control reflects platform-level status only - execution, research and reporting health. It never displays customer positions, broker credentials, or strategy logic. See our <a href="trust.html" style="text-decoration:underline">Trust &amp; Security page</a> for the four-gate check sequence and regulatory status, and the <a href="research.html" style="text-decoration:underline">Research log</a> for full version history.</p>
     </div>
   </div>
 </section>
@@ -825,6 +843,14 @@
       </div>
 
     </div>
+
+    <div class="card reveal" style="margin-top:22px; padding:22px 26px; display:flex; flex-wrap:wrap; gap:18px; align-items:center; justify-content:space-between;">
+      <div>
+        <p style="font-size:var(--fs-sm); font-weight:600; margin-bottom:4px;">All three strategies together</p>
+        <p style="font-size:var(--fs-xs); color:var(--text-secondary);">₹29,997 one-time activation · ₹2,997/month - shown here so you don't have to do the arithmetic yourself.</p>
+      </div>
+      <p style="font-size:var(--fs-xs); color:var(--text-secondary); max-width:420px; margin:0;">Quantitative trading involves risk, including possible loss of principal. Strategies are evaluated against historical data - this is not a guaranteed-return product. Recommended capital of ₹3,00,000+ stays in your own broker account at all times.</p>
+    </div>
   </div>
 </section>
 
@@ -865,6 +891,10 @@
       <div class="faq-item">
         <button class="faq-q" aria-expanded="false">How are reports delivered?<span class="faq-plus" aria-hidden="true"></span></button>
         <div class="faq-a"><div class="faq-a-inner">A concise report is generated after each trading session and delivered by email, summarizing execution activity, trades, platform status, and any relevant updates for that day.</div></div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q" aria-expanded="false">Are you SEBI registered?<span class="faq-plus" aria-hidden="true"></span></button>
+        <div class="faq-a"><div class="faq-a-inner">Viksit Analyst is not currently registered as a SEBI Research Analyst (RA). This is a stated priority as the framework governing automated strategy providers evolves, and this answer - along with our <a href="trust.html">Trust &amp; Security page</a> - will be updated the moment that status changes. We'd rather tell you plainly where things stand today than let a vague claim sit here.</div></div>
       </div>
       <div class="faq-item">
         <button class="faq-q" aria-expanded="false">What capital is recommended?<span class="faq-plus" aria-hidden="true"></span></button>
@@ -915,6 +945,8 @@
           <li><a href="#strategies">Strategies</a></li>
           <li><a href="#pricing">Pricing</a></li>
           <li><a href="#mission-control">Mission Control</a></li>
+          <li><a href="research.html">Research</a></li>
+          <li><a href="trust.html">Trust &amp; Security</a></li>
           <li><a href="#faq">FAQ</a></li>
           <li><a href="contact.html">Contact</a></li>
         </ul>
