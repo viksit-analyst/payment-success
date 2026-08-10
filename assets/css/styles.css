@@ -304,6 +304,7 @@ section { position: relative; }
   border-color: var(--border-default);
 }
 .btn-secondary:hover { border-color: var(--color-primary); transform: translateY(-2px); background: var(--bg-raised); }
+[data-theme="dark"] .btn-secondary:hover { border-color: var(--color-accent); }
 
 .btn-accent {
   background: var(--color-accent);
@@ -334,6 +335,7 @@ section { position: relative; }
   transition: all var(--dur-base) var(--ease-standard);
 }
 .btn-icon:hover { border-color: var(--color-primary); color: var(--color-primary); background: var(--bg-raised); }
+[data-theme="dark"] .btn-icon:hover { border-color: var(--color-accent); color: var(--color-accent); }
 
 /* --------------------------------------------------------------------------
    5. BADGES / STATUS
@@ -477,6 +479,7 @@ section { position: relative; }
   transition: all var(--dur-base) var(--ease-standard);
 }
 .theme-toggle:hover { border-color: var(--color-primary); color: var(--color-primary); }
+[data-theme="dark"] .theme-toggle:hover { border-color: var(--color-accent); color: var(--color-accent); }
 .theme-toggle .icon-moon { display: none; }
 [data-theme="dark"] .theme-toggle .icon-sun { display: none; }
 [data-theme="dark"] .theme-toggle .icon-moon { display: block; }
@@ -978,6 +981,7 @@ body.is-armed .spark-node { animation: node-pop 0.4s var(--ease-out) forwards; }
   box-shadow: var(--shadow-lg);
   border-top: 4px solid var(--strategy-color, var(--color-primary));
 }
+[data-theme="dark"] .modal { border-top-color: var(--strategy-color, var(--color-accent)); }
 .modal-overlay.is-open .modal { transform: translateY(0) scale(1); }
 
 .modal-close {
@@ -1216,6 +1220,9 @@ body.is-armed .spark-node { animation: node-pop 0.4s var(--ease-out) forwards; }
   color: var(--color-primary);
   transition: border-color var(--dur-base) var(--ease-standard), background-color var(--dur-base) var(--ease-standard);
 }
+/* Bug fix: same currentColor-on-matching-background issue as .why-icon -
+   the step number text was near-invisible against its own dark-mode background. */
+[data-theme="dark"] .step-num { color: var(--color-accent); }
 .step:hover .step-num { border-color: var(--color-accent); background: rgba(255, 153, 51, 0.08); }
 .step h3 { font-size: var(--fs-sm); font-weight: 600; margin-bottom: 6px; }
 .step p { font-size: var(--fs-xs); color: var(--text-secondary); line-height: 1.5; }
