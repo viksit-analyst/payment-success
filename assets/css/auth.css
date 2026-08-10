@@ -158,6 +158,8 @@
 }
 .btn-secondary .spinner,
 .btn-ghost .spinner { border-color: var(--border-default); border-top-color: var(--color-primary); }
+[data-theme="dark"] .btn-secondary .spinner,
+[data-theme="dark"] .btn-ghost .spinner { border-top-color: var(--color-accent); }
 @keyframes auth-spin { to { transform: rotate(360deg); } }
 @media (prefers-reduced-motion: reduce) {
   .spinner { animation-duration: 1400ms; }
@@ -185,6 +187,7 @@
   transition: border-color var(--dur-base) var(--ease-standard), box-shadow var(--dur-base) var(--ease-standard);
 }
 .va-otp-box:hover { border-color: var(--color-primary); }
+[data-theme="dark"] .va-otp-box:hover { border-color: var(--color-accent); }
 .va-otp-box:focus {
   outline: none;
   border-color: var(--color-accent);
