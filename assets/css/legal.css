@@ -312,7 +312,7 @@
 .contact-info-icon {
   width: 42px; height: 42px;
   border-radius: 11px;
-  background: var(--bg-sunken);
+  background: rgba(var(--color-primary-rgb), 0.08);
   color: var(--color-primary);
   display: flex;
   align-items: center;
@@ -320,6 +320,11 @@
   flex-shrink: 0;
 }
 .contact-info-icon svg { width: 20px; height: 20px; }
+/* Same dark-mode contrast fix as .why-icon on the homepage. */
+[data-theme="dark"] .contact-info-icon {
+  background: rgba(var(--color-accent-rgb), 0.14);
+  color: var(--color-accent);
+}
 .contact-info-card h4 { font-size: var(--fs-sm); margin-bottom: 4px; }
 .contact-info-card p { font-size: var(--fs-xs); color: var(--text-secondary); line-height: 1.6; margin: 0; }
 .contact-info-card a { color: var(--color-secondary); }
