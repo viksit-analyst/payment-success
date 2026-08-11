@@ -3,8 +3,7 @@
    Vanilla ES2023 module.
 
    Owns step sequencing and delegates rendering to the per-step modules
-   (welcome.js, brokerSetup.js, botSetup.js, downloadCenter.js,
-   activation.js). progressTracker.js is the source of truth for "where
+   (welcome.js, brokerSetup.js, botSetup.js, activation.js). progressTracker.js is the source of truth for "where
    am I"; this file is purely presentation + transition logic.
    ========================================================================== */
 
@@ -15,7 +14,6 @@ import { confirm as confirmDialog } from './components/confirmDialog.js';
 import { renderWelcomeStep, renderProfileStep, readProfileForm, notifyWelcomeShown } from './welcome.js';
 import { renderBrokerConnectStep, renderBrokerVerifyStep } from './brokerSetup.js';
 import { renderStrategyStep, readSelectedStrategy, renderBotConfigStep } from './botSetup.js';
-import { renderDownloadsStep } from './downloadCenter.js';
 import { renderInfrastructureStep, renderActivationStep, renderFinalScreen } from './activation.js';
 
 // Session-scoped (not persisted) working state accumulated as the
@@ -250,13 +248,6 @@ async function runStep(stepId, { skipToFinal = false } = {}) {
       }
       case 'infrastructure':
         await renderInfrastructureStep(panelEl);
-        break;
-      case 'downloads':
-        renderDownloadsStep(panelEl, {
-          customer: session.customer || (await Api.loadCustomer()),
-          subscription: session.subscription || (await Api.loadSubscription()),
-          config: session.config,
-        });
         break;
       case 'activation':
         nextBtnEl.style.display = 'none';
