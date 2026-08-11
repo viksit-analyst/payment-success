@@ -1,0 +1,11 @@
+{
+  "name": "viksit-analyst-web",
+  "private": true,
+  "description": "Static site + Apps Script client. No build step for the site itself — smoketest.js is the only thing with a dependency.",
+  "scripts": {
+    "smoketest": "node smoketest.js"
+  },
+  "devDependencies": {
+    "jsdom": "^27.0.0"
+  }
+}
