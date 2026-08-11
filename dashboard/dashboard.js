@@ -137,62 +137,82 @@ function apiCall(resolveValue, { latency = [220, 620], failRate = 0 } = {}) {
 /* --------------------------------------------------------------------------
    3. MOCK DATA LAYER — shaped to VADS (Viksit Analyst Data Specification)
    -------------------------------------------------------------------------- */
+// Product catalogue. `key`/`renewAmount`/`initialAmount` mirror
+// Config.js's CONFIG.STRATEGIES exactly (₹999/month renewal, ₹9,999 due
+// today — the same numbers already advertised on the pricing page), so
+// subscription/billing amounts shown below are real listed prices, not
+// invented ones. `status`/`researchVersion`/`updated` are still
+// presentational placeholders (no backend currently reports live
+// per-strategy research state) — left as-is for this pass, flagged in
+// DELIVERY_NOTES.md as the same F2-pattern gap on the Strategies tab.
 const STRATEGIES_DB = [
-  { id: 'STR001', code: 'IVRV', name: 'IVRV', fullName: 'Implied vs Realized Volatility', color: 'ivrv', version: '4.2', researchVersion: '19', status: 'POSITION_OPEN', expectedFrequency: '2–4 trades / week', holdingPeriod: '1–3 days', capitalRequirement: 300000, riskProfile: 'Moderate', updated: '2026-07-29T18:10:00' },
-  { id: 'STR002', code: 'GAMMA', name: 'Gamma Flip', fullName: 'Gamma Exposure Flip', color: 'gamma', version: '3.1', researchVersion: '19', status: 'MONITORING', expectedFrequency: '1–2 trades / week', holdingPeriod: 'Intraday', capitalRequirement: 500000, riskProfile: 'Moderate–High', updated: '2026-07-30T09:05:00' },
-  { id: 'STR003', code: 'VWAP', name: 'VWAP', fullName: 'VWAP Mean Reversion', color: 'vwap', version: '2.6', researchVersion: '19', status: 'WAITING', expectedFrequency: '3–6 trades / week', holdingPeriod: 'Intraday', capitalRequirement: 300000, riskProfile: 'Low–Moderate', updated: '2026-07-31T15:40:00' },
+  { id: 'STR001', key: 'ivrv', code: 'IVRV', name: 'IVRV', fullName: 'Implied vs Realized Volatility', color: 'ivrv', version: '4.2', researchVersion: '19', status: 'POSITION_OPEN', expectedFrequency: '2–4 trades / week', holdingPeriod: '1–3 days', capitalRequirement: 300000, riskProfile: 'Moderate', renewAmount: 99900, initialAmount: 999900, updated: '2026-07-29T18:10:00' },
+  { id: 'STR002', key: 'gammaflip', code: 'GAMMA', name: 'Gamma Flip', fullName: 'Gamma Exposure Flip', color: 'gamma', version: '3.1', researchVersion: '19', status: 'MONITORING', expectedFrequency: '1–2 trades / week', holdingPeriod: 'Intraday', capitalRequirement: 500000, riskProfile: 'Moderate–High', renewAmount: 99900, initialAmount: 999900, updated: '2026-07-30T09:05:00' },
+  { id: 'STR003', key: 'vwap', code: 'VWAP', name: 'VWAP', fullName: 'VWAP Mean Reversion', color: 'vwap', version: '2.6', researchVersion: '19', status: 'WAITING', expectedFrequency: '3–6 trades / week', holdingPeriod: 'Intraday', capitalRequirement: 300000, riskProfile: 'Low–Moderate', renewAmount: 99900, initialAmount: 999900, updated: '2026-07-31T15:40:00' },
 ];
 
+/** Resolve a strategy from any shape the backend hands back — getStatusApi_'s
+ *  subscriptions[].bot is the raw Config.js key (e.g. "gammaflip"); getSubscriptionApi_/
+ *  getRenewalApi_'s bot field is the display name (e.g. "Gamma Flip"). Try both. */
+function findStrategyByBotField(botValue) {
+  if (!botValue) return null;
+  const needle = String(botValue).trim().toLowerCase();
+  return STRATEGIES_DB.find((s) => s.key === needle || s.name.toLowerCase() === needle || s.code.toLowerCase() === needle) || null;
+}
+
+/**
+ * REAL DATA — populated at runtime by loadCustomerData_() from
+ * DashboardApi.gs (customer + status). No hardcoded name, email, plan, or
+ * subscription/renewal fields here anymore — see loadCustomerData_() below
+ * dashboard.js's init(). CUSTOMER starts empty; every render function that
+ * reads it now runs only after loadCustomerData_() has populated it or
+ * failed and shown errorStateHTML(), so nothing renders a stale shape.
+ */
 const CUSTOMER = {
-  id: 'CUS004821',
-  name: 'Rohan Deshmukh',
-  email: 'rohan.deshmukh@gmail.com',
-  phone: '+91 98765 43210',
-  company: 'Individual',
-  country: 'India',
-  timezone: 'Asia/Kolkata (IST, UTC+5:30)',
-  strategyId: 'STR002',
-  brokerId: 'BR001',
-  brokerStatus: 'TOKEN_VALID',
-  subscriptionStatus: 'ACTIVE',
-  capitalRange: '₹5,00,000 – ₹10,00,000',
-  createdDate: '2025-11-14',
-  renewalDate: '2026-08-18',
-  nextPaymentAmount: 50000,
-  lastLogin: new Date(Date.now() - 1000 * 60 * 46).toISOString(),
-  plan: 'Gamma Flip — Annual',
-  twoFAEnabled: true,
+  id: null,
+  name: null,
+  email: null,
+  phone: null,
+  strategyId: null,      // resolved from the first subscription in status.subscriptions
+  subscriptionStatus: null,
+  renewalDate: null,
+  nextPaymentAmount: null,
+  createdDate: null,
+  lastLogin: null,
+  plan: null,
+  botStatus: null, // { status, activeStrategy, heartbeatAt, server, latencyMs } | null — see loadCustomerData_
 };
 
+// Product catalogue — which strategies and brokers the platform itself
+// offers. This is not per-customer data (nothing here is fabricated about
+// a specific customer's account), so it's fine as static reference data
+// for display (colors, full names) the way a pricing page would list it.
 const BROKERS_CATALOG = [
   { id: 'BR001', name: 'Upstox', short: 'UX', supported: true },
-  { id: 'BR002', name: 'Zerodha', short: 'ZD', supported: true },
+  { id: 'BR002', name: 'Zerodha', short: 'ZD', supported: false, note: 'In active development' },
   { id: 'BR003', name: 'Angel One', short: 'AO', supported: false, note: 'Coming soon' },
   { id: 'BR004', name: 'Groww', short: 'GW', supported: false, note: 'Future ready' },
   { id: 'BR005', name: 'ICICI Direct', short: 'IC', supported: false, note: 'Future ready' },
 ];
 
-const BROKER_CONNECTION = {
-  customerId: CUSTOMER.id,
-  brokerId: 'BR001',
-  userId: 'UX8213',
-  status: 'TOKEN_VALID',
-  accessTokenStatus: 'Valid — expires 3:30 AM tomorrow',
-  lastSync: new Date(Date.now() - 1000 * 60 * 4).toISOString(),
-  portfolioValue: 742350,
-  updated: new Date(Date.now() - 1000 * 60 * 4).toISOString(),
-};
-
-const BOT_STATUS = {
-  state: 'RUNNING', // RUNNING | PAUSED | STOPPED
-  connected: true,
-  lastHeartbeat: new Date(Date.now() - 1000 * 18).toISOString(),
-  version: 'v4.2.1',
-  latencyMs: 142,
-  server: 'mumbai-vm-02',
-  brokerConnected: true,
-  autoRefresh: true,
-};
+/**
+ * NOT WIRED — deliberately, except for bot status (see hydrateCustomerFromSession()
+ * and RENDERERS.dashboard below, which do call the real botStatus action).
+ * brokerStatus/brokerOrders/brokerHoldings/brokerPositions/brokerFunds/
+ * brokerMargins/brokerProfile/marketStatus all still trace back through
+ * TokenStore.gs/BrokerHealth.gs to brokerConfig_(), brokerDatabaseSheet_(),
+ * brokerAppCredentials_(), and every upstoxFetch*_()/upstoxBuildAuthUrl_()/
+ * upstoxCheckHealth_()/upstoxGetMarketStatus_()/upstoxVerifyPermissions_()
+ * helper — none of which are defined anywhere in this Apps Script project.
+ * botStatus was the one exception: its chain (getBotStatus_ ->
+ * fetchVmBotStatus_ -> vmBridgeConfig_) only needed vmBridgeConfig_, which
+ * has now been implemented in VMConnector.gs (two Script Properties,
+ * VM_BRIDGE_BASE_URL and VM_BRIDGE_SHARED_SECRET — see that file). The
+ * broker connection card below still shows an honest "not available"
+ * state, since that piece genuinely still needs the missing Upstox API
+ * client. See DELIVERY_NOTES.md.
+ */
+const BROKER_CONNECTION = null;
 
 const MISSION_CONTROL = {
   platformVersion: 'v2.7.0',
@@ -208,126 +228,54 @@ const MISSION_CONTROL = {
   ],
 };
 
-// ---- Trade history generation (Trade Database schema) ----
-const INSTRUMENTS = ['NIFTY 24800 CE', 'NIFTY 24700 PE', 'BANKNIFTY 52400 CE', 'BANKNIFTY 52200 PE', 'NIFTY 24900 CE', 'FINNIFTY 23600 PE', 'NIFTY FUT', 'BANKNIFTY FUT'];
-function genTrades(count) {
-  const trades = [];
-  let t = new Date('2026-07-31T15:20:00');
-  for (let i = 0; i < count; i++) {
-    const strat = pick(STRATEGIES_DB);
-    const entry = randRange(120, 640);
-    const win = rng() < 0.58;
-    const pnlPct = win ? randRange(0.02, 0.22) : -randRange(0.02, 0.16);
-    const qty = pick([25, 50, 75, 100, 150, 200]);
-    const exit = entry * (1 + pnlPct);
-    const pnl = Math.round((exit - entry) * qty);
-    const fees = Math.round(qty * randRange(0.8, 2.1));
-    const durMin = randInt(6, 340);
-    const closedDate = new Date(t.getTime() - i * (1000 * 60 * randInt(40, 260)));
-    const createdDate = new Date(closedDate.getTime() - durMin * 60000);
-    trades.push({
-      id: `TRD${String(100450 - i).padStart(6, '0')}`,
-      customer: CUSTOMER.id,
-      strategy: strat.id,
-      strategyName: strat.name,
-      strategyColor: strat.color,
-      broker: 'BR001',
-      signalId: `SIG${String(220310 - i).padStart(6, '0')}`,
-      instrument: pick(INSTRUMENTS),
-      entry: Math.round(entry * 100) / 100,
-      exit: Math.round(exit * 100) / 100,
-      quantity: qty,
-      pnl,
-      fees,
-      duration: durMin,
-      status: i === 0 && rng() < 0.3 ? 'PARTIAL' : 'FILLED',
-      version: strat.version,
-      created: createdDate.toISOString(),
-      closed: closedDate.toISOString(),
-    });
-  }
-  return trades;
-}
-const TRADES_DB = genTrades(146);
-
-// ---- Equity curve series ----
-function genEquitySeries(days) {
-  let equity = 500000;
-  const series = [];
-  const start = new Date();
-  start.setDate(start.getDate() - days);
-  for (let i = 0; i <= days; i++) {
-    const d = new Date(start.getTime() + i * 86400000);
-    if (d.getDay() !== 0 && d.getDay() !== 6) {
-      equity += randRange(-9000, 13500);
-    }
-    series.push({ date: d.toISOString().slice(0, 10), value: Math.round(equity) });
-  }
-  return series;
-}
-const EQUITY_SERIES = { '1M': genEquitySeries(30), '3M': genEquitySeries(90), '1Y': genEquitySeries(365), 'ALL': genEquitySeries(430) };
-
-function genMonthlyReturns() {
-  const months = ['Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul'];
-  return months.map((m) => ({ month: m, value: Math.round(randRange(-4.5, 9.5) * 100) / 100 }));
-}
-const MONTHLY_RETURNS = genMonthlyReturns();
-
-function genDailyPnl(n) {
-  const out = [];
-  for (let i = 0; i < n; i++) out.push(Math.round(randRange(-14000, 19000)));
-  return out;
-}
-const DAILY_PNL = genDailyPnl(22);
-
-// ---- Performance metrics ----
-const totalPnl = TRADES_DB.reduce((s, t) => s + t.pnl, 0);
-const wins = TRADES_DB.filter((t) => t.pnl > 0);
-const losses = TRADES_DB.filter((t) => t.pnl <= 0);
-const PERFORMANCE_METRICS = {
-  cagr: 27.4, sharpe: 1.82, sortino: 2.31, calmar: 1.94,
-  maxDrawdown: -8.6, winRate: Math.round((wins.length / TRADES_DB.length) * 1000) / 10,
-  avgWin: Math.round(wins.reduce((s, t) => s + t.pnl, 0) / wins.length),
-  avgLoss: Math.round(losses.reduce((s, t) => s + t.pnl, 0) / losses.length),
-  profitFactor: Math.round((wins.reduce((s, t) => s + t.pnl, 0) / Math.abs(losses.reduce((s, t) => s + t.pnl, 0))) * 100) / 100,
-  expectancy: Math.round(totalPnl / TRADES_DB.length),
-  totalTrades: TRADES_DB.length,
-};
+/**
+ * TRADE HISTORY / EQUITY CURVE / PERFORMANCE METRICS — REMOVED.
+ *
+ * This used to be 146 randomly-generated fake trades (fake instruments,
+ * fake entry/exit prices, fake P&L) feeding a fake equity curve and fake
+ * Sharpe/Sortino/CAGR/win-rate numbers on a financial dashboard. That's
+ * exactly the F2/F6 findings from the recommendation-intelligence report:
+ * every customer would have seen identical fictional results, with
+ * nothing in the UI distinguishing that from a real one.
+ *
+ * There is currently no backend endpoint that can honestly replace this.
+ * BrokerRouter.gs's brokerOrders action would be the natural source (real
+ * Upstox order history), but it depends on upstoxFetchOrders_(), which
+ * isn't defined anywhere in the backend project (see the note above
+ * BROKER_CONNECTION). And even a working brokerOrders wouldn't be
+ * enough on its own — raw order history isn't the same as a
+ * strategy-attributed P&L ledger with entry/exit pairing, which is what
+ * F6 in the report calls out as needing genuinely new backend work, not
+ * just a connection.
+ *
+ * TRADES_DB, EQUITY_SERIES, MONTHLY_RETURNS, DAILY_PNL, and
+ * PERFORMANCE_METRICS are intentionally left undefined. RENDERERS.trades
+ * and RENDERERS.performance below now render an honest "not available
+ * yet" empty state instead of silently referencing removed fabricated
+ * data — see DELIVERY_NOTES.md for what real implementation needs
+ * (an Upstox order-history integration plus a P&L attribution layer).
+ */
 
 // ---- Reports ----
-const REPORTS_CATALOG = [
-  { type: 'Monthly Report', icon: 'file', desc: 'Full breakdown of trades, PnL and strategy activity for the calendar month.' },
-  { type: 'Annual Report', icon: 'fileText', desc: 'Consolidated yearly performance across all active strategies.' },
-  { type: 'Tax Report', icon: 'fileText', desc: 'Realized gains summary formatted for ITR filing.' },
-  { type: 'Broker Report', icon: 'building', desc: 'Reconciliation between broker contract notes and platform trade logs.' },
-  { type: 'Performance Report', icon: 'trend', desc: 'CAGR, Sharpe, Sortino, drawdown and win-rate over the selected period.' },
-  { type: 'Drawdown Report', icon: 'activity', desc: 'Peak-to-trough analysis with recovery duration for each drawdown.' },
-  { type: 'Risk Report', icon: 'shield', desc: 'Position sizing, margin utilisation and risk-limit adherence.' },
-];
+// REPORTS_CATALOG / DOWNLOADS_CATALOG removed — a fabricated catalog of
+// report types and a bot binary with a fake SHA-256 checksum, fake file
+// sizes, and a fake version changelog, none of which exist on the
+// backend. Same issue as the onboarding wizard's removed "setup
+// documents" step (there's no real document/binary delivery system yet
+// — see the top of this file and DELIVERY_NOTES.md). RENDERERS.reports
+// and RENDERERS.downloads below now render an honest state instead.
 
-// ---- Downloads ----
-const DOWNLOADS_CATALOG = {
-  strategyFiles: [
-    { name: 'Gamma Flip Execution Bot', version: 'v4.2.1', size: '18.4 MB', date: '2026-07-22', checksum: 'a1c9e2f4b8d0173e5f6a9c2b1d4e7f80' },
-  ],
-  docs: [
-    { name: 'Setup Guide', icon: 'bookOpen', format: 'PDF', size: '2.1 MB' },
-    { name: 'User Manual', icon: 'fileText', format: 'PDF', size: '4.6 MB' },
-    { name: 'Changelog', icon: 'layers', format: 'PDF', size: '640 KB' },
-  ],
-  previousVersions: [
-    { version: 'v4.1.0', date: '2026-06-02', notes: 'Improved slippage handling on BANKNIFTY legs.' },
-    { version: 'v4.0.4', date: '2026-05-11', notes: 'Broker session refresh reliability fix.' },
-    { version: 'v3.9.0', date: '2026-04-03', notes: 'Added Gamma Flip v3 research parameters.' },
-  ],
-};
-
-// ---- Billing ----
-const INVOICES_DB = [
-  { id: 'INV-2026-0148', date: '2025-08-18', amount: 50000, plan: 'Gamma Flip — Annual', status: 'PAID', gst: 'GSTIN27ABCDE1234F1Z5' },
-  { id: 'INV-2025-0091', date: '2024-08-18', amount: 45000, plan: 'Gamma Flip — Annual', status: 'PAID', gst: 'GSTIN27ABCDE1234F1Z5' },
-];
-const PAYMENT_METHOD = { brand: 'HDFC Bank', last4: '4821', type: 'UPI Autopay', expiry: null };
+/**
+ * BILLING — REMOVED fabricated invoices (including a made-up GSTIN — a
+ * fake number on what reads as a tax document is worse than an empty
+ * state) and a fabricated stored payment method. Real payment history
+ * now comes from DashboardApi.gs's `payments` action (paymentId, bot,
+ * amount, currency, status, timestamp — see loadCustomerData_() and
+ * RENDERERS.billing below). There's no stored "payment method on file"
+ * to show honestly: Razorpay holds that, not this backend, and no
+ * endpoint exposes it here — the Billing view says so instead of
+ * inventing a card.
+ */
 
 // ---- Notifications ----
 const NOTIFICATIONS_DB = [
@@ -636,11 +584,8 @@ qs('#profileBtn').addEventListener('click', (e) => {
 function buildSearchIndex() {
   const idx = [];
   STRATEGIES_DB.forEach((s) => idx.push({ group: 'Strategies', label: s.name, meta: s.status.replace('_', ' '), route: 'strategies', icon: 'trend' }));
-  TRADES_DB.slice(0, 40).forEach((t) => idx.push({ group: 'Trades', label: `${t.instrument} · ${t.id}`, meta: fmtDate(t.closed), route: 'trades', icon: 'activity' }));
-  INVOICES_DB.forEach((i) => idx.push({ group: 'Invoices', label: `${i.id} — ${i.plan}`, meta: fmtINR(i.amount), route: 'billing', icon: 'card' }));
   TICKETS_DB.forEach((t) => idx.push({ group: 'Support Tickets', label: `${t.id} — ${t.subject}`, meta: t.status, route: 'support', icon: 'ticket' }));
-  REPORTS_CATALOG.forEach((r) => idx.push({ group: 'Reports', label: r.type, meta: 'Generate', route: 'reports', icon: 'file' }));
-  DOWNLOADS_CATALOG.docs.forEach((d) => idx.push({ group: 'Downloads', label: d.name, meta: d.format, route: 'downloads', icon: 'download' }));
+  // Reports/Downloads entries removed along with REPORTS_CATALOG/DOWNLOADS_CATALOG above.
   return idx;
 }
 const SEARCH_INDEX = buildSearchIndex();
@@ -805,9 +750,17 @@ function renderHeatmap(container, values) {
 /* --------------------------------------------------------------------------
    13. STATUS BADGE HELPERS (VADS-consistent labels/colors across the app)
    -------------------------------------------------------------------------- */
+// Matches Config.js's CONFIG.SUBSCRIPTION_STATUS exactly (PENDING_ACTIVATION,
+// ACTIVE, EXPIRED, SUSPENDED, CANCELLED — see getStatusApi_/getSubscriptionApi_
+// in DashboardApi.gs). GRACE_PERIOD/PAUSED/ARCHIVED were never real backend
+// values; NONE is a frontend-only state for "no subscription record at all".
 const SUBSCRIPTION_BADGE = {
-  ACTIVE: ['success', 'Active'], PENDING: ['neutral', 'Pending'], GRACE_PERIOD: ['warning', 'Grace Period'],
-  PAUSED: ['warning', 'Paused'], CANCELLED: ['neutral', 'Cancelled'], EXPIRED: ['error', 'Expired'], ARCHIVED: ['neutral', 'Archived'],
+  ACTIVE: ['success', 'Active'],
+  PENDING_ACTIVATION: ['warning', 'Activating'],
+  EXPIRED: ['error', 'Expired'],
+  SUSPENDED: ['error', 'Suspended'],
+  CANCELLED: ['neutral', 'Cancelled'],
+  NONE: ['neutral', 'No Subscription'],
 };
 const BROKER_BADGE = {
   NOT_CONNECTED: ['neutral', 'Not Connected'], CONNECTED: ['success', 'Connected'], TOKEN_PENDING: ['warning', 'Token Pending'],
@@ -820,7 +773,10 @@ const STRATEGY_STATUS_BADGE = {
 const ORDER_STATUS_BADGE = {
   FILLED: ['success', 'Filled'], PARTIAL: ['warning', 'Partial'], CANCELLED: ['neutral', 'Cancelled'], REJECTED: ['error', 'Rejected'], FAILED: ['error', 'Failed'],
 };
-function badge([tone, label]) { return `<span class="badge badge-${tone}">${escapeHTML(label)}</span>`; }
+function badge(entry) {
+  const [tone, label] = entry || ['neutral', 'Unknown'];
+  return `<span class="badge badge-${tone}">${escapeHTML(label)}</span>`;
+}
 
 /* --------------------------------------------------------------------------
    14. DASHBOARD HOME
@@ -828,105 +784,128 @@ function badge([tone, label]) { return `<span class="badge badge-${tone}">${esca
 RENDERERS.dashboard = async function renderDashboard() {
   renderDashboardBanner();
 
-  qs('#welcomeTitle').textContent = `Welcome back, ${CUSTOMER.name.split(' ')[0]}`;
-  qs('#welcomeSubtitle').textContent = `Last login ${fmtRelative(CUSTOMER.lastLogin)} · Customer ID ${CUSTOMER.id}`;
-  qs('#topbarAvatar').textContent = CUSTOMER.name.split(' ').map((s) => s[0]).slice(0, 2).join('');
-  qs('#topbarName').textContent = CUSTOMER.name;
-  qs('#topbarPlan').textContent = CUSTOMER.plan;
+  const firstName = (CUSTOMER.name || '').split(' ')[0] || 'there';
+  qs('#welcomeTitle').textContent = `Welcome back, ${firstName}`;
+  qs('#welcomeSubtitle').textContent = CUSTOMER.createdDate
+    ? `Customer ID ${CUSTOMER.id || '—'} · Member since ${fmtDate(CUSTOMER.createdDate)}`
+    : `Customer ID ${CUSTOMER.id || '—'}`;
+  qs('#topbarAvatar').textContent = (CUSTOMER.name || '?').split(' ').map((s) => s[0]).slice(0, 2).join('');
+  qs('#topbarName').textContent = CUSTOMER.name || '—';
+  qs('#topbarPlan').textContent = CUSTOMER.plan || '—';
 
-  try {
-    await apiCall(true, { latency: [300, 700] }); // simulated loadCustomer()
-    const daysLeft = daysBetween(new Date(), CUSTOMER.renewalDate);
-    const strategy = STRATEGIES_DB.find((s) => s.id === CUSTOMER.strategyId);
+  if (CUSTOMER.loadError) {
+    qs('#statCards').innerHTML = errorStateHTML("We couldn't load your account data.");
+    qs('#subscriptionCard').innerHTML = '';
+    qs('#botStatusCard').innerHTML = '';
+    qs('#brokerMiniCard').innerHTML = '';
+    return;
+  }
 
-    qs('#statCards').innerHTML = `
-      ${statCard({ label: 'Subscription Status', icon: 'shield', value: SUBSCRIPTION_BADGE[CUSTOMER.subscriptionStatus][1], valueHtml: badge(SUBSCRIPTION_BADGE[CUSTOMER.subscriptionStatus]), footnote: `Renews ${fmtDate(CUSTOMER.renewalDate)}` })}
-      ${statCard({ label: 'Days Remaining', icon: 'calendar', value: daysLeft, footnote: `Next payment ${fmtINR(CUSTOMER.nextPaymentAmount)}` })}
-      ${statCard({ label: "Today's PnL", icon: 'wallet', value: fmtINR(DAILY_PNL[DAILY_PNL.length - 1]), valueClass: DAILY_PNL[DAILY_PNL.length - 1] >= 0 ? 'pos' : 'neg', delta: DAILY_PNL[DAILY_PNL.length - 1] >= 0 ? 'up' : 'down', deltaLabel: `${TRADES_DB.filter(t=>daysBetween(t.closed,new Date())===0).length} trades today` })}
-      ${statCard({ label: 'Bot Status', icon: 'bolt', value: BOT_STATUS.state === 'RUNNING' ? 'Running' : BOT_STATUS.state === 'PAUSED' ? 'Paused' : 'Stopped', valueHtml: `<span class="flex items-center gap-8"><span class="pulse-dot ${BOT_STATUS.state === 'RUNNING' ? 'success' : BOT_STATUS.state === 'PAUSED' ? 'warning' : 'error'}"></span>${BOT_STATUS.state === 'RUNNING' ? 'Running' : BOT_STATUS.state === 'PAUSED' ? 'Paused' : 'Stopped'}</span>`, footnote: `v${BOT_STATUS.version.replace('v','')} · ${BOT_STATUS.latencyMs}ms` })}
-    `;
+  const hasSubscription = CUSTOMER.subscriptionStatus && CUSTOMER.subscriptionStatus !== 'NONE';
+  const daysLeft = hasSubscription ? daysBetween(new Date(), CUSTOMER.renewalDate) : null;
+  const strategy = STRATEGIES_DB.find((s) => s.id === CUSTOMER.strategyId) || null;
 
-    qs('#subscriptionCard').innerHTML = `
+  qs('#statCards').innerHTML = `
+    ${statCard({ label: 'Subscription Status', icon: 'shield', value: (SUBSCRIPTION_BADGE[CUSTOMER.subscriptionStatus] || SUBSCRIPTION_BADGE.NONE)[1], valueHtml: badge(SUBSCRIPTION_BADGE[CUSTOMER.subscriptionStatus] || SUBSCRIPTION_BADGE.NONE), footnote: hasSubscription ? `Renews ${fmtDate(CUSTOMER.renewalDate)}` : 'No active plan' })}
+    ${statCard({ label: 'Days Remaining', icon: 'calendar', value: hasSubscription ? daysLeft : '—', footnote: hasSubscription ? `Renewal amount ${fmtINR(CUSTOMER.nextPaymentAmount)}` : 'Subscribe to a strategy to get started' })}
+    ${statCard({ label: 'Active Strategy', icon: 'bolt', value: strategy ? strategy.name : 'None', footnote: strategy ? strategy.fullName : 'No strategy subscription found' })}
+  `;
+
+  qs('#subscriptionCard').innerHTML = hasSubscription && strategy ? `
       <div class="card-head">
         <div>
           <div class="card-title">${ICONS.shield}Subscription</div>
           <div class="card-sub">Strategy plan &amp; renewal</div>
         </div>
-        ${badge(SUBSCRIPTION_BADGE[CUSTOMER.subscriptionStatus])}
+        ${badge(SUBSCRIPTION_BADGE[CUSTOMER.subscriptionStatus] || SUBSCRIPTION_BADGE.NONE)}
       </div>
       <div class="flex items-center gap-12 mb-16">
         <span class="strategy-dot ${strategy.color}" style="width:11px;height:11px;"></span>
         <div>
           <div style="font-family:var(--font-display);font-weight:600;font-size:var(--fs-md);">${escapeHTML(strategy.name)}</div>
-          <div class="text-tertiary text-xs">${escapeHTML(strategy.fullName)} · v${strategy.version}</div>
+          <div class="text-tertiary text-xs">${escapeHTML(strategy.fullName)}</div>
         </div>
       </div>
-      <div class="grid grid-3" style="gap:12px;margin-bottom:18px;">
-        <div class="card-flat"><div class="text-tertiary text-xs mb-16" style="margin-bottom:6px;">Expiry Date</div><div class="font-mono font-semibold text-sm">${fmtDate(CUSTOMER.renewalDate)}</div></div>
-        <div class="card-flat"><div class="text-tertiary text-xs" style="margin-bottom:6px;">Next Payment</div><div class="font-mono font-semibold text-sm">${fmtINR(CUSTOMER.nextPaymentAmount)}</div></div>
-        <div class="card-flat"><div class="text-tertiary text-xs" style="margin-bottom:6px;">Capital Range</div><div class="font-mono font-semibold text-sm">${escapeHTML(CUSTOMER.capitalRange.split(' – ')[0])}+</div></div>
+      <div class="grid grid-2" style="gap:12px;margin-bottom:18px;">
+        <div class="card-flat"><div class="text-tertiary text-xs" style="margin-bottom:6px;">Expiry Date</div><div class="font-mono font-semibold text-sm">${fmtDate(CUSTOMER.renewalDate)}</div></div>
+        <div class="card-flat"><div class="text-tertiary text-xs" style="margin-bottom:6px;">Renewal Amount</div><div class="font-mono font-semibold text-sm">${fmtINR(CUSTOMER.nextPaymentAmount)}/mo</div></div>
       </div>
-      <div class="text-tertiary text-xs mb-16" style="margin-bottom:6px;display:flex;justify-content:space-between;"><span>${daysLeft} days remaining</span><span>${fmtDate(CUSTOMER.createdDate)} → ${fmtDate(CUSTOMER.renewalDate)}</span></div>
-      <div class="progress"><div class="progress-bar ${daysLeft < 10 ? 'error' : daysLeft < 30 ? 'warning' : ''}" style="width:${Math.max(4, Math.min(100, 100 - (daysLeft / 365) * 100))}%"></div></div>
+      <div class="text-tertiary text-xs mb-16" style="margin-bottom:6px;">${daysLeft} day${daysLeft === 1 ? '' : 's'} remaining</div>
+      <div class="progress"><div class="progress-bar ${daysLeft < 3 ? 'error' : daysLeft < 7 ? 'warning' : ''}" style="width:${Math.max(4, Math.min(100, 100 - (daysLeft / 30) * 100))}%"></div></div>
       <div class="flex gap-10 mt-20">
         <button class="btn btn-primary" data-action="renew">${ICONS.refresh}Renew Now</button>
         <button class="btn btn-secondary" data-route="billing">View History</button>
-      </div>`;
+      </div>`
+    : emptyStateHTML({ title: 'No active subscription', desc: 'Subscribe to a strategy to see it here.', iconName: 'shield', actionLabel: 'View Strategies', actionRoute: 'strategies' });
 
+  // Bot status is real (VM-backed, see hydrateCustomerFromSession()).
+  // Broker connection status still isn't — see the note above
+  // BROKER_CONNECTION near the top of this file.
+  const bs = CUSTOMER.botStatus;
+  if (bs && bs.status) {
+    const stateLower = String(bs.status).toLowerCase();
+    const tone = bs.status === 'RUNNING' ? 'success' : bs.status === 'PAUSED' ? 'warning' : 'error';
     qs('#botStatusCard').innerHTML = `
       <div class="card-head"><div class="card-title">${ICONS.bolt}Bot Status</div></div>
       <div class="bot-hero" style="margin-bottom:18px;">
-        <div class="bot-orb ${BOT_STATUS.state.toLowerCase()}">${ICONS.bolt}</div>
+        <div class="bot-orb ${stateLower}">${ICONS.bolt}</div>
         <div>
-          <div style="font-weight:600;font-size:var(--fs-md);text-transform:capitalize;">${BOT_STATUS.state.toLowerCase()}</div>
-          <div class="text-tertiary text-xs">Heartbeat ${fmtRelative(BOT_STATUS.lastHeartbeat)}</div>
+          <div style="font-weight:600;font-size:var(--fs-md);text-transform:capitalize;">${escapeHTML(stateLower)}</div>
+          <div class="text-tertiary text-xs">${bs.heartbeatAt ? `Heartbeat ${fmtRelative(bs.heartbeatAt)}` : 'No heartbeat yet'}</div>
         </div>
       </div>
-      <div class="flex justify-between" style="padding:9px 0;border-top:1px solid var(--border-subtle);"><span class="text-tertiary text-xs">Version</span><span class="font-mono text-xs">${BOT_STATUS.version}</span></div>
-      <div class="flex justify-between" style="padding:9px 0;border-top:1px solid var(--border-subtle);"><span class="text-tertiary text-xs">Latency</span><span class="font-mono text-xs">${BOT_STATUS.latencyMs}ms</span></div>
-      <div class="flex justify-between" style="padding:9px 0;border-top:1px solid var(--border-subtle);"><span class="text-tertiary text-xs">Server</span><span class="font-mono text-xs">${BOT_STATUS.server}</span></div>
-      <div class="flex justify-between" style="padding:9px 0;border-top:1px solid var(--border-subtle);"><span class="text-tertiary text-xs">Broker</span><span>${badge(BROKER_BADGE[CUSTOMER.brokerStatus])}</span></div>
-      <div class="flex justify-between" style="padding:9px 0;border-top:1px solid var(--border-subtle);">
-        <span class="text-tertiary text-xs">Auto Refresh</span>
-        <label class="switch"><input type="checkbox" ${BOT_STATUS.autoRefresh ? 'checked' : ''} id="autoRefreshToggle"><span class="switch-track"></span></label>
-      </div>`;
-    const arToggle = qs('#autoRefreshToggle');
-    if (arToggle) arToggle.addEventListener('change', (e) => { BOT_STATUS.autoRefresh = e.target.checked; toast({ type: 'info', title: `Auto refresh ${e.target.checked ? 'enabled' : 'disabled'}` }); });
+      <div class="flex justify-between" style="padding:9px 0;border-top:1px solid var(--border-subtle);"><span class="text-tertiary text-xs">Active Strategy</span><span class="font-mono text-xs">${bs.activeStrategy ? escapeHTML(bs.activeStrategy) : '—'}</span></div>
+      ${bs.server ? `<div class="flex justify-between" style="padding:9px 0;border-top:1px solid var(--border-subtle);"><span class="text-tertiary text-xs">Server</span><span class="font-mono text-xs">${escapeHTML(bs.server.name)} · ${escapeHTML(bs.server.region || '')}</span></div>` : ''}
+      ${bs.latencyMs != null ? `<div class="flex justify-between" style="padding:9px 0;border-top:1px solid var(--border-subtle);"><span class="text-tertiary text-xs">Latency</span><span class="font-mono text-xs">${bs.latencyMs}ms</span></div>` : ''}
+      ${badge([tone, bs.status === 'RUNNING' ? 'Running' : bs.status === 'PAUSED' ? 'Paused' : 'Stopped'])}`;
+  } else {
+    qs('#botStatusCard').innerHTML = emptyStateHTML({
+      title: 'Bot status unavailable',
+      desc: 'The trading VM didn\u2019t respond. This is checked live, not cached \u2014 try refreshing in a moment.',
+      iconName: 'bolt',
+    });
+  }
 
-    const bkr = BROKERS_CATALOG.find((b) => b.id === CUSTOMER.brokerId);
-    qs('#brokerMiniCard').innerHTML = `
-      <div class="card-head"><div class="card-title">${ICONS.link}Broker</div>${badge(BROKER_BADGE[CUSTOMER.brokerStatus])}</div>
-      <div class="broker-card" style="background:transparent;border:none;padding:0;margin-bottom:16px;">
-        <div class="broker-logo">${bkr.short}</div>
-        <div class="broker-info">
-          <div class="broker-name">${bkr.name}</div>
-          <div class="broker-meta">Portfolio ${fmtINR(BROKER_CONNECTION.portfolioValue)}</div>
-        </div>
-      </div>
-      <div class="text-tertiary text-xs" style="margin-bottom:14px;">Last sync ${fmtRelative(BROKER_CONNECTION.lastSync)}</div>
-      <button class="btn btn-secondary btn-block" data-route="broker">Manage Broker</button>`;
+  qs('#brokerMiniCard').innerHTML = emptyStateHTML({
+    title: 'Broker status unavailable',
+    desc: 'Connect and manage your broker from the Broker tab.',
+    iconName: 'link',
+    actionLabel: 'Go to Broker',
+    actionRoute: 'broker',
+  });
 
-    renderEquityChart();
-    qsa('#equityRangeTabs .chart-tab').forEach((tab) => tab.addEventListener('click', () => {
-      qsa('#equityRangeTabs .chart-tab').forEach((t) => t.classList.remove('is-active'));
-      tab.classList.add('is-active');
-      STATE.equityRange = tab.dataset.range;
-      renderEquityChart();
-    }));
-  } catch (err) {
-    qs('#statCards').innerHTML = errorStateHTML();
+  // Equity curve needs real trade/P&L history — no backend endpoint
+  // provides that yet (see the note above the removed TRADES_DB block).
+  const equityChartEl = qs('#equityChart');
+  if (equityChartEl) {
+    const chartCard = equityChartEl.closest('.card') || equityChartEl.parentElement;
+    if (chartCard) {
+      chartCard.innerHTML = emptyStateHTML({
+        title: 'Performance history not available yet',
+        desc: 'A real equity curve needs a trade/P&L backend endpoint that does not exist yet — see the Performance tab for details.',
+        iconName: 'trend',
+      });
+    }
   }
 };
 
 function renderDashboardBanner() {
-  const days = daysBetween(new Date(), CUSTOMER.renewalDate);
   const banner = qs('#dashboardBanner');
-  if (CUSTOMER.subscriptionStatus === 'GRACE_PERIOD') {
-    banner.innerHTML = `<div class="banner banner-warning"><span class="banner-icon">${ICONS.alertTriangle}</span><div class="banner-body"><div class="banner-title">Your subscription is in its grace period</div><div class="banner-desc">Trading continues uninterrupted, but renew soon to avoid a pause.</div></div><button class="btn btn-primary btn-sm" data-action="renew">Renew Now</button></div>`;
+  if (!banner) return;
+  if (CUSTOMER.loadError) { banner.innerHTML = ''; return; }
+  if (CUSTOMER.subscriptionStatus === 'SUSPENDED') {
+    banner.innerHTML = `<div class="banner banner-error"><span class="banner-icon">${ICONS.alertCircle}</span><div class="banner-body"><div class="banner-title">Your subscription is suspended</div><div class="banner-desc">Contact support to resolve this and resume automated trading.</div></div><button class="btn btn-primary btn-sm" data-route="support">Contact Support</button></div>`;
   } else if (CUSTOMER.subscriptionStatus === 'EXPIRED') {
     banner.innerHTML = `<div class="banner banner-error"><span class="banner-icon">${ICONS.alertCircle}</span><div class="banner-body"><div class="banner-title">Your subscription has expired</div><div class="banner-desc">Execution has been paused. Renew to resume automated trading.</div></div><button class="btn btn-primary btn-sm" data-action="renew">Renew Now</button></div>`;
-  } else if (days <= 7) {
-    banner.innerHTML = `<div class="banner banner-warning"><span class="banner-icon">${ICONS.calendar}</span><div class="banner-body"><div class="banner-title">Your plan renews in ${days} day${days===1?'':'s'}</div><div class="banner-desc">Renew ahead of time to keep the bot running without interruption.</div></div><button class="btn btn-primary btn-sm" data-action="renew">Renew Now</button></div>`;
+  } else if (CUSTOMER.subscriptionStatus === 'PENDING_ACTIVATION') {
+    banner.innerHTML = `<div class="banner banner-warning"><span class="banner-icon">${ICONS.alertTriangle}</span><div class="banner-body"><div class="banner-title">Your subscription is being activated</div><div class="banner-desc">This usually completes within a few minutes of payment. Refresh shortly if it doesn't update.</div></div></div>`;
+  } else if (CUSTOMER.subscriptionStatus === 'ACTIVE' && CUSTOMER.renewalDate) {
+    const days = daysBetween(new Date(), CUSTOMER.renewalDate);
+    if (days <= 7) {
+      banner.innerHTML = `<div class="banner banner-warning"><span class="banner-icon">${ICONS.calendar}</span><div class="banner-body"><div class="banner-title">Your plan renews in ${days} day${days === 1 ? '' : 's'}</div><div class="banner-desc">Renew ahead of time to keep the bot running without interruption.</div></div><button class="btn btn-primary btn-sm" data-action="renew">Renew Now</button></div>`;
+    } else {
+      banner.innerHTML = '';
+    }
   } else {
     banner.innerHTML = '';
   }
@@ -941,12 +920,9 @@ function statCard({ label, icon, value, valueHtml, valueClass = '', footnote, de
     </div>`;
 }
 
-function renderEquityChart() {
-  const canvas = qs('#equityChart');
-  if (!canvas) return;
-  drawLineChart(canvas, EQUITY_SERIES[STATE.equityRange], { tooltipEl: qs('#equityTooltip') });
-}
-window.addEventListener('resize', debounce(() => { if (STATE.route === 'dashboard') renderEquityChart(); }, 200));
+// renderEquityChart() removed — the #equityChart canvas no longer exists
+// in the DOM (RENDERERS.dashboard now renders an honest empty state in
+// its place, see the note near the removed TRADES_DB block above).
 
 /* --------------------------------------------------------------------------
    15. SHARED STATE PANELS
@@ -1006,83 +982,19 @@ RENDERERS.strategies = function (target) {
    17. PERFORMANCE VIEW
    -------------------------------------------------------------------------- */
 RENDERERS.performance = function (target) {
-  const m = PERFORMANCE_METRICS;
   target.innerHTML = `
     <div class="view-head">
       <div><div class="view-title">Performance</div><div class="view-subtitle">Every number your strategy has produced, nothing exaggerated.</div></div>
-      <button class="btn btn-secondary" data-route="reports">${ICONS.download}Export Report</button>
     </div>
-    <div class="grid grid-4">
-      ${statCard({ label: 'CAGR', icon: 'trend', value: `${m.cagr}%`, valueClass: 'pos' })}
-      ${statCard({ label: 'Sharpe Ratio', icon: 'activity', value: m.sharpe })}
-      ${statCard({ label: 'Sortino Ratio', icon: 'activity', value: m.sortino })}
-      ${statCard({ label: 'Max Drawdown', icon: 'arrowDown', value: `${m.maxDrawdown}%`, valueClass: 'neg' })}
-    </div>
-    <div class="grid grid-4 mt-20">
-      ${statCard({ label: 'Win Rate', icon: 'checkCircle', value: `${m.winRate}%` })}
-      ${statCard({ label: 'Profit Factor', icon: 'trend', value: m.profitFactor })}
-      ${statCard({ label: 'Avg Win / Avg Loss', icon: 'wallet', value: `${fmtINR(m.avgWin)} / ${fmtINR(m.avgLoss)}` })}
-      ${statCard({ label: 'Expectancy / Trade', icon: 'bolt', value: fmtINR(m.expectancy) })}
-    </div>
-
-    <div class="grid grid-12 mt-20">
-      <div class="col-7">
-        <div class="card">
-          <div class="card-head"><div><div class="card-title">${ICONS.trend}Monthly Returns</div><div class="card-sub">% return by calendar month</div></div></div>
-          <canvas id="monthlyReturnsChart" height="220"></canvas>
-        </div>
-      </div>
-      <div class="col-5">
-        <div class="card">
-          <div class="card-head"><div><div class="card-title">${ICONS.activity}Daily PnL</div><div class="card-sub">Last ${DAILY_PNL.length} sessions</div></div></div>
-          <canvas id="dailyPnlChart" height="220"></canvas>
-        </div>
-      </div>
-    </div>
-
-    <div class="grid grid-12 mt-20">
-      <div class="col-12">
-        <div class="card">
-          <div class="card-head"><div><div class="card-title">${ICONS.calendar}Monthly Heatmap</div><div class="card-sub">Daily PnL intensity, current month</div></div></div>
-          <div class="heatmap-grid" id="heatmapGrid"></div>
-        </div>
-      </div>
-    </div>
-
-    <div class="grid grid-12 mt-20">
-      <div class="col-6">
-        <div class="card">
-          <div class="card-head"><div class="card-title">${ICONS.trend}Rolling 20-Trade Win Rate</div></div>
-          <canvas id="rollingChart" height="180"></canvas>
-        </div>
-      </div>
-      <div class="col-6">
-        <div class="card">
-          <div class="card-head"><div class="card-title">${ICONS.clock}Trade Duration Distribution</div></div>
-          <canvas id="durationChart" height="180"></canvas>
-        </div>
-      </div>
+    <div class="card" style="padding:48px 32px;">
+      ${emptyStateHTML({
+        title: 'Performance analytics aren\u2019t available yet',
+        desc: 'Real Sharpe/Sortino/CAGR, win rate, and a trade-attributed equity curve need a P&L backend that doesn\u2019t exist yet \u2014 raw broker order history alone isn\u2019t enough to compute these honestly. Until that\u2019s built, we\u2019d rather show nothing than show numbers that look real and aren\u2019t. Reach out to support if you\u2019d like your current trade record directly.',
+        iconName: 'trend',
+        actionLabel: 'Contact Support',
+        actionRoute: 'support',
+      })}
     </div>`;
-
-  drawBarChart(qs('#monthlyReturnsChart', target), MONTHLY_RETURNS, { labelKey: 'month', valueKey: 'value' });
-  drawBarChart(qs('#dailyPnlChart', target), DAILY_PNL.map((v, i) => ({ label: i + 1, value: v })), { labelKey: 'label', valueKey: 'value' });
-  renderHeatmap(qs('#heatmapGrid', target), genDailyPnl(31));
-
-  // rolling win rate
-  const rolling = [];
-  for (let i = 20; i < TRADES_DB.length; i += 4) {
-    const window = TRADES_DB.slice(i - 20, i);
-    rolling.push({ date: window[0].closed, value: Math.round((window.filter((t) => t.pnl > 0).length / 20) * 1000) / 10 });
-  }
-  drawLineChart(qs('#rollingChart', target), rolling.reverse(), { positiveColor: cssVar('--color-ivrv') });
-
-  const durationBuckets = [
-    { label: '<15m', value: TRADES_DB.filter((t) => t.duration < 15).length },
-    { label: '15-60m', value: TRADES_DB.filter((t) => t.duration >= 15 && t.duration < 60).length },
-    { label: '1-3h', value: TRADES_DB.filter((t) => t.duration >= 60 && t.duration < 180).length },
-    { label: '3h+', value: TRADES_DB.filter((t) => t.duration >= 180).length },
-  ];
-  drawBarChart(qs('#durationChart', target), durationBuckets, { labelKey: 'label', valueKey: 'value', negativeColor: cssVar('--color-ivrv') });
 };
 
 /* --------------------------------------------------------------------------
@@ -1091,176 +1003,32 @@ RENDERERS.performance = function (target) {
 RENDERERS.trades = function (target) {
   target.innerHTML = `
     <div class="view-head">
-      <div><div class="view-title">Trade History</div><div class="view-subtitle">${TRADES_DB.length} trades logged across all strategies.</div></div>
-      <button class="btn btn-secondary" id="exportCsvBtn">${ICONS.download}Export CSV</button>
+      <div><div class="view-title">Trade History</div><div class="view-subtitle">Your executed trades, from your broker.</div></div>
     </div>
-    <div class="table-toolbar">
-      <div class="input-wrap">${ICONS.search}<input class="input" id="tradeSearch" placeholder="Search instrument or trade ID…"></div>
-      <select class="select" id="tradeStrategyFilter" style="width:160px;height:38px;background:var(--bg-sunken);border:1px solid var(--border-default);border-radius:var(--radius-sm);padding:0 10px;">
-        <option value="all">All Strategies</option>
-        ${STRATEGIES_DB.map((s) => `<option value="${s.id}">${s.name}</option>`).join('')}
-      </select>
-      <select class="select" id="tradeStatusFilter" style="width:140px;height:38px;background:var(--bg-sunken);border:1px solid var(--border-default);border-radius:var(--radius-sm);padding:0 10px;">
-        <option value="all">All Status</option>
-        <option value="FILLED">Filled</option>
-        <option value="PARTIAL">Partial</option>
-      </select>
-      <div class="table-toolbar-spacer"></div>
-      <span class="chip">${ICONS.filter}<span id="tradeResultCount"></span></span>
-    </div>
-    <div class="table-wrap" id="tradeTableWrap"></div>`;
-
-  qs('#tradeSearch', target).addEventListener('input', debounce((e) => { STATE.trades.search = e.target.value; STATE.trades.page = 1; renderTradeTable(target); }, 180));
-  qs('#tradeStrategyFilter', target).addEventListener('change', (e) => { STATE.trades.strategy = e.target.value; STATE.trades.page = 1; renderTradeTable(target); });
-  qs('#tradeStatusFilter', target).addEventListener('change', (e) => { STATE.trades.status = e.target.value; STATE.trades.page = 1; renderTradeTable(target); });
-  qs('#exportCsvBtn', target).addEventListener('click', exportTradesCsv);
-
-  renderTradeTable(target);
-};
-
-function getFilteredTrades() {
-  const { search, strategy, status, sortKey, sortDir } = STATE.trades;
-  let rows = TRADES_DB.filter((t) => {
-    if (strategy !== 'all' && t.strategy !== strategy) return false;
-    if (status !== 'all' && t.status !== status) return false;
-    if (search) {
-      const s = search.toLowerCase();
-      if (!t.instrument.toLowerCase().includes(s) && !t.id.toLowerCase().includes(s)) return false;
-    }
-    return true;
-  });
-  rows.sort((a, b) => {
-    let av = a[sortKey], bv = b[sortKey];
-    if (sortKey === 'closed' || sortKey === 'created') { av = new Date(av).getTime(); bv = new Date(bv).getTime(); }
-    if (typeof av === 'string') { av = av.toLowerCase(); bv = bv.toLowerCase(); }
-    if (av < bv) return sortDir === 'asc' ? -1 : 1;
-    if (av > bv) return sortDir === 'asc' ? 1 : -1;
-    return 0;
-  });
-  return rows;
-}
-
-const TRADE_COLUMNS = [
-  { key: 'closed', label: 'Date' }, { key: 'instrument', label: 'Instrument' }, { key: 'entry', label: 'Entry', num: true },
-  { key: 'exit', label: 'Exit', num: true }, { key: 'quantity', label: 'Qty', num: true }, { key: 'strategyName', label: 'Strategy' },
-  { key: 'pnl', label: 'P&L', num: true }, { key: 'status', label: 'Status' },
-];
-
-function renderTradeTable(target) {
-  const wrap = qs('#tradeTableWrap', target);
-  const all = getFilteredTrades();
-  const { page, pageSize } = STATE.trades;
-  const totalPages = Math.max(1, Math.ceil(all.length / pageSize));
-  const curPage = Math.min(page, totalPages);
-  const rows = all.slice((curPage - 1) * pageSize, curPage * pageSize);
-  qs('#tradeResultCount', target).textContent = `${all.length} results`;
-
-  if (!all.length) {
-    wrap.innerHTML = emptyStateHTML({ title: 'No trades match your filters', desc: 'Try a different search term, or clear the strategy and status filters.', iconName: 'activity' });
-    return;
-  }
-
-  wrap.innerHTML = `
-    <table class="data-table">
-      <thead><tr>${TRADE_COLUMNS.map((c) => `<th class="${c.num ? 'num' : ''} ${STATE.trades.sortKey === c.key ? 'is-sorted' : ''}" data-sort="${c.key}">${c.label}<span class="sort-icon">${STATE.trades.sortKey === c.key ? (STATE.trades.sortDir === 'asc' ? '▲' : '▼') : '⇅'}</span></th>`).join('')}</tr></thead>
-      <tbody>
-        ${rows.map((t) => `
-          <tr>
-            <td>${fmtDate(t.closed)}<div class="text-tertiary" style="font-size:10px;">${fmtDateTime(t.closed).split(',')[1]}</div></td>
-            <td class="font-mono">${escapeHTML(t.instrument)}</td>
-            <td class="num font-mono">${fmtNum(t.entry)}</td>
-            <td class="num font-mono">${fmtNum(t.exit)}</td>
-            <td class="num font-mono">${t.quantity}</td>
-            <td><span class="cell-strategy"><span class="strategy-dot ${t.strategyColor}"></span>${escapeHTML(t.strategyName)}</span></td>
-            <td class="num cell-pnl ${t.pnl >= 0 ? 'pos' : 'neg'}">${t.pnl >= 0 ? '+' : ''}${fmtINR(t.pnl)}</td>
-            <td>${badge(ORDER_STATUS_BADGE[t.status])}</td>
-          </tr>`).join('')}
-      </tbody>
-    </table>
-    <div class="table-footer">
-      <span class="table-footer-count">Showing ${(curPage - 1) * pageSize + 1}–${Math.min(curPage * pageSize, all.length)} of ${all.length}</span>
-      <div class="pagination" id="tradePagination"></div>
+    <div class="card" style="padding:48px 32px;">
+      ${emptyStateHTML({
+        title: 'Trade history isn\u2019t connected yet',
+        desc: 'This needs a working Upstox order-history integration on the backend, which doesn\u2019t exist yet (see Broker tab for details). We won\u2019t show placeholder trades in the meantime \u2014 contact support if you need your records now.',
+        iconName: 'activity',
+        actionLabel: 'Contact Support',
+        actionRoute: 'support',
+      })}
     </div>`;
-
-  qsa('th[data-sort]', wrap).forEach((th) => th.addEventListener('click', () => {
-    const key = th.dataset.sort;
-    if (STATE.trades.sortKey === key) STATE.trades.sortDir = STATE.trades.sortDir === 'asc' ? 'desc' : 'asc';
-    else { STATE.trades.sortKey = key; STATE.trades.sortDir = 'desc'; }
-    renderTradeTable(target);
-  }));
-
-  renderPagination(qs('#tradePagination', wrap), curPage, totalPages, (p) => { STATE.trades.page = p; renderTradeTable(target); });
-}
-
-function renderPagination(container, current, total, onChange) {
-  let pages = [];
-  const push = (p) => pages.push(p);
-  push(1);
-  for (let p = current - 1; p <= current + 1; p++) if (p > 1 && p < total) push(p);
-  if (total > 1) push(total);
-  pages = [...new Set(pages)].sort((a, b) => a - b);
-  let html = `<button class="page-btn" ${current === 1 ? 'disabled' : ''} data-p="${current - 1}">‹</button>`;
-  let prev = 0;
-  pages.forEach((p) => {
-    if (p - prev > 1) html += `<span class="page-btn" style="pointer-events:none;">…</span>`;
-    html += `<button class="page-btn ${p === current ? 'is-active' : ''}" data-p="${p}">${p}</button>`;
-    prev = p;
-  });
-  html += `<button class="page-btn" ${current === total ? 'disabled' : ''} data-p="${current + 1}">›</button>`;
-  container.innerHTML = html;
-  qsa('button[data-p]', container).forEach((b) => b.addEventListener('click', () => onChange(parseInt(b.dataset.p, 10))));
-}
-
-function exportTradesCsv() {
-  const rows = getFilteredTrades();
-  const header = ['Trade ID', 'Date', 'Instrument', 'Strategy', 'Entry', 'Exit', 'Quantity', 'PnL', 'Fees', 'Status'];
-  const lines = [header.join(',')].concat(rows.map((t) => [t.id, fmtDate(t.closed), t.instrument, t.strategyName, t.entry, t.exit, t.quantity, t.pnl, t.fees, t.status].join(',')));
-  const blob = new Blob([lines.join('\n')], { type: 'text/csv' });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url; a.download = `trades_${new Date().toISOString().slice(0, 10)}.csv`;
-  document.body.appendChild(a); a.click(); a.remove();
-  URL.revokeObjectURL(url);
-  toast({ type: 'success', title: 'CSV exported', desc: `${rows.length} trades downloaded.` });
-}
+};
 
 /* --------------------------------------------------------------------------
    19. BROKER VIEW
    -------------------------------------------------------------------------- */
 RENDERERS.broker = function (target) {
-  const active = BROKERS_CATALOG.find((b) => b.id === CUSTOMER.brokerId);
   target.innerHTML = `
     <div class="view-head"><div><div class="view-title">Broker</div><div class="view-subtitle">Connection status and account routing for order execution.</div></div></div>
-    <div class="grid grid-12">
-      <div class="col-7">
-        <div class="card">
-          <div class="card-head"><div><div class="card-title">${ICONS.link}Connected Broker</div></div>${badge(BROKER_BADGE[CUSTOMER.brokerStatus])}</div>
-          <div class="broker-card">
-            <div class="broker-logo">${active.short}</div>
-            <div class="broker-info">
-              <div class="broker-name">${active.name}</div>
-              <div class="broker-meta">User ID ${BROKER_CONNECTION.userId}</div>
-            </div>
-            <button class="btn btn-secondary btn-sm" id="reconnectBtn">${ICONS.refresh}Reconnect</button>
-          </div>
-          <div class="metric-mini-grid mt-20">
-            <div class="metric-mini"><div class="metric-mini-label">Access Token</div><div class="text-sm font-semibold" style="margin-top:4px;color:var(--color-success);">Valid</div></div>
-            <div class="metric-mini"><div class="metric-mini-label">Last Sync</div><div class="text-sm font-semibold" style="margin-top:4px;">${fmtRelative(BROKER_CONNECTION.lastSync)}</div></div>
-            <div class="metric-mini"><div class="metric-mini-label">Portfolio Value</div><div class="text-sm font-semibold font-mono" style="margin-top:4px;">${fmtINR(BROKER_CONNECTION.portfolioValue)}</div></div>
-          </div>
-          <div class="flex gap-10 mt-20">
-            <button class="btn btn-secondary" id="disconnectBtn">${ICONS.unlink}Disconnect</button>
-          </div>
-        </div>
-      </div>
-      <div class="col-5">
-        <div class="card" style="height:100%;">
-          <div class="card-head"><div class="card-title">${ICONS.shield}API Status</div></div>
-          <div class="systems-row"><span class="systems-row-label"><span class="pulse-dot success"></span>Broker Status</span><span>${badge(BROKER_BADGE[CUSTOMER.brokerStatus])}</span></div>
-          <div class="systems-row"><span class="systems-row-label"><span class="pulse-dot success"></span>Access Token</span><span class="text-xs font-mono text-secondary">${BROKER_CONNECTION.accessTokenStatus}</span></div>
-          <div class="systems-row"><span class="systems-row-label"><span class="pulse-dot success"></span>Auto Refresh</span><span class="text-xs text-secondary">Enabled</span></div>
-        </div>
-      </div>
+    <div class="card" style="padding:48px 32px;">
+      ${emptyStateHTML({
+        title: 'Manage your broker connection',
+        desc: 'Live broker status, reconnect, and disconnect live on a dedicated, session-authenticated page \u2014 opening it now.',
+        iconName: 'link',
+      })}
+      <div class="flex justify-center mt-20"><a class="btn btn-primary" href="broker/broker.html">${ICONS.link}Open Broker Connection</a></div>
     </div>
 
     <div class="card mt-20">
@@ -1269,18 +1037,11 @@ RENDERERS.broker = function (target) {
         ${BROKERS_CATALOG.map((b) => `
           <div class="broker-option ${!b.supported ? 'is-disabled' : ''}">
             <div class="broker-logo" style="width:36px;height:36px;font-size:12px;">${b.short}</div>
-            <div class="broker-info"><div class="broker-name" style="font-size:var(--fs-sm);">${b.name}</div><div class="broker-meta">${b.id === CUSTOMER.brokerId ? 'Currently connected' : (b.supported ? 'Available' : b.note)}</div></div>
-            ${b.id === CUSTOMER.brokerId ? '<span class="badge badge-success">Active</span>' : (b.supported ? `<button class="btn btn-secondary btn-sm" data-connect-broker="${b.id}">Connect</button>` : '<span class="badge badge-neutral">Future Ready</span>')}
+            <div class="broker-info"><div class="broker-name" style="font-size:var(--fs-sm);">${b.name}</div><div class="broker-meta">${b.supported ? 'Connect from the page above' : b.note}</div></div>
+            ${b.supported ? `<a class="btn btn-secondary btn-sm" href="broker/broker.html">Connect</a>` : '<span class="badge badge-neutral">Future Ready</span>'}
           </div>`).join('')}
       </div>
     </div>`;
-
-  qs('#reconnectBtn', target).addEventListener('click', () => toast({ type: 'success', title: 'Broker reconnected', desc: 'Session refreshed successfully.' }));
-  qsa('[data-connect-broker]', target).forEach((b) => b.addEventListener('click', () => connectBroker(b.dataset.connectBroker)));
-  qs('#disconnectBtn', target).addEventListener('click', () => confirmAction({
-    title: 'Disconnect broker?', desc: 'Automated execution will pause immediately until you reconnect a broker.', confirmLabel: 'Disconnect', danger: true,
-    onConfirm: () => toast({ type: 'warning', title: 'Broker disconnected', desc: 'Execution is paused until reconnected.' }),
-  }));
 };
 
 /* --------------------------------------------------------------------------
@@ -1288,82 +1049,32 @@ RENDERERS.broker = function (target) {
    -------------------------------------------------------------------------- */
 RENDERERS.reports = function (target) {
   target.innerHTML = `
-    <div class="view-head"><div><div class="view-title">Reports</div><div class="view-subtitle">Generated fresh from your trade ledger — never estimated.</div></div></div>
-    <div class="grid grid-3" id="reportCards"></div>`;
-  qs('#reportCards', target).innerHTML = REPORTS_CATALOG.map((r, i) => `
-    <div class="card">
-      <div class="card-head"><span class="stat-icon-wrap">${ICONS[r.icon]}</span></div>
-      <div style="font-weight:600;margin-bottom:6px;">${escapeHTML(r.type)}</div>
-      <p class="text-xs text-tertiary" style="line-height:1.6;margin-bottom:18px;min-height:52px;">${escapeHTML(r.desc)}</p>
-      <div class="flex gap-8">
-        <button class="btn btn-secondary btn-sm w-full" data-report="${i}" data-format="pdf">${ICONS.download}PDF</button>
-        <button class="btn btn-secondary btn-sm w-full" data-report="${i}" data-format="csv">${ICONS.download}CSV</button>
-      </div>
-    </div>`).join('');
-  qsa('button[data-report]', target).forEach((b) => b.addEventListener('click', () => {
-    const r = REPORTS_CATALOG[b.dataset.report];
-    toast({ type: 'success', title: `Generating ${r.type}`, desc: `Preparing your ${b.dataset.format.toUpperCase()} — it will download shortly.` });
-    setTimeout(() => toast({ type: 'success', title: `${r.type} ready`, desc: 'Download started.' }), 1400);
-  }));
+    <div class="view-head"><div><div class="view-title">Reports</div><div class="view-subtitle">Trade and performance reports.</div></div></div>
+    <div class="card" style="padding:48px 32px;">
+      ${emptyStateHTML({
+        title: 'Report generation isn\u2019t live yet',
+        desc: 'We don\u2019t have automated report generation running yet. Contact support and we\u2019ll put together what you need.',
+        iconName: 'fileText',
+        actionLabel: 'Contact Support',
+        actionRoute: 'support',
+      })}
+    </div>`;
 };
 
 /* --------------------------------------------------------------------------
    21. DOWNLOADS VIEW
    -------------------------------------------------------------------------- */
 RENDERERS.downloads = function (target) {
-  // Require active subscription — customers without a live subscription
-  // don't get the bot binary or docs, only a path back to billing.
-  const ACTIVE_STATUSES = ['ACTIVE', 'GRACE_PERIOD'];
-  if (!ACTIVE_STATUSES.includes(CUSTOMER.subscriptionStatus)) {
-    target.innerHTML = `
-      <div class="view-head"><div><div class="view-title">Downloads</div><div class="view-subtitle">Execution bot, documentation and version history.</div></div></div>
-      ${emptyStateHTML({ title: 'Downloads unlock with an active subscription', desc: `Your subscription is currently ${escapeHTML(SUBSCRIPTION_BADGE[CUSTOMER.subscriptionStatus] ? SUBSCRIPTION_BADGE[CUSTOMER.subscriptionStatus][1] : CUSTOMER.subscriptionStatus)}. Renew or activate a plan to download the bot, documentation and version history.`, iconName: 'download', actionLabel: 'Go to Billing', actionRoute: 'billing' })}`;
-    return;
-  }
-
-  const bot = DOWNLOADS_CATALOG.strategyFiles[0];
   target.innerHTML = `
-    <div class="view-head"><div><div class="view-title">Downloads</div><div class="view-subtitle">Execution bot, documentation and version history.</div></div></div>
-    <div class="grid grid-12">
-      <div class="col-7">
-        <div class="card download-card">
-          <div class="card-head"><div><div class="card-title">${ICONS.bolt}${escapeHTML(bot.name)}</div><div class="card-sub">Latest version — ${bot.version}</div></div><span class="badge badge-success">Latest</span></div>
-          <div class="metric-mini-grid">
-            <div class="metric-mini"><div class="metric-mini-label">Version</div><div class="text-sm font-semibold font-mono" style="margin-top:4px;">${bot.version}</div></div>
-            <div class="metric-mini"><div class="metric-mini-label">Size</div><div class="text-sm font-semibold" style="margin-top:4px;">${bot.size}</div></div>
-            <div class="metric-mini"><div class="metric-mini-label">Released</div><div class="text-sm font-semibold" style="margin-top:4px;">${fmtDate(bot.date)}</div></div>
-          </div>
-          <div>
-            <div class="field-hint mb-16" style="margin-bottom:6px;">SHA-256 Checksum</div>
-            <div class="checksum">${bot.checksum}</div>
-          </div>
-          <button class="btn btn-primary btn-block" data-action="download-bot">${ICONS.download}Download v${bot.version.replace('v','')}</button>
-        </div>
-
-        <div class="card mt-20">
-          <div class="card-head"><div class="card-title">${ICONS.layers}Previous Versions</div></div>
-          ${DOWNLOADS_CATALOG.previousVersions.map((v) => `
-            <div class="invoice-row" style="padding-left:0;padding-right:0;">
-              <span class="file-icon">${ICONS.file}</span>
-              <div style="flex:1;min-width:0;">
-                <div class="text-sm font-semibold font-mono">${v.version} <span class="text-tertiary font-mono" style="font-weight:400;">· ${fmtDate(v.date)}</span></div>
-                <div class="text-xs text-tertiary">${escapeHTML(v.notes)}</div>
-              </div>
-              <button class="btn btn-ghost btn-sm">${ICONS.download}</button>
-            </div>`).join('')}
-        </div>
-      </div>
-      <div class="col-5">
-        <div class="card">
-          <div class="card-head"><div class="card-title">${ICONS.bookOpen}Documentation</div></div>
-          ${DOWNLOADS_CATALOG.docs.map((d) => `
-            <div class="invoice-row" style="padding-left:0;padding-right:0;">
-              <span class="file-icon">${ICONS[d.icon]}</span>
-              <div style="flex:1;min-width:0;"><div class="text-sm font-semibold">${escapeHTML(d.name)}</div><div class="text-xs text-tertiary">${d.format} · ${d.size}</div></div>
-              <button class="btn btn-ghost btn-sm">${ICONS.download}</button>
-            </div>`).join('')}
-        </div>
-      </div>
+    <div class="view-head"><div><div class="view-title">Downloads</div><div class="view-subtitle">Execution bot and documentation.</div></div></div>
+    <div class="card" style="padding:48px 32px;">
+      ${emptyStateHTML({
+        title: 'Self-service downloads aren\u2019t live yet',
+        desc: 'The execution bot and setup docs are handled directly by support rather than a download center right now — reach out and we\u2019ll get you set up.',
+        iconName: 'download',
+        actionLabel: 'Contact Support',
+        actionRoute: 'support',
+      })}
     </div>`;
 };
 
@@ -1380,59 +1091,88 @@ RENDERERS.downloads = function (target) {
 // API call with its own loading/error state, and until that exists,
 // treat every "success" toast in this section as a demo confirmation,
 // not a persisted change.
-RENDERERS.billing = function (target) {
+RENDERERS.billing = async function (target) {
+  const hasSubscription = CUSTOMER.subscriptionStatus && CUSTOMER.subscriptionStatus !== 'NONE';
+
   target.innerHTML = `
-    <div class="view-head"><div><div class="view-title">Billing</div><div class="view-subtitle">Subscription, payment method and invoice history.</div></div></div>
+    <div class="view-head"><div><div class="view-title">Billing</div><div class="view-subtitle">Subscription and payment history.</div></div></div>
     <div class="grid grid-12">
       <div class="col-7">
+        ${hasSubscription ? `
         <div class="plan-card is-current">
           <div class="plan-badge-ribbon">Current Plan</div>
           <div class="text-tertiary text-xs" style="margin-bottom:4px;">Active Subscription</div>
-          <div style="font-family:var(--font-display);font-size:var(--fs-xl);font-weight:600;margin-bottom:14px;">${escapeHTML(CUSTOMER.plan)}</div>
+          <div style="font-family:var(--font-display);font-size:var(--fs-xl);font-weight:600;margin-bottom:14px;">${escapeHTML(CUSTOMER.plan || '—')}</div>
           <div class="grid grid-3" style="gap:12px;margin-bottom:18px;">
-            <div class="card-flat"><div class="text-tertiary text-xs">Status</div><div style="margin-top:6px;">${badge(SUBSCRIPTION_BADGE[CUSTOMER.subscriptionStatus])}</div></div>
-            <div class="card-flat"><div class="text-tertiary text-xs">Renewal Date</div><div class="font-mono text-sm font-semibold mt-8" style="margin-top:6px;">${fmtDate(CUSTOMER.renewalDate)}</div></div>
-            <div class="card-flat"><div class="text-tertiary text-xs">Amount</div><div class="font-mono text-sm font-semibold" style="margin-top:6px;">${fmtINR(CUSTOMER.nextPaymentAmount)}</div></div>
+            <div class="card-flat"><div class="text-tertiary text-xs">Status</div><div style="margin-top:6px;">${badge(SUBSCRIPTION_BADGE[CUSTOMER.subscriptionStatus] || SUBSCRIPTION_BADGE.NONE)}</div></div>
+            <div class="card-flat"><div class="text-tertiary text-xs">Renewal Date</div><div class="font-mono text-sm font-semibold" style="margin-top:6px;">${CUSTOMER.renewalDate ? fmtDate(CUSTOMER.renewalDate) : '—'}</div></div>
+            <div class="card-flat"><div class="text-tertiary text-xs">Amount</div><div class="font-mono text-sm font-semibold" style="margin-top:6px;">${fmtINR(CUSTOMER.nextPaymentAmount)}/mo</div></div>
           </div>
           <div class="flex gap-10">
             <button class="btn btn-primary" data-action="renew">${ICONS.refresh}Renew</button>
             <button class="btn btn-secondary" id="upgradeBtn">Upgrade Plan</button>
             <button class="btn btn-danger" id="cancelPlanBtn">Cancel</button>
           </div>
-        </div>
+        </div>` : `
+        <div class="card">
+          ${emptyStateHTML({ title: 'No active subscription', desc: 'Subscribe to a strategy to see billing details here.', iconName: 'card', actionLabel: 'View Strategies', actionRoute: 'strategies' })}
+        </div>`}
 
         <div class="card mt-20">
-          <div class="card-head"><div class="card-title">${ICONS.fileText}Invoices &amp; Payment History</div></div>
-          ${INVOICES_DB.map((inv) => `
-            <div class="invoice-row" style="padding-left:0;padding-right:0;">
-              <span class="file-icon">${ICONS.fileText}</span>
-              <div style="flex:1;min-width:0;">
-                <div class="text-sm font-semibold">${inv.id} <span class="text-tertiary" style="font-weight:400;">· ${escapeHTML(inv.plan)}</span></div>
-                <div class="text-xs text-tertiary font-mono">${fmtDate(inv.date)} · ${inv.gst}</div>
-              </div>
-              <span class="font-mono font-semibold text-sm" style="margin-right:6px;">${fmtINR(inv.amount)}</span>
-              ${badge(['success', 'Paid'])}
-              <button class="btn btn-ghost btn-sm">${ICONS.download}</button>
-            </div>`).join('')}
+          <div class="card-head"><div class="card-title">${ICONS.fileText}Payment History</div></div>
+          <div id="paymentHistoryList">${loadingLineHTML('Loading payment history…')}</div>
         </div>
       </div>
       <div class="col-5">
         <div class="card">
           <div class="card-head"><div class="card-title">${ICONS.card}Payment Method</div></div>
-          <div class="broker-card">
-            <div class="broker-logo" style="background:var(--bg-raised);">${ICONS.card}</div>
-            <div class="broker-info"><div class="broker-name">${PAYMENT_METHOD.brand}</div><div class="broker-meta">${PAYMENT_METHOD.type} •••• ${PAYMENT_METHOD.last4}</div></div>
-          </div>
-          <button class="btn btn-secondary btn-block mt-16">Update Payment Method</button>
+          <div class="text-tertiary text-sm" style="line-height:1.6;">Payments are handled by Razorpay at checkout — we don't store card or bank details on our side, so there's nothing to show here. Use the link Razorpay emails you, or your bank/UPI app, to manage the payment method itself.</div>
         </div>
       </div>
     </div>`;
 
-  qs('#upgradeBtn', target).addEventListener('click', () => toast({ type: 'info', title: 'Upgrade flow', desc: 'Contact support to switch strategy plans.' }));
-  qs('#cancelPlanBtn', target).addEventListener('click', () => confirmAction({
-    title: 'Cancel your subscription?', desc: 'Execution will stop at the end of your current billing period. Your history and account remain intact.', confirmLabel: 'Cancel Subscription', danger: true,
-    onConfirm: () => toast({ type: 'warning', title: 'Cancellation scheduled', desc: `Access continues until ${fmtDate(CUSTOMER.renewalDate)}.` }),
+  qs('#upgradeBtn', target)?.addEventListener('click', () => toast({ type: 'info', title: 'Upgrade flow', desc: 'Contact support to switch strategy plans.' }));
+  qs('#cancelPlanBtn', target)?.addEventListener('click', () => confirmAction({
+    title: 'Cancel your subscription?',
+    desc: "There's no self-service cancellation yet — this sends an email to our support team, who will confirm the cancellation with you and stop future renewal charges. Your access continues until your current billing period ends.",
+    confirmLabel: 'Email Support to Cancel',
+    danger: true,
+    onConfirm: () => {
+      window.location.href = `mailto:support@viksitanalyst.com?subject=${encodeURIComponent('Cancel subscription — ' + (CUSTOMER.id || ''))}&body=${encodeURIComponent(`Please cancel my subscription.\n\nCustomer ID: ${CUSTOMER.id || ''}\nEmail: ${CUSTOMER.email || ''}`)}`;
+      toast({ type: 'info', title: 'Opening your email client', desc: "We'll confirm by email once it's processed." });
+    },
   }));
+
+  // Real payment history — DashboardApi.gs's ?action=payments.
+  const listEl = qs('#paymentHistoryList', target);
+  try {
+    const payments = await VA_DASHBOARD_API.getPayments();
+    if (!payments || !payments.length) {
+      listEl.innerHTML = emptyStateHTML({ title: 'No payments yet', desc: 'Your payment history will appear here once you subscribe.', iconName: 'fileText' });
+      return;
+    }
+    listEl.innerHTML = payments
+      .slice()
+      .sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp))
+      .map((p) => {
+        const strategy = findStrategyByBotField(p.bot);
+        const statusTone = p.status === 'PAID' || p.status === 'CAPTURED' ? 'success' : p.status === 'FAILED' ? 'error' : 'neutral';
+        return `
+          <div class="invoice-row" style="padding-left:0;padding-right:0;">
+            <span class="file-icon">${ICONS.fileText}</span>
+            <div style="flex:1;min-width:0;">
+              <div class="text-sm font-semibold">${escapeHTML(p.paymentId)} <span class="text-tertiary" style="font-weight:400;">· ${escapeHTML(strategy ? strategy.name : (p.bot || 'Unknown strategy'))}</span></div>
+              <div class="text-xs text-tertiary font-mono">${fmtDate(p.timestamp)}</div>
+            </div>
+            <span class="font-mono font-semibold text-sm" style="margin-right:6px;">${fmtINR(p.amount)}</span>
+            ${badge([statusTone, p.status])}
+          </div>`;
+      })
+      .join('');
+  } catch (err) {
+    console.warn('[dashboard] Failed to load payment history:', err);
+    listEl.innerHTML = errorStateHTML("We couldn't load your payment history.");
+  }
 };
 
 /* --------------------------------------------------------------------------
@@ -1530,77 +1270,34 @@ function openNewTicketModal() {
    -------------------------------------------------------------------------- */
 RENDERERS.profile = function (target) {
   target.innerHTML = `
-    <div class="view-head"><div><div class="view-title">Profile</div><div class="view-subtitle">Your account details and security.</div></div></div>
+    <div class="view-head"><div><div class="view-title">Profile</div><div class="view-subtitle">Your account details.</div></div></div>
     <div class="grid grid-12">
       <div class="col-4">
         <div class="card" style="text-align:center;">
-          <div class="avatar avatar-lg" style="margin:0 auto 16px;">${CUSTOMER.name.split(' ').map((s) => s[0]).slice(0, 2).join('')}</div>
-          <div style="font-weight:600;font-size:var(--fs-md);">${escapeHTML(CUSTOMER.name)}</div>
-          <div class="text-tertiary text-xs font-mono" style="margin-top:2px;">${CUSTOMER.id}</div>
-          <button class="btn btn-secondary btn-sm mt-16" id="changePhotoBtn">${ICONS.camera}Change Photo</button>
+          <div class="avatar avatar-lg" style="margin:0 auto 16px;">${(CUSTOMER.name || '?').split(' ').map((s) => s[0]).slice(0, 2).join('')}</div>
+          <div style="font-weight:600;font-size:var(--fs-md);">${escapeHTML(CUSTOMER.name || '—')}</div>
+          <div class="text-tertiary text-xs font-mono" style="margin-top:2px;">${escapeHTML(CUSTOMER.id || '—')}</div>
         </div>
         <div class="card mt-20">
-          <div class="card-head"><div class="card-title">${ICONS.monitor}Active Sessions</div></div>
-          ${SESSIONS_DB.map((s) => `
-            <div class="session-item">
-              <span class="session-icon">${ICONS[s.icon]}</span>
-              <div style="flex:1;min-width:0;">
-                <div class="text-sm font-semibold">${escapeHTML(s.device)} ${s.current ? '<span class="badge badge-success" style="margin-left:6px;">This device</span>' : ''}</div>
-                <div class="text-xs text-tertiary">${escapeHTML(s.location)} · ${fmtRelative(s.lastActive)}</div>
-              </div>
-              ${!s.current ? `<button class="btn btn-ghost btn-sm" style="color:var(--color-error);">Revoke</button>` : ''}
-            </div>`).join('')}
+          <div class="card-head"><div class="card-title">${ICONS.monitor}Sign-in</div></div>
+          <div class="text-tertiary text-sm" style="line-height:1.6;">Viksit Analyst uses passwordless, email one-time-code sign-in — there's no password on your account, and no separate two-factor toggle needed. Every sign-in already requires access to your inbox.</div>
         </div>
       </div>
       <div class="col-8">
         <div class="card">
           <div class="card-head"><div class="card-title">${ICONS.user}Personal Information</div></div>
           <div class="form-row">
-            <div class="field"><label>Full Name</label><input class="input" value="${escapeHTML(CUSTOMER.name)}"></div>
-            <div class="field"><label>Email</label><input class="input" value="${escapeHTML(CUSTOMER.email)}" type="email"></div>
+            <div class="field"><label>Full Name</label><input class="input" value="${escapeHTML(CUSTOMER.name)}" disabled></div>
+            <div class="field"><label>Email</label><input class="input" value="${escapeHTML(CUSTOMER.email)}" type="email" disabled></div>
           </div>
           <div class="form-row">
-            <div class="field"><label>Phone</label><input class="input" value="${escapeHTML(CUSTOMER.phone)}"></div>
-            <div class="field"><label>Company</label><input class="input" value="${escapeHTML(CUSTOMER.company)}"></div>
+            <div class="field"><label>Phone</label><input class="input" value="${escapeHTML(CUSTOMER.phone)}" disabled></div>
+            <div class="field"><label>Customer Since</label><input class="input" value="${CUSTOMER.createdDate ? escapeHTML(fmtDate(CUSTOMER.createdDate)) : ''}" disabled></div>
           </div>
-          <div class="form-row">
-            <div class="field"><label>Country</label><input class="input" value="${escapeHTML(CUSTOMER.country)}"></div>
-            <div class="field"><label>Timezone</label><input class="input" value="${escapeHTML(CUSTOMER.timezone)}"></div>
-          </div>
-          <button class="btn btn-primary" id="saveProfileBtn">Save Changes</button>
-        </div>
-
-        <div class="card mt-20">
-          <div class="card-head"><div class="card-title">${ICONS.shield}Security</div></div>
-          <div class="pref-row">
-            <div><div class="pref-row-label">Password</div><div class="pref-row-desc">Last changed 4 months ago</div></div>
-            <button class="btn btn-secondary btn-sm" id="changePasswordBtn">Change Password</button>
-          </div>
-          <div class="pref-row">
-            <div><div class="pref-row-label">Two-Factor Authentication</div><div class="pref-row-desc">Adds an extra step when signing in</div></div>
-            <label class="switch"><input type="checkbox" ${CUSTOMER.twoFAEnabled ? 'checked' : ''} id="twoFaToggle"><span class="switch-track"></span></label>
-          </div>
-          <div class="pref-row">
-            <div><div class="pref-row-label">Login History</div><div class="pref-row-desc">View recent sign-ins to your account</div></div>
-            <button class="btn btn-ghost btn-sm">View</button>
-          </div>
+          <div class="text-tertiary text-xs" style="margin-top:4px;">These fields aren't editable here yet — there's no backend endpoint to update them. Contact support for changes to your name, phone, or email.</div>
         </div>
       </div>
     </div>`;
-
-  qs('#saveProfileBtn', target).addEventListener('click', () => toast({ type: 'success', title: 'Profile updated' }));
-  qs('#changePhotoBtn', target).addEventListener('click', () => toast({ type: 'info', title: 'Upload coming soon' }));
-  qs('#changePasswordBtn', target).addEventListener('click', () => openModal(`
-    <div class="modal-head"><div class="modal-title">Change Password</div><button class="icon-btn" data-close-modal>${ICONS.x}</button></div>
-    <div class="modal-body">
-      <div class="field mb-16" style="margin-bottom:14px;"><label>Current Password</label><input class="input" type="password" autofocus></div>
-      <div class="field mb-16" style="margin-bottom:14px;"><label>New Password</label><input class="input" type="password"></div>
-      <div class="field"><label>Confirm New Password</label><input class="input" type="password"></div>
-    </div>
-    <div class="modal-foot"><button class="btn btn-secondary" data-close-modal>Cancel</button><button class="btn btn-primary" id="savePwBtn">Update Password</button></div>`));
-  document.addEventListener('click', function pwHandler(e) { if (e.target.id === 'savePwBtn') { closeModal(); toast({ type: 'success', title: 'Password updated' }); } });
-  const tfa = qs('#twoFaToggle', target);
-  if (tfa) tfa.addEventListener('change', (e) => toast({ type: 'info', title: `Two-factor authentication ${e.target.checked ? 'enabled' : 'disabled'}` }));
 };
 
 /* --------------------------------------------------------------------------
@@ -1688,29 +1385,13 @@ RENDERERS.settings = function (target) {
 };
 
 /* --------------------------------------------------------------------------
-   26. BROKER OAUTH CONNECT
+   26. BROKER CONNECT
    -------------------------------------------------------------------------- */
-// Per VABR security rules, the dashboard never collects or stores broker
-// credentials directly — the customer authenticates on the broker's own
-// domain via standard OAuth2 (authorization_code grant), and only the
-// resulting session status is reflected here. api_key/redirect_uri below
-// are populated by the backend template at render time in production.
-const BROKER_OAUTH_CONFIG = {
-  BR001: { name: 'Upstox', authUrl: 'https://api.upstox.com/v2/login/authorization/dialog', clientIdParam: 'client_id', extraParams: { response_type: 'code' } },
-  BR002: { name: 'Zerodha', authUrl: 'https://kite.zerodha.com/connect/login', clientIdParam: 'api_key', extraParams: { v: '3' } },
-};
-function connectBroker(brokerId) {
-  const cfg = BROKER_OAUTH_CONFIG[brokerId];
-  const broker = BROKERS_CATALOG.find((b) => b.id === brokerId);
-  if (!cfg) { toast({ type: 'info', title: `${broker.name} integration coming soon` }); return; }
-  toast({ type: 'info', title: `Redirecting to ${cfg.name}…`, desc: 'Complete login on the broker\u2019s own secure page. We never see your password.' });
-  // In production this URL is assembled server-side with the account's
-  // registered client_id and redirect_uri, then the browser is sent here:
-  //   `${cfg.authUrl}?${cfg.clientIdParam}=<CLIENT_ID>&redirect_uri=<REDIRECT_URI>&${new URLSearchParams(cfg.extraParams)}`
-  // Demo build has no live backend to exchange the resulting auth code, so
-  // we simulate the round trip instead of opening a dead popup.
-  setTimeout(() => toast({ type: 'success', title: `${cfg.name} connected`, desc: 'Access token issued. Execution will resume shortly.' }), 1600);
-}
+// Broker OAuth connect/disconnect happens entirely on
+// dashboard/broker/broker.html (see RENDERERS.broker above), which is
+// already wired to real BrokerRouter.gs endpoints via brokerAPI.js. This
+// file used to simulate that flow inline with a fake success toast after
+// a timeout -- removed rather than left as dead, misleading code.
 
 /* --------------------------------------------------------------------------
    27. GLOBAL ACTION HANDLER (data-action="…")
@@ -1720,16 +1401,18 @@ document.addEventListener('click', (e) => {
   if (!btn) return;
   const action = btn.dataset.action;
   if (action === 'renew') {
+    const hasSubscription = CUSTOMER.subscriptionStatus && CUSTOMER.subscriptionStatus !== 'NONE';
     confirmAction({
-      title: 'Renew Subscription', desc: `Renew ${CUSTOMER.plan} for ${fmtINR(CUSTOMER.nextPaymentAmount)}? Your new expiry will be ${fmtDate(new Date(new Date(CUSTOMER.renewalDate).setFullYear(new Date(CUSTOMER.renewalDate).getFullYear() + 1)))}.`,
-      confirmLabel: 'Proceed to Payment',
-      onConfirm: () => { toast({ type: 'info', title: 'Redirecting to secure checkout…' }); setTimeout(() => toast({ type: 'success', title: 'Payment successful', desc: 'Your subscription has been renewed.' }), 1600); },
+      title: 'Renew Subscription',
+      desc: hasSubscription
+        ? `We email a secure Razorpay payment link before your ${escapeHTML(CUSTOMER.plan || 'subscription')} renews (7, 3, 1, and 0 days out) — there's no on-demand "pay now" button yet. If you'd like to renew early or didn't get the email, contact support and we'll send the link directly.`
+        : "You don't have an active subscription to renew. Contact support if you think this is wrong, or subscribe to a strategy from the Strategies tab.",
+      confirmLabel: 'Contact Support',
+      onConfirm: () => navigate('support'),
     });
-  } else if (action === 'download-bot') {
-    toast({ type: 'success', title: 'Preparing download…', desc: 'Gamma Flip Execution Bot v4.2.1' });
-    setTimeout(() => toast({ type: 'success', title: 'Download started', desc: 'Check your browser downloads.' }), 1200);
-  } else if (action === 'new-ticket') {
-    openNewTicketModal();
+  } else if (action === 'download-bot' || action === 'new-ticket') {
+    if (action === 'new-ticket') { openNewTicketModal(); return; }
+    toast({ type: 'info', title: 'Setup files are sent by email', desc: "We don't have self-service downloads live yet — contact support and we'll send what you need." });
   }
 });
 
@@ -1762,51 +1445,95 @@ function showSessionExpired() {
    the real profile loads, then re-render whatever view is on screen.
    -------------------------------------------------------------------------- */
 async function hydrateCustomerFromSession() {
-  if (!window.VA_SESSION || !window.VA_API) return; // auth layer not present — keep demo data
+  if (!window.VA_SESSION || !window.VA_API) return; // auth layer not present — keep CUSTOMER empty, renderers show errorStateHTML()
 
   const sessionUser = VA_SESSION.getUser() || {};
   const token = VA_SESSION.getToken();
 
   // 1) Immediate, synchronous hydration from whatever routeGuard already
   //    validated (name/email at minimum), so the topbar never shows the
-  //    wrong person even before the network call below resolves.
+  //    wrong person even before the network calls below resolve.
   Object.assign(CUSTOMER, {
     id: sessionUser.customerId || sessionUser.id || CUSTOMER.id,
     name: sessionUser.name || CUSTOMER.name,
     email: sessionUser.email || CUSTOMER.email,
   });
-  // M1 fix: BROKER_CONNECTION.customerId was captured once at
-  // module-evaluation time (`customerId: CUSTOMER.id` above, before this
-  // function ever ran) and never updated again, so the mini broker card
-  // on the dashboard home view could show a stale/mock customer ID.
-  // Re-sync it every time CUSTOMER.id changes instead.
-  BROKER_CONNECTION.customerId = CUSTOMER.id;
 
-  // 2) Authoritative profile fetch — VA_API.me() is the existing, frozen
-  //    auth API client's real backend call (AuthApi.gs → action=me),
-  //    already used by no one else on this page. { customerId, name,
-  //    email, bot } per auth/api.js.
-  if (!token) return;
+  if (!token || !window.VA_DASHBOARD_API) return;
+
+  // 2) Authoritative profile — AuthApi.gs's real ?action=me.
   try {
     const profile = await VA_API.me(token);
-    if (!profile) return;
-    Object.assign(CUSTOMER, {
-      id: profile.customerId || CUSTOMER.id,
-      name: profile.name || CUSTOMER.name,
-      email: profile.email || CUSTOMER.email,
-    });
-    BROKER_CONNECTION.customerId = CUSTOMER.id; // M1 fix — see note above
-    if (profile.bot) {
-      // Real bot status, when the backend includes it — everything else
-      // in BOT_STATUS (server, latencyMs, ...) stays on demo data until
-      // a dedicated bot-status endpoint exists (see production TODO).
-      Object.assign(BOT_STATUS, profile.bot);
+    if (profile) {
+      Object.assign(CUSTOMER, {
+        id: profile.customerId || CUSTOMER.id,
+        name: profile.name || CUSTOMER.name,
+        email: profile.email || CUSTOMER.email,
+      });
     }
   } catch (err) {
-    // A failed profile fetch shouldn't block the dashboard — routeGuard
-    // already confirmed the session is valid; this is best-effort
-    // enrichment, not the auth check itself.
     console.warn('[dashboard] VA_API.me() failed, showing session data only:', err);
+  }
+
+  // 3) Real customer record (phone, createdAt, status) + real
+  //    subscriptions (bot, status, endDate, daysRemaining) — DashboardApi.gs's
+  //    ?action=customer and ?action=status. Both session-authenticated;
+  //    neither trusts a client-supplied customerId.
+  try {
+    const [customer, status, botStatus] = await Promise.all([
+      VA_DASHBOARD_API.getCustomer(),
+      VA_DASHBOARD_API.getStatus(),
+      VA_DASHBOARD_API.getBotStatus().catch((err) => {
+        // Bot status is real but best-effort — a VM outage or missing
+        // Script Property shouldn't take down the rest of the dashboard.
+        console.warn('[dashboard] getBotStatus() failed:', err);
+        return null;
+      }),
+    ]);
+
+    CUSTOMER.botStatus = botStatus; // { status, activeStrategy, heartbeatAt, server, latencyMs } | null
+
+    if (customer) {
+      Object.assign(CUSTOMER, {
+        id: customer.id || CUSTOMER.id,
+        name: customer.name || CUSTOMER.name,
+        email: customer.email || CUSTOMER.email,
+        phone: customer.phone || null,
+        createdDate: customer.createdAt || null,
+      });
+    }
+
+    const subs = (status && status.subscriptions) || [];
+    // Prefer an ACTIVE subscription; fall back to GRACE_PERIOD, then
+    // whatever's first (PENDING_ACTIVATION / EXPIRED) — a customer with
+    // no subscription at all (subs.length === 0) is a real, valid state
+    // (e.g. mid-checkout, or never purchased), not an error.
+    const primary = subs.find((s) => s.status === 'ACTIVE')
+      || subs.find((s) => s.status === 'GRACE_PERIOD')
+      || subs[0]
+      || null;
+
+    if (primary) {
+      const strategy = findStrategyByBotField(primary.bot);
+      Object.assign(CUSTOMER, {
+        strategyId: strategy ? strategy.id : null,
+        subscriptionStatus: primary.status,
+        renewalDate: primary.endDate,
+        nextPaymentAmount: strategy ? strategy.renewAmount : null,
+        plan: strategy ? `${strategy.name} — Monthly` : primary.bot,
+      });
+    } else {
+      Object.assign(CUSTOMER, {
+        strategyId: null,
+        subscriptionStatus: 'NONE',
+        renewalDate: null,
+        nextPaymentAmount: null,
+        plan: 'No active subscription',
+      });
+    }
+  } catch (err) {
+    console.warn('[dashboard] Failed to load real customer/subscription data:', err);
+    CUSTOMER.loadError = true;
   }
 }
 
@@ -1825,14 +1552,6 @@ function init() {
   applySidebar();
   const startRoute = window.location.hash.slice(1) || 'dashboard';
   navigate(startRoute);
-
-  // simulate loadNotifications() / loadBroker() background polling
-  if (heartbeatIntervalId_) clearInterval(heartbeatIntervalId_);
-  heartbeatIntervalId_ = setInterval(() => {
-    BOT_STATUS.lastHeartbeat = new Date().toISOString();
-    const dot = qs('#sidebarSystemDot');
-    if (dot) { dot.classList.remove('success'); void dot.offsetWidth; dot.classList.add('success'); }
-  }, 15000);
 }
 
 window.addEventListener('pagehide', () => {
