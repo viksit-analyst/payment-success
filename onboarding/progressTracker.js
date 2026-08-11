@@ -18,7 +18,6 @@ export const STEPS = Object.freeze([
   { id: 'strategy', label: 'Strategy' },
   { id: 'bot-config', label: 'Bot Setup' },
   { id: 'infrastructure', label: 'System Check' },
-  { id: 'downloads', label: 'Downloads' },
   { id: 'activation', label: 'Activate' },
 ]);
 
