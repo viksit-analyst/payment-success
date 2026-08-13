@@ -1047,18 +1047,65 @@ RENDERERS.broker = function (target) {
 /* --------------------------------------------------------------------------
    20. REPORTS VIEW
    -------------------------------------------------------------------------- */
-RENDERERS.reports = function (target) {
+// Backed by DashboardApi.gs's ?action=dailyReport (VmSyncRouter.gs's
+// handleVmReportIngest_ receives this daily from the VM's own
+// scheduler/eod_report.py, ~15:35 IST). One row per strategy that traded
+// for this customer on the selected day. Unlike Performance/Trade History
+// above, this genuinely has a live backend now, so it renders real numbers
+// instead of an empty state — except on a day with no trades, which is a
+// normal, honest empty state, not a "not built yet" one.
+RENDERERS.reports = async function (target) {
   target.innerHTML = `
-    <div class="view-head"><div><div class="view-title">Reports</div><div class="view-subtitle">Trade and performance reports.</div></div></div>
-    <div class="card" style="padding:48px 32px;">
-      ${emptyStateHTML({
-        title: 'Report generation isn\u2019t live yet',
-        desc: 'We don\u2019t have automated report generation running yet. Contact support and we\u2019ll put together what you need.',
+    <div class="view-head"><div><div class="view-title">Reports</div><div class="view-subtitle">Daily trade and P&amp;L report, one row per strategy.</div></div></div>
+    <div class="card" style="padding:24px 32px;" id="dailyReportCard">${loadingLineHTML('Loading today\u2019s report…')}</div>`;
+
+  const cardEl = qs('#dailyReportCard', target);
+  try {
+    const { date, reports } = await VA_DASHBOARD_API.getDailyReport();
+
+    if (!reports || !reports.length) {
+      cardEl.innerHTML = emptyStateHTML({
+        title: 'No trades reported for ' + fmtDate(date),
+        desc: 'Once your subscribed strategy trades today, this report fills in automatically shortly after market close.',
         iconName: 'fileText',
-        actionLabel: 'Contact Support',
-        actionRoute: 'support',
-      })}
-    </div>`;
+      });
+      return;
+    }
+
+    cardEl.innerHTML = `
+      <div class="text-xs text-tertiary" style="margin-bottom:16px;">Report for ${fmtDate(date)}</div>
+      <div style="overflow-x:auto;">
+        <table class="data-table" style="width:100%;border-collapse:collapse;">
+          <thead>
+            <tr class="text-xs text-tertiary" style="text-align:left;border-bottom:1px solid var(--border-subtle);">
+              <th style="padding:8px 12px 8px 0;">Strategy</th>
+              <th style="padding:8px 12px;">Trades</th>
+              <th style="padding:8px 12px;">Wins</th>
+              <th style="padding:8px 12px;">Losses</th>
+              <th style="padding:8px 12px;">Skipped</th>
+              <th style="padding:8px 12px;">Win Rate</th>
+              <th style="padding:8px 0 8px 12px;">Gross P&amp;L</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${reports.map((r) => `
+              <tr style="border-bottom:1px solid var(--border-subtle);">
+                <td style="padding:10px 12px 10px 0;font-weight:600;">${escapeHTML(r.strategyName)}</td>
+                <td style="padding:10px 12px;font-family:var(--font-mono, monospace);">${escapeHTML(r.trades)}</td>
+                <td style="padding:10px 12px;font-family:var(--font-mono, monospace);color:var(--color-success, #1fa971);">${escapeHTML(r.wins)}</td>
+                <td style="padding:10px 12px;font-family:var(--font-mono, monospace);color:var(--color-error, #e5484d);">${escapeHTML(r.losses)}</td>
+                <td style="padding:10px 12px;font-family:var(--font-mono, monospace);color:var(--text-tertiary);">${escapeHTML(r.skipped)}</td>
+                <td style="padding:10px 12px;font-family:var(--font-mono, monospace);">${escapeHTML(r.winRatePct)}%</td>
+                <td style="padding:10px 0 10px 12px;font-family:var(--font-mono, monospace);font-weight:600;${r.grossPnl < 0 ? 'color:var(--color-error, #e5484d);' : ''}">${fmtINR(r.grossPnl)}</td>
+              </tr>`).join('')}
+          </tbody>
+        </table>
+      </div>
+      <div class="text-xs text-tertiary" style="margin-top:16px;">Failed order attempts, if any, aren\u2019t shown in this summary — contact support for the full log on a given day.</div>`;
+  } catch (err) {
+    console.warn('[dashboard] Failed to load daily report:', err);
+    cardEl.innerHTML = errorStateHTML("We couldn't load today\u2019s report.");
+  }
 };
 
 /* --------------------------------------------------------------------------
