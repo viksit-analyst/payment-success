@@ -52,7 +52,7 @@
    -------------------------------------------------------------------------- */
 .legal-shell {
   display: grid;
-  grid-template-columns: 260px 1fr;
+  grid-template-columns: 260px minmax(0, 1fr);
   gap: 56px;
   padding-block: var(--section-pad-y);
   align-items: start;
@@ -239,7 +239,7 @@
    -------------------------------------------------------------------------- */
 .contact-grid {
   display: grid;
-  grid-template-columns: 1.1fr 0.9fr;
+  grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr);
   gap: 28px;
   align-items: start;
 }
@@ -248,7 +248,7 @@
 .contact-card h2 { font-size: var(--fs-lg); margin-bottom: 6px; }
 .contact-card > p { color: var(--text-secondary); font-size: var(--fs-sm); margin-bottom: 28px; }
 
-.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.form-row { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 16px; }
 .form-group { display: flex; flex-direction: column; gap: 8px; margin-bottom: 18px; }
 .form-group label {
   font-size: var(--fs-xs);
@@ -388,14 +388,14 @@
    6. RESPONSIVE
    -------------------------------------------------------------------------- */
 @media (max-width: 980px) {
-  .legal-shell { grid-template-columns: 1fr; gap: 32px; }
+  .legal-shell { grid-template-columns: minmax(0, 1fr); gap: 32px; }
   .legal-toc { position: relative; top: 0; }
-  .contact-grid { grid-template-columns: 1fr; }
+  .contact-grid { grid-template-columns: minmax(0, 1fr); }
 }
 @media (max-width: 640px) {
   .page-hero { padding-top: calc(var(--nav-height) + 40px); padding-bottom: 40px; }
   .page-hero h1 { font-size: var(--fs-2xl); }
-  .form-row { grid-template-columns: 1fr; }
+  .form-row { grid-template-columns: minmax(0, 1fr); }
   .contact-card { padding: 26px 22px; }
   .legal-shell { padding-block: 64px; }
 }
