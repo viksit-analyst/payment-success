@@ -216,3 +216,4 @@
     getDailyReport,
   });
 })(window);
+
