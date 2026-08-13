@@ -108,6 +108,23 @@ export function disconnectBroker(brokerId = 'BR001') {
   return callBackend('brokerDisconnect', { method: 'POST', body: { brokerId } });
 }
 
+/**
+ * Submits Upstox login credentials for automated daily reconnection.
+ * See BrokerRouter.gs's brokerEnableAutoLogin case / TokenStore.gs's
+ * enableAutoLogin_ — this is a SEPARATE, explicit-consent action from
+ * requestAuthUrl()/exchangeAuthCode() above, not a replacement wired
+ * into the same flow. `payload` = { mobile, password, pin, totpSecret,
+ * apiKey, apiSecret, redirectUri }.
+ */
+export function enableAutoLogin(payload, brokerId = 'BR001') {
+  return callBackend('brokerEnableAutoLogin', { method: 'POST', body: { brokerId, ...payload } });
+}
+
+/** Clears all stored auto-login credentials server-side (see TokenStore.gs's disableAutoLogin_). */
+export function disableAutoLogin(brokerId = 'BR001') {
+  return callBackend('brokerDisableAutoLogin', { method: 'POST', body: { brokerId } });
+}
+
 export function refreshBroker(brokerId = 'BR001') {
   return callBackend('brokerRefresh', { method: 'POST', body: { brokerId }, silent: true });
 }
