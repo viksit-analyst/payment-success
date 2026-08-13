@@ -91,6 +91,61 @@
         <p class="mono" style="font-size: var(--fs-2xs); color: var(--text-tertiary);">Secured via OAuth 2.0 · Tokens encrypted at rest</p>
       </section>
 
+      <!--
+        Automatic daily reconnection (auto-login) — a SEPARATE, explicit-
+        consent step, deliberately not merged into connectSection above.
+        Upstox sessions expire daily, so keeping a subscriber trading every
+        day without them manually reconnecting each morning requires
+        storing enough to log back in on their behalf. That is a real
+        trade-off against the promise in connectSection's copy above
+        ("Viksit Analyst never sees your password") — this section exists
+        so that promise stays true for anyone who doesn't opt in here, and
+        anyone who does is making that trade-off knowingly, not by default.
+        Rendered/hidden by autoLogin.js. Visible regardless of OAuth
+        connection state — this can now be a customer's only connection
+        step.
+      -->
+      <section id="autoLoginSection" class="card connect-panel" hidden>
+        <h2>Enable automatic daily reconnection</h2>
+        <p class="text-secondary" style="font-size:var(--fs-sm);">
+          Upstox logs every account out at ~3:30&nbsp;AM daily. Without this, you'd need to manually
+          reconnect every trading morning before 9&nbsp;AM for your bot to place trades. Enabling this
+          stores your Upstox login details, encrypted, so the platform can log back in on your behalf
+          each morning. <strong>This means Viksit Analyst will have your Upstox password and PIN on
+          file, encrypted at rest.</strong> Only enable this if you're comfortable with that trade-off.
+        </p>
+        <form id="autoLoginForm">
+          <label for="alMobile">Upstox mobile / login ID</label>
+          <input id="alMobile" name="mobile" type="text" autocomplete="off" required />
+
+          <label for="alPassword">Upstox password</label>
+          <input id="alPassword" name="password" type="password" autocomplete="new-password" required />
+
+          <label for="alPin">Upstox PIN (6-digit)</label>
+          <input id="alPin" name="pin" type="password" autocomplete="off" inputmode="numeric" maxlength="6" />
+
+          <label for="alTotpSecret">TOTP secret (optional — only if your account uses an authenticator app instead of a static PIN)</label>
+          <input id="alTotpSecret" name="totpSecret" type="password" autocomplete="off" />
+
+          <label for="alApiKey">Upstox API key <span class="mono" style="font-size:var(--fs-2xs);">(from your own Upstox Developer app)</span></label>
+          <input id="alApiKey" name="apiKey" type="text" autocomplete="off" required />
+
+          <label for="alApiSecret">Upstox API secret</label>
+          <input id="alApiSecret" name="apiSecret" type="password" autocomplete="off" required />
+
+          <label for="alRedirectUri">Redirect URI <span class="mono" style="font-size:var(--fs-2xs);">(exactly as registered in your Upstox app)</span></label>
+          <input id="alRedirectUri" name="redirectUri" type="text" autocomplete="off" required />
+
+          <label class="checkbox-row" for="alConsent">
+            <input id="alConsent" name="consent" type="checkbox" required />
+            I understand Viksit Analyst will store my Upstox password and PIN, encrypted, to log in on my behalf each trading day.
+          </label>
+
+          <button class="btn btn-primary" id="alEnableBtn" type="submit">Enable Auto-Reconnect</button>
+          <button class="btn btn-secondary" id="alDisableBtn" type="button" hidden>Disable Auto-Reconnect</button>
+        </form>
+      </section>
+
       <!-- Connected state -->
       <section id="brokerGrid" class="broker-grid" hidden>
 
