@@ -4,10 +4,12 @@
 // watch loops. No business logic lives in this file.
 
 import { handleCallbackIfPresent, beginConnect } from './oauth.js';
+import { initAutoLoginSection } from './autoLogin.js';
 import { startPolling } from './connectionStatus.js';
 import { startTokenWatch } from './tokenManager.js';
 import { getState, onChange, isConnected } from './brokerSession.js';
 import { waitForAuthenticatedConfig } from './sessionBridge.js';
+import { fetchBrokerStatus } from './brokerAPI.js';
 
 import { mountBrokerCard } from '../components/brokerCard.js';
 import { mountStatusCard } from '../components/statusCard.js';
@@ -77,6 +79,15 @@ async function main() {
   setPlatformBadge();
 
   document.getElementById('connectUpstoxBtn')?.addEventListener('click', () => beginConnect('BR001'));
+
+  try {
+    const status = await fetchBrokerStatus({ silent: true });
+    initAutoLoginSection(status?.autoLoginEnabled);
+  } catch (err) {
+    // Auto-login section just starts in its default (not-enabled) state —
+    // this must never block the rest of the page from loading.
+    initAutoLoginSection(false);
+  }
 
   await handleCallbackIfPresent();
 
