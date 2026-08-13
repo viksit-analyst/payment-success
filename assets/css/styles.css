@@ -273,6 +273,7 @@ section { position: relative; }
   border: 1px solid transparent;
 }
 .btn:active { transform: translateY(1px); }
+.btn[hidden] { display: none; }
 
 /* UX ADDITION: shared loading-state treatment for buttons — same pattern
    already used on the auth pages (auth/login.css), reused here so the
@@ -430,6 +431,31 @@ section { position: relative; }
 }
 [data-theme="dark"] .nav.is-scrolled { background: rgba(6, 15, 31, 0.72); }
 
+/* .nav-on-dark marks headers that sit directly over a permanently-dark
+   hero (independent of light/dark theme). In light theme, --text-primary
+   (#0B1F3A) is the *same* color as that hero background (--color-primary),
+   so brand text, nav links, and icons render invisible until scrolled.
+   Force light colors while transparent; once .is-scrolled adds the opaque
+   background, the normal theme-based colors below take over again. */
+.nav-on-dark:not(.is-scrolled) .brand,
+.nav-on-dark:not(.is-scrolled) .nav-links a,
+.nav-on-dark:not(.is-scrolled) .theme-toggle,
+.nav-on-dark:not(.is-scrolled) .btn-ghost {
+  color: #F3F6FA;
+}
+.nav-on-dark:not(.is-scrolled) .nav-links a:hover {
+  color: #FFFFFF;
+  background: rgba(255, 255, 255, 0.1);
+}
+.nav-on-dark:not(.is-scrolled) .btn-ghost:hover { color: #FFFFFF; }
+.nav-on-dark:not(.is-scrolled) .theme-toggle { border-color: rgba(255, 255, 255, 0.3); }
+.nav-on-dark:not(.is-scrolled) .theme-toggle:hover { border-color: var(--color-accent); color: var(--color-accent); }
+.nav-on-dark:not(.is-scrolled) .nav-toggle span,
+.nav-on-dark:not(.is-scrolled) .nav-toggle::before,
+.nav-on-dark:not(.is-scrolled) .nav-toggle::after {
+  background: #F3F6FA;
+}
+
 .nav-inner {
   width: 100%;
   display: flex;
@@ -446,6 +472,7 @@ section { position: relative; }
   font-weight: 600;
   font-size: 1.15rem;
   color: var(--text-primary);
+  white-space: nowrap;
 }
 .brand-mark { width: 30px; height: 20px; flex-shrink: 0; }
 .brand-mark path { stroke: var(--color-ivrv); }
@@ -644,7 +671,7 @@ section { position: relative; }
 
 .preview-grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 12px;
   margin-bottom: 14px;
 }
@@ -810,7 +837,7 @@ body.is-armed .spark-node { animation: node-pop 0.4s var(--ease-out) forwards; }
    -------------------------------------------------------------------------- */
 .why-grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 20px;
 }
 .why-card {
@@ -858,7 +885,7 @@ body.is-armed .spark-node { animation: node-pop 0.4s var(--ease-out) forwards; }
 .trust-pillars {
   flex: 1 1 auto;
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 24px;
 }
 .trust-pillar { display: flex; gap: 12px; align-items: flex-start; }
@@ -871,7 +898,7 @@ body.is-armed .spark-node { animation: node-pop 0.4s var(--ease-out) forwards; }
    -------------------------------------------------------------------------- */
 .strategy-grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 22px;
 }
 .strategy-card {
@@ -936,7 +963,7 @@ body.is-armed .spark-node { animation: node-pop 0.4s var(--ease-out) forwards; }
 
 .strategy-meta {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
   gap: 14px;
   padding: 18px 0;
   border-top: 1px solid var(--border-subtle);
@@ -1011,7 +1038,7 @@ body.is-armed .spark-node { animation: node-pop 0.4s var(--ease-out) forwards; }
 
 .modal-highlights {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 12px;
   margin-bottom: 28px;
 }
@@ -1032,7 +1059,7 @@ body.is-armed .spark-node { animation: node-pop 0.4s var(--ease-out) forwards; }
 
 .snapshot-grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 10px;
   margin-bottom: 10px;
 }
@@ -1086,7 +1113,7 @@ body.is-armed .spark-node { animation: node-pop 0.4s var(--ease-out) forwards; }
 
 .mission-grid {
   display: grid;
-  grid-template-columns: repeat(5, 1fr);
+  grid-template-columns: repeat(5, minmax(0, 1fr));
   gap: 1px;
   background: rgba(255, 255, 255, 0.08);
   border-radius: var(--radius-md);
@@ -1187,7 +1214,7 @@ body.is-armed .spark-node { animation: node-pop 0.4s var(--ease-out) forwards; }
    -------------------------------------------------------------------------- */
 .steps-track {
   display: grid;
-  grid-template-columns: repeat(6, 1fr);
+  grid-template-columns: repeat(6, minmax(0, 1fr));
   gap: 0;
   position: relative;
 }
@@ -1335,7 +1362,7 @@ body.is-armed .spark-node { animation: node-pop 0.4s var(--ease-out) forwards; }
 }
 .footer-grid {
   display: grid;
-  grid-template-columns: 1.4fr 1fr 1fr 1.2fr;
+  grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr) minmax(0, 1fr) minmax(0, 1.2fr);
   gap: 40px;
   padding-bottom: 56px;
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
@@ -1385,45 +1412,58 @@ body.is-armed .spark-node { animation: node-pop 0.4s var(--ease-out) forwards; }
    -------------------------------------------------------------------------- */
 @media (max-width: 1080px) {
   :root { --section-pad-y: 92px; }
-  .hero-grid { grid-template-columns: 1fr; gap: 64px; }
+  .hero-grid { grid-template-columns: minmax(0, 1fr); gap: 64px; }
   .hero-visual { max-width: 460px; }
-  .why-grid { grid-template-columns: repeat(2, 1fr); }
-  .strategy-grid { grid-template-columns: repeat(2, 1fr); }
-  .mission-grid { grid-template-columns: repeat(3, 1fr); }
+  .why-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .strategy-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .mission-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
   .mission-node:nth-child(4), .mission-node:nth-child(5) { grid-column: span 1; }
-  .steps-track { grid-template-columns: repeat(3, 1fr); row-gap: 40px; }
+  .steps-track { grid-template-columns: repeat(3, minmax(0, 1fr)); row-gap: 40px; }
   .steps-track::before { display: none; }
-  .footer-grid { grid-template-columns: 1fr 1fr; row-gap: 40px; }
-  .trust-pillars { grid-template-columns: repeat(2, 1fr); }
+  .footer-grid { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); row-gap: 40px; }
+  .trust-pillars { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
 
-@media (max-width: 860px) {
+@media (max-width: 1140px) {
+  /* Measured: the full nav-links row (8 items) plus theme-toggle + Login +
+     Subscribe overflows the header from 861px up to ~1149px - there just
+     isn't room until ~1150px+. Hamburger mode now covers that whole gap
+     instead of leaving tablets/small laptops with a broken header. */
   .nav-links { display: none; }
   .nav-toggle { display: flex; }
   .status-item { min-width: 148px; }
+  /* Login is duplicated as a full-width button in the mobile drawer;
+     dropping it from the fixed top bar here is what keeps brand +
+     theme-toggle + Subscribe + hamburger from overlapping. */
+  .nav-actions .btn-ghost { display: none; }
 }
 
 @media (max-width: 720px) {
   :root { --section-pad-y: 72px; --container-pad: 20px; --fs-2xl: 1.85rem; --fs-4xl: 2.5rem; }
-  .why-grid { grid-template-columns: 1fr; }
-  .strategy-grid { grid-template-columns: 1fr; }
-  .mission-grid { grid-template-columns: repeat(2, 1fr); }
+  .why-grid { grid-template-columns: minmax(0, 1fr); }
+  .strategy-grid { grid-template-columns: minmax(0, 1fr); }
+  .mission-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .mission-panel { padding: 26px 20px; }
-  .steps-track { grid-template-columns: 1fr 1fr; }
-  .footer-grid { grid-template-columns: 1fr; gap: 36px; }
+  .steps-track { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+  .footer-grid { grid-template-columns: minmax(0, 1fr); gap: 36px; }
   .trust-inner { flex-direction: column; align-items: flex-start; }
-  .trust-pillars { grid-template-columns: 1fr; width: 100%; }
+  .trust-pillars { grid-template-columns: minmax(0, 1fr); width: 100%; }
   .status-item { min-width: 140px; padding-inline: 18px; }
   .modal { padding: 28px 22px; }
-  .modal-highlights { grid-template-columns: 1fr 1fr; }
-  .snapshot-grid { grid-template-columns: 1fr 1fr; }
+  .modal-highlights { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+  .snapshot-grid { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
   .price-row .p-value { font-size: var(--fs-lg); }
   .footer-bottom { flex-direction: column; align-items: flex-start; }
 }
 
 @media (max-width: 480px) {
-  .mission-grid { grid-template-columns: 1fr; }
-  .steps-track { grid-template-columns: 1fr; }
+  .mission-grid { grid-template-columns: minmax(0, 1fr); }
+  .steps-track { grid-template-columns: minmax(0, 1fr); }
   .hero-actions .btn { flex: 1 1 100%; }
   .pricing-card { padding: 32px 24px; }
+  /* Subscribe is duplicated as a full-width primary button in the mobile
+     drawer; dropping it from the fixed top bar on phone widths leaves
+     brand + theme-toggle + hamburger room to breathe instead of crowding. */
+  .nav-actions { gap: 6px; }
+  .nav-actions .btn-primary { display: none; }
 }
