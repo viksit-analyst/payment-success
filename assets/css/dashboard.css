@@ -442,10 +442,10 @@ textarea.input { height: auto; padding: 10px 12px; resize: vertical; min-height:
    5. CARDS & GRID
    -------------------------------------------------------------------------- */
 .grid { display: grid; gap: 20px; }
-.grid-4 { grid-template-columns: repeat(4, 1fr); }
-.grid-3 { grid-template-columns: repeat(3, 1fr); }
-.grid-2 { grid-template-columns: repeat(2, 1fr); }
-.grid-12 { grid-template-columns: repeat(12, 1fr); }
+.grid-4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+.grid-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.grid-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.grid-12 { grid-template-columns: repeat(12, minmax(0, 1fr)); }
 .col-8 { grid-column: span 8; }
 .col-4 { grid-column: span 4; }
 .col-6 { grid-column: span 6; }
@@ -454,12 +454,12 @@ textarea.input { height: auto; padding: 10px 12px; resize: vertical; min-height:
 .col-12 { grid-column: span 12; }
 
 @media (max-width: 1180px) {
-  .grid-4 { grid-template-columns: repeat(2, 1fr); }
-  .grid-3 { grid-template-columns: repeat(2, 1fr); }
+  .grid-4 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .grid-3 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .col-8, .col-4, .col-6, .col-7, .col-5 { grid-column: span 12; }
 }
 @media (max-width: 640px) {
-  .grid-4, .grid-3, .grid-2 { grid-template-columns: 1fr; }
+  .grid-4, .grid-3, .grid-2 { grid-template-columns: minmax(0, 1fr); }
 }
 
 .card {
@@ -521,9 +521,9 @@ textarea.input { height: auto; padding: 10px 12px; resize: vertical; min-height:
 .systems-row-label { display: flex; align-items: center; gap: 10px; font-size: var(--fs-sm); color: var(--text-secondary); }
 
 /* Quick action tile */
-.qa-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; }
-@media (max-width: 900px) { .qa-grid { grid-template-columns: repeat(3, 1fr); } }
-@media (max-width: 560px) { .qa-grid { grid-template-columns: repeat(2, 1fr); } }
+.qa-grid { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 12px; }
+@media (max-width: 900px) { .qa-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+@media (max-width: 560px) { .qa-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 .qa-tile {
   display: flex; flex-direction: column; align-items: flex-start; gap: 12px;
   padding: 16px; border-radius: var(--radius-md); background: var(--bg-sunken);
@@ -545,6 +545,36 @@ textarea.input { height: auto; padding: 10px 12px; resize: vertical; min-height:
 .table-toolbar-spacer { flex: 1; }
 
 .table-wrap { overflow-x: auto; border: 1px solid var(--border-subtle); border-radius: var(--radius-lg); background: var(--bg-raised); }
+.table-scroll-hint {
+  display: none;
+  align-items: center; gap: 4px;
+  font-size: var(--fs-xs); color: var(--text-tertiary);
+  margin-bottom: 8px;
+}
+.table-scroll-hint svg { width: 13px; height: 13px; flex-shrink: 0; }
+/* Cards holding a horizontally-scrollable table become a size query
+   container so the scroll hint/fade reacts to the *actual* room available
+   -- not a guessed viewport width. That matters here because the sidebar
+   goes from hidden (mobile drawer) to a persistent 248px column at 1025px,
+   which eats real width in a band no single viewport breakpoint can
+   describe correctly (works at 900px and 1100px, breaks at 1025px). */
+.card:has(> .table-wrap) { container-type: inline-size; }
+/* Fallback for browsers without :has()/container query support: match the
+   table's own min-width so the hint at least shows on small screens. */
+@media (max-width: 720px) {
+  .table-wrap {
+    -webkit-mask-image: linear-gradient(to right, #000 calc(100% - 28px), transparent 100%);
+    mask-image: linear-gradient(to right, #000 calc(100% - 28px), transparent 100%);
+  }
+  .table-scroll-hint { display: flex; }
+}
+@container (max-width: 780px) {
+  .table-wrap {
+    -webkit-mask-image: linear-gradient(to right, #000 calc(100% - 28px), transparent 100%);
+    mask-image: linear-gradient(to right, #000 calc(100% - 28px), transparent 100%);
+  }
+  .table-scroll-hint { display: flex; }
+}
 table.data-table { width: 100%; border-collapse: collapse; min-width: 720px; }
 .data-table thead th {
   position: sticky; top: 0; background: var(--bg-raised); z-index: 2;
@@ -714,7 +744,7 @@ table.data-table { width: 100%; border-collapse: collapse; min-width: 720px; }
 .metric-mini-label { font-size: var(--fs-2xs); color: var(--text-tertiary); margin-bottom: 6px; }
 .metric-mini-value { font-family: var(--font-mono); font-size: var(--fs-lg); font-weight: 600; }
 
-.heatmap-grid { display: grid; grid-template-columns: repeat(31, 1fr); gap: 3px; }
+.heatmap-grid { display: grid; grid-template-columns: repeat(31, minmax(0, 1fr)); gap: 3px; }
 .heatmap-cell { aspect-ratio: 1; border-radius: 3px; background: var(--bg-sunken); }
 
 /* --------------------------------------------------------------------------
@@ -744,8 +774,8 @@ table.data-table { width: 100%; border-collapse: collapse; min-width: 720px; }
 /* --------------------------------------------------------------------------
    11. SETTINGS / PROFILE / FORMS
    -------------------------------------------------------------------------- */
-.settings-layout { display: grid; grid-template-columns: 220px 1fr; gap: 24px; align-items: start; }
-@media (max-width: 900px) { .settings-layout { grid-template-columns: 1fr; } }
+.settings-layout { display: grid; grid-template-columns: 220px minmax(0, 1fr); gap: 24px; align-items: start; }
+@media (max-width: 900px) { .settings-layout { grid-template-columns: minmax(0, 1fr); } }
 .settings-nav { display: flex; flex-direction: column; gap: 2px; position: sticky; top: 88px; }
 .settings-nav button { display: flex; align-items: center; gap: 10px; padding: 9px 12px; border-radius: var(--radius-sm); font-size: var(--fs-sm); color: var(--text-secondary); text-align: left; }
 .settings-nav button:hover { background: var(--bg-hover); }
@@ -753,8 +783,8 @@ table.data-table { width: 100%; border-collapse: collapse; min-width: 720px; }
 .settings-panel { display: none; }
 .settings-panel.is-active { display: block; animation: viewIn var(--dur-base) var(--ease-out); }
 
-.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px; }
-@media (max-width: 560px) { .form-row { grid-template-columns: 1fr; } }
+.form-row { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 16px; margin-bottom: 16px; }
+@media (max-width: 560px) { .form-row { grid-template-columns: minmax(0, 1fr); } }
 
 .pref-row { display: flex; align-items: center; justify-content: space-between; padding: 14px 0; border-bottom: 1px solid var(--border-subtle); gap: 16px; }
 .pref-row:last-child { border-bottom: none; }
@@ -841,10 +871,10 @@ table.data-table { width: 100%; border-collapse: collapse; min-width: 720px; }
   .view { padding: 18px 16px 48px; }
   .card { padding: 16px; }
   .view-title { font-size: var(--fs-lg); }
-  .qa-grid { grid-template-columns: repeat(2, 1fr); }
+  .qa-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .toast-stack { right: 12px; left: 12px; width: auto; top: 74px; }
   .cmdk .modal { margin-top: 0; }
-  .form-row { grid-template-columns: 1fr; }
+  .form-row { grid-template-columns: minmax(0, 1fr); }
 }
 
 /* --------------------------------------------------------------------------
