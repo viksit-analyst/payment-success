@@ -133,6 +133,24 @@
   }
 
   /**
+   * { date, reports: [{ strategyKey, strategyName, trades, wins, losses,
+   *   skipped, failed, grossPnl, winRatePct }, ...] }
+   * Backed by DashboardApi.gs's getDailyReportApi_, which reads the
+   * DailyReports sheet — populated once daily (~15:35 IST) by the VM's
+   * own scheduler/eod_report.py pushing through VmSyncRouter.gs. `date`
+   * is optional (defaults server-side to today, Asia/Kolkata) and takes
+   * a "YYYY-MM-DD" string when passed explicitly (e.g. from a date
+   * picker on a reports history page). One entry per strategy that
+   * traded for this customer that day — an empty `reports` array is a
+   * normal, valid response (no trades that day), not an error.
+   */
+  async function getDailyReport(date) {
+    const data = await request_('dailyReport', date ? { date } : {});
+    return { date: data.date, reports: data.reports };
+  }
+
+
+  /**
    * BrokerRouter.gs's contract differs from DashboardApi.gs's: token
    * travels as `authorization` (see authenticateRequest_ in
    * BrokerRouter.gs), and a successful response wraps its payload in
@@ -195,5 +213,6 @@
     getRenewal,
     getStatus,
     getBotStatus,
+    getDailyReport,
   });
 })(window);
