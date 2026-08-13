@@ -1074,7 +1074,8 @@ RENDERERS.reports = async function (target) {
 
     cardEl.innerHTML = `
       <div class="text-xs text-tertiary" style="margin-bottom:16px;">Report for ${fmtDate(date)}</div>
-      <div style="overflow-x:auto;">
+      <div class="table-scroll-hint">Swipe to see Losses, Skipped, Win Rate &amp; Gross P&amp;L ${ICONS.chevronRight}</div>
+      <div class="table-wrap">
         <table class="data-table" style="width:100%;border-collapse:collapse;">
           <thead>
             <tr class="text-xs text-tertiary" style="text-align:left;border-bottom:1px solid var(--border-subtle);">
