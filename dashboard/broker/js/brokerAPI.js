@@ -166,13 +166,5 @@ export function deactivateStrategy(strategyId) {
 /*  notes before wiring this up for real customers)                      */
 /* -------------------------------------------------------------------- */
 
-export function enableAutoLogin({ totpSecret, pin }) {
-  return callBackend('brokerEnableAutoLogin', { method: 'POST', body: { totpSecret, pin } });
-}
-
-export function disableAutoLogin() {
-  return callBackend('brokerDisableAutoLogin', { method: 'POST' });
-}
-
 export { BrokerApiError };
 
