@@ -8,7 +8,7 @@
 import { enableAutoLogin, disableAutoLogin } from './brokerAPI.js';
 import { showToast } from './utils.js';
 
-const FIELDS = ['mobile', 'password', 'pin', 'totpSecret', 'apiKey', 'apiSecret', 'redirectUri'];
+const FIELDS = ['mobile', 'pin', 'totpSecret', 'apiKey', 'apiSecret', 'redirectUri'];
 
 function readForm(form) {
   const data = {};
@@ -45,8 +45,8 @@ export function initAutoLoginSection(autoLoginEnabled) {
       return;
     }
     const payload = readForm(form);
-    if (!payload.pin && !payload.totpSecret) {
-      showToast('Enter either a PIN or a TOTP secret — Upstox needs one of these to complete login.', 'warning');
+    if (!payload.pin || !payload.totpSecret) {
+      showToast('Both PIN and TOTP secret are required — Upstox\u2019s login needs both, not just one.', 'warning');
       return;
     }
 
