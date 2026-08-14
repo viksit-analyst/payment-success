@@ -113,7 +113,7 @@ export function disconnectBroker(brokerId = 'BR001') {
  * See BrokerRouter.gs's brokerEnableAutoLogin case / TokenStore.gs's
  * enableAutoLogin_ — this is a SEPARATE, explicit-consent action from
  * requestAuthUrl()/exchangeAuthCode() above, not a replacement wired
- * into the same flow. `payload` = { mobile, password, pin, totpSecret,
+ * into the same flow. `payload` = { mobile, pin, totpSecret,
  * apiKey, apiSecret, redirectUri }.
  */
 export function enableAutoLogin(payload, brokerId = 'BR001') {
@@ -165,6 +165,14 @@ export function deactivateStrategy(strategyId) {
 /*  Automated daily reconnection (explicit opt-in — see README security  */
 /*  notes before wiring this up for real customers)                      */
 /* -------------------------------------------------------------------- */
+
+export function enableAutoLogin({ totpSecret, pin }) {
+  return callBackend('brokerEnableAutoLogin', { method: 'POST', body: { totpSecret, pin } });
+}
+
+export function disableAutoLogin() {
+  return callBackend('brokerDisableAutoLogin', { method: 'POST' });
+}
 
 export { BrokerApiError };
 
