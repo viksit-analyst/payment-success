@@ -493,6 +493,63 @@ section { position: relative; }
 }
 .nav-links a:hover { color: var(--text-primary); background: var(--bg-sunken); }
 
+.nav-more { position: relative; }
+.nav-more-trigger {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 10px 14px;
+  border-radius: var(--radius-button);
+  font-family: inherit;
+  font-size: var(--fs-sm);
+  font-weight: 500;
+  color: var(--text-secondary);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  transition: color var(--dur-base) var(--ease-standard), background-color var(--dur-base) var(--ease-standard);
+}
+.nav-more-trigger svg { transition: transform var(--dur-base) var(--ease-standard); }
+.nav-more-trigger:hover { color: var(--text-primary); background: var(--bg-sunken); }
+.nav-more.is-open .nav-more-trigger { color: var(--text-primary); background: var(--bg-sunken); }
+.nav-more.is-open .nav-more-trigger svg { transform: rotate(180deg); }
+
+.nav-more-panel {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  min-width: 190px;
+  padding: 6px;
+  background: var(--bg-raised);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-md);
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(-6px);
+  transition: opacity var(--dur-base) var(--ease-standard), transform var(--dur-base) var(--ease-standard), visibility var(--dur-base);
+  z-index: 210;
+}
+.nav-more.is-open .nav-more-panel { opacity: 1; visibility: visible; transform: translateY(0); }
+.nav-more-panel a {
+  padding: 10px 12px;
+  border-radius: var(--radius-sm);
+  font-size: var(--fs-sm);
+  font-weight: 500;
+  color: var(--text-secondary);
+  white-space: nowrap;
+  transition: color var(--dur-base) var(--ease-standard), background-color var(--dur-base) var(--ease-standard);
+}
+.nav-more-panel a:hover { color: var(--text-primary); background: var(--bg-sunken); }
+
+.nav-on-dark:not(.is-scrolled) .nav-more-trigger { color: #F3F6FA; }
+.nav-on-dark:not(.is-scrolled) .nav-more-trigger:hover,
+.nav-on-dark:not(.is-scrolled) .nav-more.is-open .nav-more-trigger {
+  color: #FFFFFF;
+  background: rgba(255, 255, 255, 0.1);
+}
+
 .nav-actions { display: flex; align-items: center; gap: 10px; }
 
 .theme-toggle {
