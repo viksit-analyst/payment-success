@@ -58,6 +58,30 @@
   }));
 
   /* ------------------------------------------------------------------------
+     "More" nav dropdown
+     ------------------------------------------------------------------------ */
+  const navMore = document.getElementById('navMore');
+  const navMoreTrigger = document.getElementById('navMoreTrigger');
+  if (navMore && navMoreTrigger) {
+    const closeNavMore = () => {
+      navMore.classList.remove('is-open');
+      navMoreTrigger.setAttribute('aria-expanded', 'false');
+    };
+    navMoreTrigger.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const isOpen = navMore.classList.toggle('is-open');
+      navMoreTrigger.setAttribute('aria-expanded', String(isOpen));
+    });
+    document.addEventListener('click', (e) => {
+      if (!navMore.contains(e.target)) closeNavMore();
+    });
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') closeNavMore();
+    });
+    navMore.querySelectorAll('a').forEach(a => a.addEventListener('click', closeNavMore));
+  }
+
+  /* ------------------------------------------------------------------------
      Theme toggle (in-memory only — no storage API, session-scoped by design)
      ------------------------------------------------------------------------ */
   const themeToggle = document.getElementById('themeToggle');
