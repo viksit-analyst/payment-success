@@ -44,11 +44,29 @@
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
-  "@type": "Organization",
-  "name": "Viksit Analyst",
-  "url": "https://www.viksitanalyst.com",
-  "description": "Viksit Analyst builds research-driven algo trading strategies for Indian markets, with disciplined risk management and fully automated execution.",
-  "slogan": "Trade with Discipline. Not Emotion."
+  "@graph": [
+    {
+      "@type": "WebSite",
+      "@id": "https://www.viksitanalyst.com/#website",
+      "url": "https://www.viksitanalyst.com/",
+      "name": "Viksit Analyst",
+      "description": "Research-driven algo trading strategies for Indian markets with automated execution and defined risk controls.",
+      "publisher": { "@id": "https://www.viksitanalyst.com/#organization" },
+      "inLanguage": "en-IN"
+    },
+    {
+      "@type": "Organization",
+      "@id": "https://www.viksitanalyst.com/#organization",
+      "name": "Viksit Analyst",
+      "url": "https://www.viksitanalyst.com/",
+      "logo": {
+        "@type": "ImageObject",
+        "url": "https://www.viksitanalyst.com/assets/logo.svg"
+      },
+      "description": "Viksit Analyst builds research-driven algo trading strategies for Indian markets, with disciplined risk management and fully automated execution.",
+      "slogan": "Trade with Discipline. Not Emotion."
+    }
+  ]
 }
 </script>
 <script type="application/ld+json">
