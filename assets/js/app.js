@@ -17,6 +17,32 @@ function debugLog(...args) { if (DEBUG) console.log(...args); }
 
 let paymentInProgress = false;
 
+// PERF FIX: checkout.razorpay.com/v1/checkout.js used to be a blocking
+// <script> tag loaded on every page view, whether or not the visitor ever
+// clicked "Subscribe" - PageSpeed flagged this as a large chunk of unused
+// JavaScript on first load, and it also queued in front of this file and
+// script.js, delaying the hero reveal on slow mobile connections. It's now
+// fetched on demand, the first time buy() actually runs, and cached so a
+// second click doesn't reload it. CSP already allowlists this exact origin
+// (script-src 'self' https://checkout.razorpay.com), so no CSP change is
+// needed to load it this way.
+let razorpayScriptPromise = null;
+function loadRazorpayScript() {
+    if (window.Razorpay) return Promise.resolve();
+    if (razorpayScriptPromise) return razorpayScriptPromise;
+    razorpayScriptPromise = new Promise((resolve, reject) => {
+        const script = document.createElement('script');
+        script.src = 'https://checkout.razorpay.com/v1/checkout.js';
+        script.onload = () => resolve();
+        script.onerror = () => {
+            razorpayScriptPromise = null;
+            reject(new Error('Could not load the payment gateway. Please check your connection and try again.'));
+        };
+        document.head.appendChild(script);
+    });
+    return razorpayScriptPromise;
+}
+
 // UX FIX: buy() previously gave zero visual feedback between the click and
 // Razorpay's checkout modal opening — just a silent paymentInProgress flag.
 // On a cold Apps Script execution (createOrder can genuinely take 1-3s)
@@ -50,7 +76,12 @@ async function buy(bot, btn) {
     try {
 
         debugLog("Sending request...");
-        
+
+        // Kick off the Razorpay script load and the order-creation request
+        // at the same time - the modal needs both, so there's no reason to
+        // make one wait on the other.
+        const razorpayReady = loadRazorpayScript();
+
         const response = await fetch(
             SCRIPT_URL +
             "?action=createOrder&bot=" +
@@ -144,6 +175,8 @@ async function buy(bot, btn) {
         debugLog("Options:");
         
         debugLog(options);
+
+        await razorpayReady;
         const rzp = new Razorpay(options);
         
         debugLog("Opening Razorpay...");
