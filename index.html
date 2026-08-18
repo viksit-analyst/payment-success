@@ -1018,13 +1018,20 @@
   </div>
 </div>
 
-<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+<!-- PERF FIX: checkout.razorpay.com/v1/checkout.js used to load here,
+     unconditionally, on every single page view. It's a large, third-party
+     script that's only actually needed once someone clicks "Subscribe" -
+     PageSpeed was flagging it as ~170KB of unused JS on first load, and
+     because it's a blocking, same-queue <script> ahead of app.js/script.js,
+     it also delayed everything after it (including the hero's own reveal
+     script) until it finished downloading. It's now lazy-loaded from
+     inside buy() in app.js, right when a checkout is actually started. -->
 <!-- M3 fix: auth/config.js is the single source of truth for the Apps
      Script deployment URL - app.js now reads window.VA_AUTH_CONFIG.API_BASE_URL
      from it instead of carrying its own hardcoded copy. -->
-<script src="auth/config.js"></script>
-<script src="assets/js/app.js"></script>
-<script src="assets/js/script.js"></script>
+<script src="auth/config.js" defer></script>
+<script src="assets/js/app.js" defer></script>
+<script src="assets/js/script.js" defer></script>
   
 </body>
 </html>
