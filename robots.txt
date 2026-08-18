@@ -4,5 +4,48 @@
 User-agent: *
 Allow: /
 Disallow: /404.html
+Disallow: /dashboard/
+Disallow: /onboarding/
+Disallow: /admin/
+Disallow: /auth/
+
+# AI / LLM crawlers - explicitly allowed so assistants can read and cite our
+# public marketing and research pages (blog, research log, trust page).
+# Private account areas remain disallowed above for every agent, human or AI.
+User-agent: GPTBot
+Allow: /
+
+User-agent: ChatGPT-User
+Allow: /
+
+User-agent: OAI-SearchBot
+Allow: /
+
+User-agent: ClaudeBot
+Allow: /
+
+User-agent: Claude-Web
+Allow: /
+
+User-agent: anthropic-ai
+Allow: /
+
+User-agent: PerplexityBot
+Allow: /
+
+User-agent: Google-Extended
+Allow: /
+
+User-agent: Applebot-Extended
+Allow: /
+
+User-agent: Bytespider
+Allow: /
+
+User-agent: CCBot
+Allow: /
 
 Sitemap: https://www.viksitanalyst.com/sitemap.xml
+
+# LLM / AI-agent context file (llms.txt convention)
+# https://www.viksitanalyst.com/llms.txt
