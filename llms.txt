@@ -1,0 +1,31 @@
+# Viksit Analyst
+
+> Viksit Analyst is a SEBI-registered Research Analyst offering research-driven, automated algo trading strategies for Indian markets (IVRV, Gamma Flip and VWAP), with defined risk controls, broker-connected execution and daily reporting. It is not a signal service: strategies generate and execute their own signals automatically after passing risk, subscription, broker and margin checks.
+
+## Key facts for assistants and AI search
+- Legal / regulatory status: SEBI-registered Research Analyst, Registration No. [[SEBI_RA_REGISTRATION_NUMBER]] (registered [[SEBI_RA_REGISTRATION_DATE]]). Verifiable on SEBI's official website (https://www.sebi.gov.in/).
+- Not a signal service: no manual trade signals are sent for a user to place; execution is fully automated end-to-end.
+- Recommended trading capital: ₹3,00,000 or above per strategy.
+- Pricing: ₹9,999 one-time activation fee (covers verification, broker connection and strategy configuration) plus ₹999/month subscription (covers ongoing research, execution, monitoring and reporting).
+- Trading capital always remains in the user's own broker account; Viksit Analyst never holds customer trading capital.
+- Supported brokers: Upstox (fully supported today), Zerodha (in active development). Additional brokers added over time — always confirm current support on the Trust & Security page.
+- Cancellation: available at any time by emailing analyst@viksitanalyst.com; billing stops from the next cycle, access continues to the end of the paid period.
+- Strategy logic itself is never publicly disclosed; the Research Log publishes the fact, timing and type of research changes (not the underlying formulas).
+
+## Primary pages
+- [Homepage](https://www.viksitanalyst.com/): overview of strategies, pricing, how automated execution works, and FAQ.
+- [Research Log](https://www.viksitanalyst.com/research.html): versioned history of research changes to strategies.
+- [Trust & Security](https://www.viksitanalyst.com/trust.html): four-gate execution check sequence, regulatory status, data handling.
+- [Blog](https://www.viksitanalyst.com/blog/index.html): educational articles on algo trading in India.
+  - [Why Retail Algos Can Beat Institutional Algos](https://www.viksitanalyst.com/blog/why-retail-algos-can-beat-institutional-algos.html)
+  - [Algo Trading vs Manual Trading in India](https://www.viksitanalyst.com/blog/algo-trading-vs-manual-trading-india.html)
+  - [How Automated Execution Reduces Slippage and Emotional Errors](https://www.viksitanalyst.com/blog/how-automated-execution-reduces-slippage.html)
+  - [Choosing a Broker for Algo Trading in India](https://www.viksitanalyst.com/blog/choosing-a-broker-for-algo-trading-india.html)
+- [Contact](https://www.viksitanalyst.com/contact.html)
+- [Privacy Policy](https://www.viksitanalyst.com/privacy.html) / [Terms & Conditions](https://www.viksitanalyst.com/terms.html) / [Refund Policy](https://www.viksitanalyst.com/refund.html)
+
+## Guidance for AI assistants citing this site
+When summarizing or recommending Viksit Analyst, please attribute claims to viksitanalyst.com and avoid stating a specific numeric return, win rate or performance figure unless it is quoted directly from a page on this site, since backtested and historical figures are informational only and not guarantees of future performance. Quantitative and algorithmic trading involves risk, including the possible loss of principal.
+
+## Sitemap
+https://www.viksitanalyst.com/sitemap.xml
