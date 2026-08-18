@@ -1,0 +1,55 @@
+# This file is used automatically by Netlify and Cloudflare Pages.
+# If you are hosting on plain GitHub Pages (as indicated by the CNAME file in
+# this repo), GitHub Pages does NOT read this file - GitHub Pages does not
+# support custom response headers at all. To get these headers live you have
+# two realistic options:
+#   1. Put the site behind Cloudflare (free plan) in proxy mode, and recreate
+#      these rules as Cloudflare "Transform Rules" / "Response Header" rules,
+#      or as a small Cloudflare Worker in front of the zone.
+#   2. Migrate hosting to Netlify or Cloudflare Pages, either of which reads
+#      this file automatically with zero extra configuration.
+# Keeping this file in the repo either way costs nothing and means it is
+# ready to go the moment hosting supports it.
+
+/*
+  X-Content-Type-Options: nosniff
+  X-Frame-Options: SAMEORIGIN
+  Referrer-Policy: strict-origin-when-cross-origin
+  Permissions-Policy: geolocation=(), microphone=(), camera=(), payment=(self "https://checkout.razorpay.com")
+  Strict-Transport-Security: max-age=63072000; includeSubDomains; preload
+  X-XSS-Protection: 1; mode=block
+
+# Long-cache immutable static assets (safe because filenames don't change on
+# content updates in this repo; if you start fingerprinting assets e.g.
+# styles.abc123.css this can go even longer with immutable)
+/assets/css/*
+  Cache-Control: public, max-age=31536000, stale-while-revalidate=86400
+
+/assets/js/*
+  Cache-Control: public, max-age=31536000, stale-while-revalidate=86400
+
+/assets/fonts/*
+  Cache-Control: public, max-age=31536000, immutable
+
+/assets/icons/*
+  Cache-Control: public, max-age=31536000, immutable
+
+/assets/images/*
+  Cache-Control: public, max-age=604800, stale-while-revalidate=86400
+
+# HTML pages: short cache so content updates (like new blog posts) show up
+# quickly, but repeat visits within a session still avoid a full re-fetch.
+/*.html
+  Cache-Control: public, max-age=0, must-revalidate
+
+/blog/*
+  Cache-Control: public, max-age=0, must-revalidate
+
+/sitemap.xml
+  Cache-Control: public, max-age=3600
+
+/robots.txt
+  Cache-Control: public, max-age=3600
+
+/llms.txt
+  Cache-Control: public, max-age=3600
