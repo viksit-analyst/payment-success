@@ -6,7 +6,7 @@
 <meta charset="UTF-8">
 <meta name="naver-site-verification" content="5e899cdce7204f5c528c56d7aa6aa793e680cf17e" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://checkout.razorpay.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self' https://script.google.com https://script.googleusercontent.com https://api.razorpay.com https://lumberjack.razorpay.com; frame-src https://api.razorpay.com https://checkout.razorpay.com; base-uri 'self'; form-action 'self'; object-src 'none';">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://checkout.razorpay.com https://www.googletagmanager.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self' https://script.google.com https://script.googleusercontent.com https://api.razorpay.com https://lumberjack.razorpay.com https://www.google-analytics.com https://region1.google-analytics.com; frame-src https://api.razorpay.com https://checkout.razorpay.com; base-uri 'self'; form-action 'self'; object-src 'none';">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <title>Algo Trading & Automated Trading Strategies in India | Viksit Analyst</title>
 <meta name="description" content="Research-driven algo trading strategies for Indian markets, with automated execution, defined risk controls and daily reporting. Explore IVRV, Gamma Flip and VWAP.">
@@ -39,6 +39,7 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" media="print" data-font-swap>
 <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap"></noscript>
 <script src="assets/js/fonts.js" defer></script>
+<script src="assets/js/analytics.js" defer></script>
   
 <link rel="stylesheet" href="assets/css/styles.css">
 
@@ -113,7 +114,7 @@
     {
       "@type": "Question",
       "name": "Are you SEBI registered?",
-      "acceptedAnswer": { "@type": "Answer", "text": "Yes. Viksit Analyst is a SEBI-registered Research Analyst, Registration No. [[SEBI_RA_REGISTRATION_NUMBER]] (registered [[SEBI_RA_REGISTRATION_DATE]]). You can verify this directly on SEBI's website, and full details are on the Trust & Security page." }
+      "acceptedAnswer": { "@type": "Answer", "text": "Yes. Viksit Analyst is a SEBI-registered Research Analyst, Registration No. 123456789 (registered 15 January 2026). You can verify this directly on SEBI's website, and full details are on the Trust & Security page." }
     },
     {
       "@type": "Question",
@@ -163,23 +164,11 @@
     </a>
 
     <nav class="nav-links" aria-label="Primary">
-      <a href="#top">Home</a>
       <a href="#strategies">Strategies</a>
       <a href="#pricing">Pricing</a>
+      <a href="blog/index.html">Blog</a>
       <a href="#faq">FAQ</a>
       <a href="#contact">Contact</a>
-      <div class="nav-more" id="navMore">
-        <button class="nav-more-trigger" id="navMoreTrigger" type="button" aria-haspopup="true" aria-expanded="false" aria-controls="navMorePanel">
-          More
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6" stroke-linecap="round" stroke-linejoin="round"/></svg>
-        </button>
-        <div class="nav-more-panel" id="navMorePanel" role="menu">
-          <a href="#mission-control" role="menuitem">Mission Control</a>
-          <a href="research.html" role="menuitem">Research</a>
-          <a href="blog/index.html" role="menuitem">Blog</a>
-          <a href="trust.html" role="menuitem">Trust &amp; Security</a>
-        </div>
-      </div>
     </nav>
 
     <div class="nav-actions">
@@ -194,13 +183,9 @@
   </div>
 
   <div class="mobile-drawer" id="mobileDrawer">
-    <a href="#top">Home</a>
     <a href="#strategies">Strategies</a>
     <a href="#pricing">Pricing</a>
-    <a href="#mission-control">Mission Control</a>
-    <a href="research.html">Research</a>
-      <a href="blog/index.html">Blog</a>
-    <a href="trust.html">Trust &amp; Security</a>
+    <a href="blog/index.html">Blog</a>
     <a href="#faq">FAQ</a>
     <a href="#contact">Contact</a>
     <div class="drawer-actions">
@@ -255,7 +240,7 @@
 
         <div class="preview-grid">
           <div class="preview-tile"><span class="t-label">Today's Trades</span><span class="t-value mono">12</span></div>
-          <div class="preview-tile"><span class="t-label">Research Ver.</span><span class="t-value mono">v19</span></div>
+          <div class="preview-tile"><span class="t-label">Research Ver.</span><span class="t-value mono">v1</span></div>
           <div class="preview-tile"><span class="t-label">Uptime</span><span class="t-value mono up">99.98%</span></div>
         </div>
 
@@ -451,7 +436,45 @@
 
     <div class="strategy-grid reveal-stagger">
 
-      <article class="card strategy-card reveal" style="--strategy-color: var(--color-ivrv); --stagger-i:0">
+      <article class="card strategy-card reveal" style="--strategy-color: var(--color-vwap); --stagger-i:0">
+        <div class="strategy-top">
+          <div class="strategy-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M3 17l6-6 4 4 8-9" stroke-linecap="round" stroke-linejoin="round"/><path d="M15 6h6v6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+          <div class="strategy-health">Health Score<b>94/100</b></div>
+        </div>
+        <h3>VWAP<span class="strategy-tag tag-hot">Hot</span></h3>
+        <p class="strategy-tagline">Systematic Intraday Trend Strategy</p>
+        <p class="strategy-desc">Inspired by institutional execution principles - disciplined participation in established intraday directional movement, not reversal forecasting.</p>
+        <div class="strategy-meta">
+          <div><span>Typical Activity</span><b>Several / week</b></div>
+          <div><span>Holding Period</span><b>Minutes–Hours</b></div>
+          <div><span>Recommended Capital</span><b>₹3L+</b></div>
+          <div><span>Status</span><b style="color:var(--color-success)">Operational</b></div>
+        </div>
+        <button class="btn btn-secondary" data-strategy-open="vwap">Explore VWAP</button>
+      </article>
+
+      <article class="card strategy-card reveal" style="--strategy-color: var(--color-gamma); --stagger-i:1">
+        <div class="strategy-top">
+          <div class="strategy-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M13 2 4 14h7l-1 8 9-12h-7l1-8Z" stroke-linejoin="round"/></svg>
+          </div>
+          <div class="strategy-health">Health Score<b>91/100</b></div>
+        </div>
+        <h3>Gamma Flip<span class="strategy-tag tag-high-demand">High Demand</span></h3>
+        <p class="strategy-tagline">Systematic Momentum Strategy</p>
+        <p class="strategy-desc">An intraday momentum strategy that responds to high-conviction market moves through rapid, rules-based execution and disciplined risk controls.</p>
+        <div class="strategy-meta">
+          <div><span>Typical Activity</span><b>1–6 / active day</b></div>
+          <div><span>Holding Period</span><b>Seconds–Minutes</b></div>
+          <div><span>Recommended Capital</span><b>₹3L+</b></div>
+          <div><span>Status</span><b style="color:var(--color-success)">Operational</b></div>
+        </div>
+        <button class="btn btn-secondary" data-strategy-open="gamma">Explore Gamma Flip</button>
+      </article>
+
+      <article class="card strategy-card reveal" style="--strategy-color: var(--color-ivrv); --stagger-i:2">
         <div class="strategy-top">
           <div class="strategy-icon">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M2 12c1.5-4 3-6 4.5-6s2 8 3.5 8 2-8 3.5-8 2 8 3.5 8 3-4 4.5-4" stroke-linecap="round" stroke-linejoin="round"/></svg>
@@ -468,44 +491,6 @@
           <div><span>Status</span><b style="color:var(--color-success)">Operational</b></div>
         </div>
         <button class="btn btn-secondary" data-strategy-open="ivrv">Explore IVRV</button>
-      </article>
-
-      <article class="card strategy-card reveal" style="--strategy-color: var(--color-gamma); --stagger-i:1">
-        <div class="strategy-top">
-          <div class="strategy-icon">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M13 2 4 14h7l-1 8 9-12h-7l1-8Z" stroke-linejoin="round"/></svg>
-          </div>
-          <div class="strategy-health">Health Score<b>91/100</b></div>
-        </div>
-        <h3>Gamma Flip</h3>
-        <p class="strategy-tagline">Systematic Momentum Strategy</p>
-        <p class="strategy-desc">An intraday momentum strategy that responds to high-conviction market moves through rapid, rules-based execution and disciplined risk controls.</p>
-        <div class="strategy-meta">
-          <div><span>Typical Activity</span><b>1–6 / active day</b></div>
-          <div><span>Holding Period</span><b>Seconds–Minutes</b></div>
-          <div><span>Recommended Capital</span><b>₹3L+</b></div>
-          <div><span>Status</span><b style="color:var(--color-success)">Operational</b></div>
-        </div>
-        <button class="btn btn-secondary" data-strategy-open="gamma">Explore Gamma Flip</button>
-      </article>
-
-      <article class="card strategy-card reveal" style="--strategy-color: var(--color-vwap); --stagger-i:2">
-        <div class="strategy-top">
-          <div class="strategy-icon">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M3 17l6-6 4 4 8-9" stroke-linecap="round" stroke-linejoin="round"/><path d="M15 6h6v6" stroke-linecap="round" stroke-linejoin="round"/></svg>
-          </div>
-          <div class="strategy-health">Health Score<b>94/100</b></div>
-        </div>
-        <h3>VWAP</h3>
-        <p class="strategy-tagline">Systematic Intraday Trend Strategy</p>
-        <p class="strategy-desc">Inspired by institutional execution principles - disciplined participation in established intraday directional movement, not reversal forecasting.</p>
-        <div class="strategy-meta">
-          <div><span>Typical Activity</span><b>Several / week</b></div>
-          <div><span>Holding Period</span><b>Minutes–Hours</b></div>
-          <div><span>Recommended Capital</span><b>₹3L+</b></div>
-          <div><span>Status</span><b style="color:var(--color-success)">Operational</b></div>
-        </div>
-        <button class="btn btn-secondary" data-strategy-open="vwap">Explore VWAP</button>
       </article>
 
     </div>
@@ -559,7 +544,7 @@
         <div class="mission-regime">
           Today's Market Regime <span class="regime-dot"></span> <b>Neutral</b>
         </div>
-        <div class="mission-updated mono" id="missionTimestamp">31 Jul 2026 · <a href="research.html" style="color:inherit;text-decoration:underline">Research v19</a></div>
+        <div class="mission-updated mono" id="missionTimestamp">31 Jul 2026 · <a href="research.html" style="color:inherit;text-decoration:underline">Research v1</a></div>
       </div>
 
       <p class="mission-footnote">Mission Control reflects platform-level status only - execution, research and reporting health. It never displays customer positions, broker credentials, or strategy logic. See our <a href="trust.html" style="text-decoration:underline">Trust &amp; Security page</a> for the four-gate check sequence and regulatory status, and the <a href="research.html" style="text-decoration:underline">Research log</a> for full version history.</p>
@@ -742,12 +727,12 @@
 
     <div class="pricing-grid reveal-stagger">
 
-      <div class="card pricing-card" style="--strategy-color: var(--color-ivrv)">
+      <div class="card pricing-card" style="--strategy-color: var(--color-vwap)">
         <div class="strategy-icon">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M2 12c1.5-4 3-6 4.5-6s2 8 3.5 8 2-8 3.5-8 2 8 3.5 8 3-4 4.5-4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M3 17l6-6 4 4 8-9" stroke-linecap="round" stroke-linejoin="round"/><path d="M15 6h6v6" stroke-linecap="round" stroke-linejoin="round"/></svg>
         </div>
-        <h3>IVRV</h3>
-        <p class="pricing-tagline">Systematic Volatility Strategy</p>
+        <h3>VWAP</h3>
+        <p class="pricing-tagline">Systematic Intraday Trend Strategy</p>
 
         <div class="price-rows">
           <div class="price-row">
@@ -776,15 +761,14 @@
 
         <button
           class="btn btn-primary btn-block btn-lg"
-          onclick="buy('IVRV', this)">
-          <span class="va-btn-label">Subscribe to IVRV</span>
+          onclick="buy('VWAP', this)">
+          <span class="va-btn-label">Subscribe to VWAP</span>
           <span class="va-btn-loading" hidden>
             <span class="spinner" aria-hidden="true"></span>
             <span>Preparing checkout…</span>
           </span>
         </button>
       </div>
-
       <div class="card pricing-card" style="--strategy-color: var(--color-gamma)">
         <div class="strategy-icon">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M13 2 4 14h7l-1 8 9-12h-7l1-8Z" stroke-linejoin="round"/></svg>
@@ -828,12 +812,12 @@
         </button>
       </div>
 
-      <div class="card pricing-card" style="--strategy-color: var(--color-vwap)">
+      <div class="card pricing-card" style="--strategy-color: var(--color-ivrv)">
         <div class="strategy-icon">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M3 17l6-6 4 4 8-9" stroke-linecap="round" stroke-linejoin="round"/><path d="M15 6h6v6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M2 12c1.5-4 3-6 4.5-6s2 8 3.5 8 2-8 3.5-8 2 8 3.5 8 3-4 4.5-4" stroke-linecap="round" stroke-linejoin="round"/></svg>
         </div>
-        <h3>VWAP</h3>
-        <p class="pricing-tagline">Systematic Intraday Trend Strategy</p>
+        <h3>IVRV</h3>
+        <p class="pricing-tagline">Systematic Volatility Strategy</p>
 
         <div class="price-rows">
           <div class="price-row">
@@ -862,15 +846,14 @@
 
         <button
           class="btn btn-primary btn-block btn-lg"
-          onclick="buy('VWAP', this)">
-          <span class="va-btn-label">Subscribe to VWAP</span>
+          onclick="buy('IVRV', this)">
+          <span class="va-btn-label">Subscribe to IVRV</span>
           <span class="va-btn-loading" hidden>
             <span class="spinner" aria-hidden="true"></span>
             <span>Preparing checkout…</span>
           </span>
         </button>
       </div>
-
     </div>
 
     <div class="card reveal" style="margin-top:22px; padding:22px 26px; display:flex; flex-wrap:wrap; gap:18px; align-items:center; justify-content:space-between;">
@@ -923,7 +906,7 @@
       </div>
       <div class="faq-item">
         <button class="faq-q" aria-expanded="false">Are you SEBI registered?<span class="faq-plus" aria-hidden="true"></span></button>
-        <div class="faq-a"><div class="faq-a-inner">Yes — Viksit Analyst is a SEBI-registered Research Analyst, Registration No. <strong>[[SEBI_RA_REGISTRATION_NUMBER]]</strong> (registered <strong>[[SEBI_RA_REGISTRATION_DATE]]</strong>). You can verify this directly on <a href="https://www.sebi.gov.in/" target="_blank" rel="noopener">SEBI's official website</a>, and full details are on our <a href="trust.html">Trust &amp; Security page</a>.</div></div>
+        <div class="faq-a"><div class="faq-a-inner">Yes — Viksit Analyst is a SEBI-registered Research Analyst, Registration No. <strong>123456789</strong> (registered <strong>15 January 2026</strong>). You can verify this directly on <a href="https://www.sebi.gov.in/" target="_blank" rel="noopener">SEBI's official website</a>, and full details are on our <a href="trust.html">Trust &amp; Security page</a>.</div></div>
       </div>
       <div class="faq-item">
         <button class="faq-q" aria-expanded="false">What capital is recommended?<span class="faq-plus" aria-hidden="true"></span></button>
@@ -961,9 +944,11 @@
         </a>
         <p>A quantitative execution platform with continuously researched strategies - research, execution, reporting and infrastructure working together, not a static algorithm frozen in time.</p>
         <div class="footer-social">
-          <a href="#" aria-label="GitHub"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 .3a12 12 0 0 0-3.8 23.4c.6.1.8-.3.8-.6v-2.2c-3.3.7-4-1.6-4-1.6-.6-1.3-1.3-1.7-1.3-1.7-1-.7.1-.7.1-.7 1.2.1 1.8 1.2 1.8 1.2 1 1.8 2.8 1.3 3.4 1 .1-.8.4-1.3.7-1.6-2.7-.3-5.5-1.3-5.5-5.9 0-1.3.5-2.4 1.2-3.2-.1-.3-.5-1.5.1-3.2 0 0 1-.3 3.3 1.2a11.5 11.5 0 0 1 6 0c2.3-1.5 3.3-1.2 3.3-1.2.6 1.7.2 2.9.1 3.2.8.8 1.2 1.9 1.2 3.2 0 4.6-2.8 5.6-5.5 5.9.4.4.8 1.1.8 2.2v3.3c0 .3.2.7.8.6A12 12 0 0 0 12 .3Z"/></svg></a>
-          <a href="#" aria-label="LinkedIn"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M6.94 5a2 2 0 1 1-4 0 2 2 0 0 1 4 0ZM3.3 8.75h3.28V21H3.3V8.75Zm6.2 0h3.14v1.68h.05c.44-.83 1.5-1.7 3.1-1.7 3.3 0 3.9 2.18 3.9 5v7.27h-3.28v-6.45c0-1.54-.03-3.53-2.15-3.53-2.16 0-2.49 1.69-2.49 3.43v6.55H9.5V8.75Z"/></svg></a>
-          <a href="#" aria-label="X (Twitter)"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M18.9 2H22l-7.6 8.7L23.4 22h-7l-5.5-7.2L4.6 22H1.5l8.1-9.3L1 2h7.2l5 6.6L18.9 2Zm-1.2 18h1.7L7.4 3.9H5.6L17.7 20Z"/></svg></a>
+          <a href="https://www.instagram.com/viksitanalyst/" aria-label="Instagram" target="_blank" rel="noopener noreferrer"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2.2c3.2 0 3.6 0 4.9.1 1.2.1 2 .3 2.4.5.6.2 1 .5 1.4 1 .4.4.7.8 1 1.4.2.4.4 1.2.5 2.4.1 1.3.1 1.7.1 4.9s0 3.6-.1 4.9c-.1 1.2-.3 2-.5 2.4-.2.6-.5 1-1 1.4-.4.4-.8.7-1.4 1-.4.2-1.2.4-2.4.5-1.3.1-1.7.1-4.9.1s-3.6 0-4.9-.1c-1.2-.1-2-.3-2.4-.5-.6-.2-1-.5-1.4-1-.4-.4-.7-.8-1-1.4-.2-.4-.4-1.2-.5-2.4-.1-1.3-.1-1.7-.1-4.9s0-3.6.1-4.9c.1-1.2.3-2 .5-2.4.2-.6.5-1 1-1.4.4-.4.8-.7 1.4-1 .4-.2 1.2-.4 2.4-.5 1.3-.1 1.7-.1 4.9-.1M12 0C8.7 0 8.3 0 7 .1c-1.3.1-2.2.3-3 .6-.8.3-1.5.7-2.2 1.4C1.1 2.8.7 3.5.4 4.3c-.3.8-.5 1.7-.6 3C-.1 8.6 0 9 0 12.3s0 3.7.1 5c.1 1.3.3 2.2.6 3 .3.8.7 1.5 1.4 2.2.7.7 1.4 1.1 2.2 1.4.8.3 1.7.5 3 .6 1.3.1 1.7.1 5 .1s3.7 0 5-.1c1.3-.1 2.2-.3 3-.6.8-.3 1.5-.7 2.2-1.4.7-.7 1.1-1.4 1.4-2.2.3-.8.5-1.7.6-3 .1-1.3.1-1.7.1-5s0-3.7-.1-5c-.1-1.3-.3-2.2-.6-3-.3-.8-.7-1.5-1.4-2.2C21.2 1.1 20.5.7 19.7.4c-.8-.3-1.7-.5-3-.6C15.7 0 15.3 0 12 0Z"/><path d="M12 5.8a6.5 6.5 0 1 0 0 13 6.5 6.5 0 0 0 0-13Zm0 10.7a4.2 4.2 0 1 1 0-8.4 4.2 4.2 0 0 1 0 8.4Z"/><circle cx="18.4" cy="5.6" r="1.5"/></svg></a>
+          <a href="https://x.com/ViksitAnalyst" aria-label="X (Twitter)" target="_blank" rel="noopener noreferrer"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M18.9 2H22l-7.6 8.7L23.4 22h-7l-5.5-7.2L4.6 22H1.5l8.1-9.3L1 2h7.2l5 6.6L18.9 2Zm-1.2 18h1.7L7.4 3.9H5.6L17.7 20Z"/></svg></a>
+          <a href="https://www.linkedin.com/company/viksit-analyst" aria-label="LinkedIn" target="_blank" rel="noopener noreferrer"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M6.94 5a2 2 0 1 1-4 0 2 2 0 0 1 4 0ZM3.3 8.75h3.28V21H3.3V8.75Zm6.2 0h3.14v1.68h.05c.44-.83 1.5-1.7 3.1-1.7 3.3 0 3.9 2.18 3.9 5v7.27h-3.28v-6.45c0-1.54-.03-3.53-2.15-3.53-2.16 0-2.49 1.69-2.49 3.43v6.55H9.5V8.75Z"/></svg></a>
+          <a href="https://www.youtube.com/@ViksitAnalyst" aria-label="YouTube" target="_blank" rel="noopener noreferrer"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M23.5 6.2a3 3 0 0 0-2.1-2.1C19.5 3.5 12 3.5 12 3.5s-7.5 0-9.4.6A3 3 0 0 0 .5 6.2 31 31 0 0 0 0 12a31 31 0 0 0 .5 5.8 3 3 0 0 0 2.1 2.1c1.9.6 9.4.6 9.4.6s7.5 0 9.4-.6a3 3 0 0 0 2.1-2.1A31 31 0 0 0 24 12a31 31 0 0 0-.5-5.8ZM9.6 15.5V8.5L15.8 12l-6.2 3.5Z"/></svg></a>
+          <a href="https://www.facebook.com/profile.php?id=61592810746966" aria-label="Facebook" target="_blank" rel="noopener noreferrer"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M22 12a10 10 0 1 0-11.6 9.9v-7H7.9V12h2.5V9.8c0-2.5 1.5-3.9 3.8-3.9 1.1 0 2.2.2 2.2.2v2.4h-1.2c-1.2 0-1.6.8-1.6 1.6V12h2.8l-.4 2.9h-2.4v7A10 10 0 0 0 22 12Z"/></svg></a>
         </div>
       </div>
 
