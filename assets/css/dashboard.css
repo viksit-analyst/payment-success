@@ -42,7 +42,7 @@
 
   --text-primary: #F3F6FA;
   --text-secondary: #AEB9CC;
-  --text-tertiary: #7C879C;
+  --text-tertiary: #8E9AB0;
   --text-disabled: #4E5A70;
   --text-on-accent: #0B1F3A;
   --text-on-dark: #0B1F3A;
@@ -59,8 +59,8 @@
   --font-body: 'Inter', 'Segoe UI', sans-serif;
   --font-mono: 'IBM Plex Mono', 'SFMono-Regular', Menlo, monospace;
 
-  --fs-2xs: 0.6875rem;
-  --fs-xs: 0.8125rem;
+  --fs-2xs: 0.75rem;
+  --fs-xs: 0.875rem;
   --fs-sm: 0.9375rem;
   --fs-base: 1rem;
   --fs-md: 1.125rem;
@@ -107,7 +107,7 @@
 
   --text-primary: #0B1F3A;
   --text-secondary: #445068;
-  --text-tertiary: #7A879C;
+  --text-tertiary: #5C6B82;
   --text-disabled: #A9B2C2;
   --text-on-accent: #0B1F3A;
 
