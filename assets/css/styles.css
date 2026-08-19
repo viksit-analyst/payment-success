@@ -37,7 +37,7 @@
 
   --text-primary: #0B1F3A;
   --text-secondary: #445068;
-  --text-tertiary: #7A879C;
+  --text-tertiary: #5C6B82;
   --text-on-dark: #F8FAFC;
   --text-on-dark-secondary: rgba(248, 250, 252, 0.68);
   --text-on-dark-tertiary: rgba(248, 250, 252, 0.46);
@@ -53,8 +53,8 @@
   --font-body: 'Inter', 'Segoe UI', sans-serif;
   --font-mono: 'IBM Plex Mono', 'SFMono-Regular', Menlo, monospace;
 
-  --fs-2xs: 0.6875rem;   /* 11px */
-  --fs-xs: 0.8125rem;    /* 13px */
+  --fs-2xs: 0.75rem;     /* 12px, was 11px — too small to read comfortably */
+  --fs-xs: 0.875rem;     /* 14px, was 13px */
   --fs-sm: 0.9375rem;    /* 15px */
   --fs-base: 1rem;       /* 16px */
   --fs-md: 1.125rem;     /* 18px */
@@ -95,7 +95,7 @@
 
   --text-primary: #F3F6FA;
   --text-secondary: #AEB9CC;
-  --text-tertiary: #7C879C;
+  --text-tertiary: #8E9AB0;
   --text-on-dark: #0B1F3A;
   --text-on-dark-secondary: rgba(11, 31, 58, 0.7);
   --text-on-dark-tertiary: rgba(11, 31, 58, 0.5);
@@ -948,7 +948,7 @@ body.is-armed .spark-node { animation: node-pop 0.4s var(--ease-out) forwards; }
 .trust-pillar { display: flex; gap: 12px; align-items: flex-start; }
 .trust-pillar svg { width: 18px; height: 18px; color: var(--color-accent); flex-shrink: 0; margin-top: 3px; }
 .trust-pillar h4 { font-size: var(--fs-sm); font-weight: 600; margin-bottom: 4px; }
-.trust-pillar p { font-size: var(--fs-xs); color: var(--text-secondary); line-height: 1.5; }
+.trust-pillar p { font-size: var(--fs-xs); color: var(--text-secondary); line-height: 1.6; }
 
 /* --------------------------------------------------------------------------
    13. STRATEGIES
@@ -1309,7 +1309,7 @@ body.is-armed .spark-node { animation: node-pop 0.4s var(--ease-out) forwards; }
 [data-theme="dark"] .step-num { color: var(--color-accent); }
 .step:hover .step-num { border-color: var(--color-accent); background: rgba(255, 153, 51, 0.08); }
 .step h3 { font-size: var(--fs-sm); font-weight: 600; margin-bottom: 6px; }
-.step p { font-size: var(--fs-xs); color: var(--text-secondary); line-height: 1.5; }
+.step p { font-size: var(--fs-xs); color: var(--text-secondary); line-height: 1.6; }
 
 /* --------------------------------------------------------------------------
    17. PRICING
