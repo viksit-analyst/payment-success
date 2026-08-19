@@ -451,7 +451,7 @@
           </div>
           <div class="strategy-health">Health Score<b>94/100</b></div>
         </div>
-        <h3>VWAP<span class="strategy-tag tag-hot">Hot</span></h3>
+        <h3>VWAP<span class="strategy-tag tag-hot">🔥 High Demand</span></h3>
         <p class="strategy-tagline">Systematic Intraday Trend Strategy</p>
         <p class="strategy-desc">Inspired by institutional execution principles - disciplined participation in established intraday directional movement, not reversal forecasting.</p>
         <div class="strategy-meta">
@@ -725,6 +725,28 @@
       .pricing-grid .price-rows { margin-bottom: 22px; }
       .pricing-grid .price-includes { flex-grow: 1; }
       .pricing-grid .pricing-card .btn { width: 100%; }
+      .pricing-card-featured {
+        box-shadow: var(--shadow-lg), 0 0 0 1px color-mix(in srgb, var(--color-vwap) 30%, transparent);
+      }
+      .pricing-badge {
+        position: absolute;
+        top: 16px;
+        right: -34px;
+        transform: rotate(40deg);
+        background: linear-gradient(135deg, #FF9933, #FF5F35);
+        color: #fff;
+        font-family: var(--font-mono);
+        font-size: var(--fs-2xs);
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+        padding: 5px 40px;
+        box-shadow: 0 4px 12px rgba(255, 95, 53, 0.35);
+        z-index: 2;
+      }
+      @media (max-width: 600px) {
+        .pricing-badge { top: 14px; right: -38px; font-size: 0.6rem; padding: 4px 38px; }
+      }
       @media (max-width: 900px) {
         .pricing-grid { grid-template-columns: repeat(2, 1fr); }
       }
@@ -735,7 +757,8 @@
 
     <div class="pricing-grid reveal-stagger">
 
-      <div class="card pricing-card" style="--strategy-color: var(--color-vwap)">
+      <div class="card pricing-card pricing-card-featured" style="--strategy-color: var(--color-vwap)">
+        <span class="pricing-badge">🔥 High Demand</span>
         <div class="strategy-icon">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M3 17l6-6 4 4 8-9" stroke-linecap="round" stroke-linejoin="round"/><path d="M15 6h6v6" stroke-linecap="round" stroke-linejoin="round"/></svg>
         </div>
@@ -770,7 +793,7 @@
         <button
           class="btn btn-primary btn-block btn-lg"
           onclick="buy('VWAP', this)">
-          <span class="va-btn-label">Subscribe to VWAP</span>
+          <span class="va-btn-label">🔥 Subscribe to VWAP</span>
           <span class="va-btn-loading" hidden>
             <span class="spinner" aria-hidden="true"></span>
             <span>Preparing checkout…</span>
